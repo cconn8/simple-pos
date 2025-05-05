@@ -48,7 +48,7 @@ export default function CategorySection() {
                                 key={field.name}
                                 type={field.type} 
                                 placeholder={field.name}
-                                className="rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                className=" flex rounded-sm bg-white p-1 shadow-lg outline outline-black/10dark:shadow-none  dark:outline-white/10"
                             />
                         ))}
                     </div>
