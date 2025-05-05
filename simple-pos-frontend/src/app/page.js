@@ -75,22 +75,42 @@ const itemCategories = [
   },
 ]
 
+const styles = {
+  margin : 'auto',
+  border : 'groove'
+}
+
 export default function Home() {
   return (
     <div id="container">
       <div id="funeral-arrangements-div">
+        <h1><b>Vital Information</b></h1>
         {informationCategories.map((category) => (
           <div key={category.name}>
             <h2 key={category.name}>{category.name}</h2>
             <div key={category.name} id="category-fields-div">
               {category.fields.map((field) => (
-                <div style={{border: 'groove'}} key={field.name}>{field.name}</div>
+                <input style={styles} type={field.type} key={field.name} placeholder={field.name} />
+              ))}
+            </div>
+          </div>
+        ))}
+
+        <h1><b>Products & Services</b></h1>
+        {itemCategories.map((category) => (
+          <div key={category.name}>
+            <h2 key={category.name}>{category.name}</h2>
+            <div className="flex flex-row" key={category.name} id="category-items-div">
+              {category.items.map((item) => (
+                <div style={{border: 'groove'}} key={item.name}>
+                  <h3>{item.name}</h3>
+                  <h4 style={{justifyContent: 'start'}}>Add</h4>
+                </div>
               ))}
             </div>
           </div>
         ))}
       </div>
-
     </div>
   );
 }
