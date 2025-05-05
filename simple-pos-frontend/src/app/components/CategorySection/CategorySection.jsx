@@ -34,7 +34,7 @@ const informationCategories = [
   ]
 
 
-export default function CategorySection() {
+export default function CategorySection(categoryTitle, categoryFields) {
 
     return (
         <>
@@ -48,8 +48,7 @@ export default function CategorySection() {
                                 key={field.name}
                                 type={field.type} 
                                 placeholder={field.name}
-                                className=" flex rounded-sm bg-white p-1 shadow-lg outline outline-black/10dark:shadow-none  dark:outline-white/10"
-                            />
+                              />
                         ))}
                     </div>
                 </div>
