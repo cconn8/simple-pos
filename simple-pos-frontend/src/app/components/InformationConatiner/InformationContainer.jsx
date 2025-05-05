@@ -33,7 +33,7 @@ const informationCategories = [
     }
   ]
 
-export default function InformationContainer() {
+export default function InformationContainer({categories}) {
 
     return (
         <>
