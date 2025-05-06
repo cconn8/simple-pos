@@ -1,5 +1,7 @@
 import Image from "next/image";
 import InformationContainer from "./components/InformationConatiner/InformationContainer";
+import MainContent from "./components/MainContent/MainContent";
+import Layout from "./components/Layout/Layout";
 
 const informationCategories = [
   {
@@ -34,47 +36,7 @@ const informationCategories = [
   }
 ]
 
-const itemCategories = [
-  {
-    name : "Coffin",
-    items : [
-      {
-        name : "Light Leinster",
-      },
-      {
-        name : "The Kilmacduagh",
-      },
-      {
-        name : "The Galwegian",
-      }]
-  },
-  {
-    name : "Flowers",
-    items : [
-      {
-        name : "Fresh Floral Arrangements",
-      },
-      {
-        name : "Standard Coffin Spray",
-      },
-      {
-        name : "5 x Red Roses",
-      }]
-  },
-  {
-    name : "Music",
-    items : [
-      {
-        name : "Carla & Carmel",
-      },
-      {
-        name : "Frankie Colohan",
-      },
-      {
-        name : "Ailbhe Hession",
-      }]
-  },
-]
+
 
 const styles = {
   margin : 'auto',
@@ -83,6 +45,6 @@ const styles = {
 
 export default function Home() {
   return (
-    <InformationContainer />
+    <Layout />
   );
 }
