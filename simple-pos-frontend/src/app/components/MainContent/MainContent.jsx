@@ -48,6 +48,24 @@ export default function MainContent() {
             },
             {
               title : "The Galwegian",
+            },
+            {
+              title : "Light Leinster",
+            },
+            {
+              title : "The Kilmacduagh",
+            },
+            {
+              title : "The Galwegian",
+            },
+            {
+              title : "Light Leinster",
+            },
+            {
+              title : "The Kilmacduagh",
+            },
+            {
+              title : "The Galwegian",
             }]
         },
         {
