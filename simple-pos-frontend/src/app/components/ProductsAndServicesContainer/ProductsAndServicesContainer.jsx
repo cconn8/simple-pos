@@ -3,23 +3,24 @@ import React from "react";
 
 export default function ProductsAndServicesContainer({categories}) {
 
-    const handleClick = () => {
+    function handleClick() {
         console.log('Button clicked!');
       };
 
     return (
-
         <div id="products-and-services-container">
 
             {categories.map( (category) => (
                 
-                <div className="m-4 p-4 border" key={category.title} id='product-category-container'>
+                <div className="grid" key={category.title} id='product-category-container'>
                     <h2>{category.title}</h2>
-                    <div className="flex flex-row mx-2" id="product-items-container">
+                    <div className="border rounded-sm p-5 shadow-md gap-2" id="product-items-container">
                         {category.items.map( (item) => (
-                            <div className="mx-4 border rounded-sm p-5 shadow-md" key={item.title}>
-                                <button className="bg-blue-500" onClick={handleClick}>{item.title}</button>
-                            </div>
+                                <button 
+                                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 m-2" 
+                                    onClick={handleClick}>
+                                        {item.title}
+                                </button>
                         ))}
                     </div>
                 </div>          
