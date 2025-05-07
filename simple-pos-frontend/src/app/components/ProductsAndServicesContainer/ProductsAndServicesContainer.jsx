@@ -16,11 +16,11 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
 
             {categories.map( (category) => (
                 
-                <div className="my-4 p-4 border" key={category.id} id='product-category-container'>
+                <div className="my-4 p-4 border" key={category.id || category.title} id='product-category-container'>
                     <h2>{category.title}</h2>
                     <div className="p-5 shadow-md gap-2" id="product-items-container">
                         {category.items.map( (item, index) => (
-                                <button  key={item.id}
+                                <button  key={item.id || index}
                                     className="bg-blue-500 text-white p-10 rounded hover:bg-blue-600 m-1" 
                                     onClick={ () => onItemClick(item)}>
                                         {item.title}

@@ -10,6 +10,7 @@ export default function Layout() {
     const informationCategories = [
         {
         title : "Deceased Details",
+        id: uuidv4(),
           fields : [{
             id : uuidv4(),
             title : "DeceasedName",
@@ -28,6 +29,7 @@ export default function Layout() {
         },
         {
         title : "Client Details",
+        id: uuidv4(),
           fields : [{
             id : uuidv4(),
             title : "ClientName",
@@ -48,6 +50,7 @@ export default function Layout() {
     const productAndServicesCategories = [
       {
         title : "Coffin",
+        id: uuidv4(),
         items : [
           {
             id : uuidv4(),
@@ -88,6 +91,7 @@ export default function Layout() {
       },
       {
         title : "Flowers",
+        id: uuidv4(),
         items : [
           {
             id : uuidv4(),
@@ -104,6 +108,7 @@ export default function Layout() {
       },
       {
         title : "Music",
+        id: uuidv4(),
         items : [
           {
             id : uuidv4(),
