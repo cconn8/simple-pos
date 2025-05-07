@@ -1,7 +1,11 @@
 import React from "react";
 
-export default function SideBar({selectedItems}) {
+export default function SideBar({setSelectedItems, selectedItems}) {
 
+    function onDeleteSelectedItemButtonClick(id) {
+        setSelectedItems(selectedItems.filter( item => item.id != id))
+    }
+    
     return(
         
         <div id="sidebar-container">
@@ -10,9 +14,9 @@ export default function SideBar({selectedItems}) {
 
             <div className="mx-2 my-4 p-4 border" id="selected-items-div">
                 {selectedItems && selectedItems.map( (item, index) => (
-                    <div key={item + '-' + index} className="flex flex-row border">
-                        <h3 className="mx-1">{item.title}</h3>
-                        <button className="mx-1 underline">Delete</button>
+                    <div key={item.id} className="flex flex-row border">
+                        <h3 key={item.id} className="mx-1">{item.title}</h3>
+                        <button key={item.id} className="mx-1 underline" onClick={( () => onDeleteSelectedItemButtonClick(item.id))}>Delete</button>
                     </div>
                 ))}
             </div>
