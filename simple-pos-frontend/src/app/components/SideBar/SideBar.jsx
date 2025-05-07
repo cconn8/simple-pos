@@ -3,7 +3,9 @@ import React from "react";
 export default function SideBar({setSelectedItems, selectedItems}) {
 
     function onDeleteSelectedItemButtonClick(id) {
-        setSelectedItems(selectedItems.filter( item => item.id != id))
+        setSelectedItems( (prevItems) => 
+            prevItems.filter((item) => item.id !== id)
+        );
     }
     
     return(
@@ -13,10 +15,11 @@ export default function SideBar({setSelectedItems, selectedItems}) {
             <h1 className="my-5 underline"><b>Selected Items</b></h1>
 
             <div className="mx-2 my-4 p-4 border" id="selected-items-div">
+
                 {selectedItems && selectedItems.map( (item, index) => (
-                    <div key={item.id} className="flex flex-row border">
-                        <h3 key={item.id} className="mx-1">{item.title}</h3>
-                        <button key={item.id} className="mx-1 underline" onClick={( () => onDeleteSelectedItemButtonClick(item.id))}>Delete</button>
+                    <div key={item.id || index} className="flex flex-row border">
+                        <h3 className="mx-1">{item.title}</h3>
+                        <button className="mx-1 underline" onClick={( () => onDeleteSelectedItemButtonClick(item.id))}>Delete</button>
                     </div>
                 ))}
             </div>
