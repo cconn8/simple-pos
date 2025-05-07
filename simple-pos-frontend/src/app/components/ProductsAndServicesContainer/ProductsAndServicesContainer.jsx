@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from "react";
-import SideBar from "../InformationConatiner/SideBar";
+import SideBar from "../SideBar/SideBar";
 
 export default function ProductsAndServicesContainer({categories, selectedItems, setSelectedItems}) {
 

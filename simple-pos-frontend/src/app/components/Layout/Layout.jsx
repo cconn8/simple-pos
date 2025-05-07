@@ -1,7 +1,7 @@
 'use client'
 import React, { useState } from "react";
 import MainContent from "../MainContent/MainContent";
-import SideBar from "../InformationConatiner/SideBar";
+import SideBar from "../SideBar/SideBar";
 
 
 export default function Layout() {
