@@ -6,8 +6,8 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
 
     function onItemClick(item) {
         console.log('Item Button clicked!');
-        setSelectedItems( (prev) => [...prev, item]);
-        };
+        setSelectedItems((prev) => [...prev, { ...item, id: item.id || item.title + Date.now() }]);
+    };
 
     return (
         <div id="products-and-services-container">
