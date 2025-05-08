@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Layout() {
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [selectedItems, setSelectedItems] = useState([])
     const informationCategories = [
         {
         title : "Deceased Details",
@@ -55,38 +55,65 @@ export default function Layout() {
           {
             id : uuidv4(),
             title : "Light Leinster",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Kilmacduagh",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Galwegian",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "Light Leinster",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Kilmacduagh",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Galwegian",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "Light Leinster",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Kilmacduagh",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "The Galwegian",
+            price : 250,
+            currency : "€",
+            description : ""
           }]
       },
       {
@@ -96,14 +123,23 @@ export default function Layout() {
           {
             id : uuidv4(),
             title : "Fresh Floral Arrangements",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "Standard Coffin Spray",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "5 x Red Roses",
+            price : 250,
+            currency : "€",
+            description : ""
           }]
       },
       {
@@ -113,14 +149,23 @@ export default function Layout() {
           {
             id : uuidv4(),
             title : "Carla & Carmel",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "Frankie Colohan",
+            price : 250,
+            currency : "€",
+            description : ""
           },
           {
             id : uuidv4(),
             title : "Ailbhe Hession",
+            price : 250,
+            currency : "€",
+            description : ""
           }]
       },
     ]
