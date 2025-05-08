@@ -61,42 +61,21 @@ export default function Layout() {
           },
           {
             id : uuidv4(),
-            title : "The Kilmacduagh",
+            title : "Dark Leinster",
             price : 250,
             currency : "€",
             description : ""
           },
           {
             id : uuidv4(),
-            title : "The Galwegian",
+            title : "Timber Leinster",
             price : 250,
             currency : "€",
             description : ""
           },
           {
             id : uuidv4(),
-            title : "Light Leinster",
-            price : 250,
-            currency : "€",
-            description : ""
-          },
-          {
-            id : uuidv4(),
-            title : "The Kilmacduagh",
-            price : 250,
-            currency : "€",
-            description : ""
-          },
-          {
-            id : uuidv4(),
-            title : "The Galwegian",
-            price : 250,
-            currency : "€",
-            description : ""
-          },
-          {
-            id : uuidv4(),
-            title : "Light Leinster",
+            title : "Rustic Oak",
             price : 250,
             currency : "€",
             description : ""
@@ -111,6 +90,27 @@ export default function Layout() {
           {
             id : uuidv4(),
             title : "The Galwegian",
+            price : 250,
+            currency : "€",
+            description : ""
+          },
+          {
+            id : uuidv4(),
+            title : "Wax Macroom",
+            price : 250,
+            currency : "€",
+            description : ""
+          },
+          {
+            id : uuidv4(),
+            title : "Wicker Basket",
+            price : 250,
+            currency : "€",
+            description : ""
+          },
+          {
+            id : uuidv4(),
+            title : "Solid Oak Antique",
             price : 250,
             currency : "€",
             description : ""
