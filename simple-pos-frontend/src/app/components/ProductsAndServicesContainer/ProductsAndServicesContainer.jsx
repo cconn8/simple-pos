@@ -6,7 +6,7 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
 
     function onItemClick(item) {
         console.log('Item Button clicked! Here is what is passed : ', item);
-        setSelectedItems((prev) => [...prev, {...item, id : item.id || item.title + Date.now()}]);
+        setSelectedItems((prevItems) => [...prevItems, {...item, id : item.id || item.title + Date.now()}]);
     };
 
     return (
@@ -16,9 +16,9 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
 
             {categories.map( (category) => (
                 
-                <div className="my-4 p-4 border" key={category.id || category.title} id='product-category-container'>
-                    <h2>{category.title}</h2>
+                    
                     <div className="p-5 shadow-md gap-2" id="product-items-container">
+                        <h2>{category.title}</h2>
                         {category.items.map( (item, index) => (
                             <button  key={item.id || index}
                                 className="bg-blue-500 text-white p-10 rounded hover:bg-blue-600 m-1" 
@@ -29,7 +29,7 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
                         ))}
                         <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-600 m-2"> + Add Item</button>
                     </div>
-                </div>          
+                
             ))}            
         </div>
     )
