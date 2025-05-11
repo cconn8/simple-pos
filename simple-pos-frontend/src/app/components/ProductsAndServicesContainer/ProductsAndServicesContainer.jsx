@@ -10,20 +10,20 @@ export default function ProductsAndServicesContainer({categories, selectedItems,
     };
 
     return (
-        <div id="products-and-services-container">
+        <div id="products-and-services-container" className="p-5 shadow-md">
 
             <h1 className="my-5 underline"><b>Products & Services</b></h1>
 
             {categories.map( (category) => (
-                
                     
-                    <div className="p-5 shadow-md gap-2" id="product-items-container">
+                    <div key={category.id || category.title + Date.now()} className="p-5 gap-2" id="product-items-container">
+                        
                         <h2>{category.title}</h2>
+                        
                         {category.items.map( (item, index) => (
-                            <button  key={item.id || index}
+                            <button  key={item.id || item.title + Date.now()}
                                 className="bg-blue-500 text-white p-10 rounded hover:bg-blue-600 m-1" 
-                                onClick={ () => onItemClick(item)}
-                            >
+                                onClick={ () => onItemClick(item)}>
                                     {item.title}
                             </button>
                         ))}
