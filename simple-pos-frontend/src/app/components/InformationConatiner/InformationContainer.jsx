@@ -19,9 +19,12 @@ export default function InformationContainer({categories, formData, setFormData}
     }
 
     return (
-        <div id="information-container" className="p-5 shadow-md">
+       
+       
+       <form onSubmit={handleSubmit}>
+            
+            <div id="information-container" className="p-5 shadow-md">
 
-            <form onSubmit={handleSubmit}>
                 <h1 className="my-5 underline"><b>Vital Information</b></h1>
 
                 {categories.map( (category) => (
@@ -43,10 +46,11 @@ export default function InformationContainer({categories, formData, setFormData}
                 ))}
             
                 <button id="submit-button" type="submit" className="bold p-2 border rounded bg-gray-200 hover:bg-blue-400" >Save Details</button>
-            
-            </form>
 
-        </div>
+            </div>
+
+
+        </form>
     );
 
 }
