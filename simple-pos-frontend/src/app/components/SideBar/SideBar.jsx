@@ -17,11 +17,11 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
 
         <div>
             <h1 className="my-5 underline"><b>Funeral Summary</b></h1>
-            <div className="flex">
-                {formData.deceased_name && <label>Deceased : {formData.deceased_name}</label>}
-                {formData.date_of_death && <label>Date of Death : {formData.deceased_dod.format('DD MMM YYYY')}</label>}
-                {formData.client_name && <label>Client Name : {formData.client_name}</label>}
-                {formData.client_phone && <label>Client Phone : {formData.client_phone}</label>}
+            <div className="grid">
+                {formData.deceased_name && <label className="border m-1">Deceased : {formData.deceased_name}</label>}
+                {formData.deceased_date_of_death && <label className="border m-1"lassName="">Date of Death : {formData.deceased_date_of_death}</label>}
+                {formData.client_name && <label className="border m-1">Client Name : {formData.client_name}</label>}
+                {formData.client_phone && <label className="border m-1">Client Phone : {formData.client_phone}</label>}
             </div>
             
             

@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import MainContent from "../MainContent/MainContent";
 import SideBar from "../SideBar/SideBar";
 import { v4 as uuidv4 } from 'uuid';
-import InformationContainer from "../InformationConatiner/InformationContainer";
 
 const categories = [
       {
@@ -184,7 +183,7 @@ export default function Layout() {
 
     const [formData, setFormData] = useState({
         deceased_name           : null,
-        deceased_dod            : null,
+        deceased_date_of_death  : null,
         deceased_last_address   : null,
         client_name             : null,
         client_billing_address  : null,
