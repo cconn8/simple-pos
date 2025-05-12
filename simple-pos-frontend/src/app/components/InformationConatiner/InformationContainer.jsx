@@ -1,27 +1,56 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 
-export default function InformationContainer({categories}) {
+export default function InformationContainer({categories, formData, setFormData}) {
+
+    const handleChange = (e) => {
+        e.preventDefault();
+        const { name, value } = e.target;
+        setFormData( (prev) => ({
+            ...prev,
+            [name] : value,
+        }));
+        console.log('setting form data: ', formData)
+      };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Submitting form: ', formData)
+    }
 
     return (
-        <div id="information-container">
+       
+       
+       <form onSubmit={handleSubmit}>
+            
+            <div id="information-container" className="p-5 shadow-md">
 
-            <h1 className="my-5 underline"><b>Vital Information</b></h1>
+                <h1 className="my-5 underline"><b>Vital Information</b></h1>
 
-            {categories.map( (category) => (
-                <div className="my-4 p-4 border" key={category.title} id="information-section-container">
-                    <h2>{category.title}</h2>
-                    <div id="information-fields-container">
-                        {category.fields.map( (field) => (
-                            <input 
-                                key={field.title}
-                                type={field.type}
-                                placeholder={field.title}
-                            />
-                        ))}
+                {categories.map( (category) => (
+                    <div className="my-4 p-5" key={category.id} id="information-section-container">
+                        <h2>{category.display_text}</h2>
+                        <div id="information-fields-container">
+                            {category.fields.map( (field) => (
+                                <input 
+                                    name={field.name}
+                                    key={field.id}
+                                    value={formData[field.name] || "" }
+                                    type={field.type}
+                                    placeholder={field.display_text}
+                                    onChange={handleChange}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            
+                <button id="submit-button" type="submit" className="bold p-2 border rounded bg-gray-200 hover:bg-blue-400" >Save Details</button>
+
+            </div>
+
+
+        </form>
     );
 
 }
