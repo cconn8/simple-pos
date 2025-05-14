@@ -10,12 +10,37 @@ export default function MainContent({categories, formData, setFormData, selected
             [name] : value,
         }));
         console.log('setting form data: ', formData)
-        };
+    };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
         console.log('Submitting form: ', {...formData, selectedItems})
-    }
+        
+        formData['selectedItems'] = selectedItems;
+        const payload = formData;
+
+        try {
+            const response = await fetch('http://localhost:3005/funerals', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                    },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            console.log("Success Message received on the client side - Lets GO!!!:", data);
+        } 
+        
+        catch (error) {
+                console.error("Error submitting funeral data:", error);
+        }
+    };
 
     function onItemClick(item) {
         console.log('Item Button clicked! Here is what is passed : ', item);
@@ -24,7 +49,7 @@ export default function MainContent({categories, formData, setFormData, selected
 
     return(
         <div id="main-content-div">
-            <form onSubmit={handleSubmit}>
+            <form id="create-funeral-form" onSubmit={handleSubmit}>
                 <div id="data-container">
                     {/* Each Data Category is mapped to a section */}
                     {categories.map((category) => (
@@ -57,7 +82,7 @@ export default function MainContent({categories, formData, setFormData, selected
                         </div>
                     ))}
                 </div>
-                <button type="submit" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-600 m-2"ç>SAVE!</button>
+                {/* <button type="submit" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-600 m-2">SAVE!</button> */}
             </form>
         </div>
             

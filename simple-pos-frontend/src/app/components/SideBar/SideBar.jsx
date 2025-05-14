@@ -43,7 +43,7 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
                 }
 
                 <div id="sidebar-buttons-dive" className="my-2">
-                    <button className="mx-2 underline">Save</button>
+                    <button form="create-funeral-form" type="submit" className="mx-2 underline">Save</button>
                     <button className="mx-2 underline" onClick={() => onClearAllButtonClick()}>Clear All</button>  
                     <button className="mx-2 underline">Generate Invoice</button>  
                 </div> 

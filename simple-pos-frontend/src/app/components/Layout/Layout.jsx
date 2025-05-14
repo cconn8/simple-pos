@@ -181,15 +181,7 @@ export default function Layout() {
 
     const [selectedItems, setSelectedItems] = useState([])
 
-    const [formData, setFormData] = useState({
-        deceased_name           : null,
-        deceased_date_of_death  : null,
-        deceased_last_address   : null,
-        client_name             : null,
-        client_billing_address  : null,
-        client_phone     : null,
-        selected_items : []
-    })
+    const [formData, setFormData] = useState({})
 
     return(
           <div className=" pd-2 flex basis-1/2">
@@ -202,7 +194,7 @@ export default function Layout() {
                 />        
 
                 <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
-                    <aside className="h-screen sticky top-0">
+                    <aside className="h-screen sticky top-0 overflow-y-auto">
                       <SideBar 
                           selectedItems={selectedItems}
                           setSelectedItems={setSelectedItems}

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import InformationContainer from "./components/InformationConatiner/InformationContainer";
 import MainContent from "./components/MainContent/MainContent";
 import Layout from "./components/Layout/Layout";
 
