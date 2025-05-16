@@ -1,5 +1,8 @@
 import Image from "next/image";
+<<<<<<< HEAD
 import InformationContainer from "./components/InformationConatiner/InformationContainer";
+=======
+>>>>>>> d56167b0c28d72597d74c712d25737eba8b53eec
 import MainContent from "./components/MainContent/MainContent";
 import Layout from "./components/Layout/Layout";
 
