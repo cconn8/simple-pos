@@ -1,16 +1,4 @@
 import React from "react";
-<<<<<<< HEAD
-import InformationContainer from "../InformationConatiner/InformationContainer";
-import ProductsAndServicesContainer from "../ProductsAndServicesContainer/ProductsAndServicesContainer";
-
-export default function MainContent({informationCategories, productAndServicesCategories, selectedItems, setSelectedItems}) {
-
-    return(
-        <div id="main-content-div">
-            <InformationContainer categories={informationCategories}/>
-            <ProductsAndServicesContainer categories={productAndServicesCategories} selectedItems={selectedItems} setSelectedItems={setSelectedItems}/>
-        </div>
-=======
 
 export default function MainContent({categories, formData, setFormData, selectedItems, setSelectedItems}) {
 
@@ -97,8 +85,6 @@ export default function MainContent({categories, formData, setFormData, selected
                 {/* <button type="submit" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-600 m-2">SAVE!</button> */}
             </form>
         </div>
-            
->>>>>>> d56167b0c28d72597d74c712d25737eba8b53eec
     )
 
 }
