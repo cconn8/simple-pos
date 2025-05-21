@@ -1,18 +1,15 @@
 
-import MainContent from "./components/MainContent/MainContent";
-import Layout from "./components/Layout/Layout";
-
-import './index.css'
+import '././index.css'
 
 const styles = {
   margin : 'auto',
   border : 'groove'
 }
 
-export default function Home() {
+export default function Invoice() {
   return (
-    <main className="m-5 p-5 md:max-w-xl lg:max-w-auto bg-white">
-      <header className="border flex-column justify-center mb-5">
+    <main className="m-5 p-5 xl:max-w-4xl md:max-w-xl lg:max-w-auto mx-auto bg-white">
+      <header className="border flex-column justify-center mb-5 xl:flex-row xl:justify-between">
       {/* Header */}
           <h2 className="font-bold uppercase tracking-wide text-4xl mb-3 text-center">O'Flaherty Logo</h2>
           <div id="buttons-div" className="flex justify-center">
@@ -39,7 +36,7 @@ export default function Home() {
 
 
       {/* Dates */}
-      <section className="flex flex-col items-end my-5  ">
+      <section className="flex flex-col items-end my-5 border-b">
         <ul>
           <li>Invoice Number</li>
           <li>Invoice Date</li>
@@ -50,6 +47,14 @@ export default function Home() {
 
 
       {/* Table Here */}
+      <table className="border">
+        <tr className="border justify-between">
+          <td>Item</td>
+          <td>Description</td>
+          <td>Unit Price</td>
+          <td>Total</td>
+        </tr>
+      </table>
 
       {/* Notes */}
       <section>
