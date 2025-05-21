@@ -6,7 +6,7 @@ const styles = {
   border : 'groove'
 }
 
-export default function Invoice() {
+export default function Invoice({formData}) {
   return (
     <main className="m-5 p-5 xl:max-w-4xl md:max-w-xl lg:max-w-auto mx-auto bg-white">
       <header className="border flex-column justify-center mb-5 xl:flex-row xl:justify-between">
