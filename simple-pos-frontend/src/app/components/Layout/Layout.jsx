@@ -193,10 +193,32 @@ const categories = [
 export default function Layout() {
 
     const [selectedItems, setSelectedItems] = useState([])
-
     const [formData, setFormData] = useState({})
 
     return(
-      <Layout />
+      <div className="pd-2 flex">
+          <div className="flex basis-3/4">
+
+
+            <MainContent
+              categories      ={categories}
+              selectedItems   ={selectedItems}
+              setSelectedItems={setSelectedItems}
+              formData        ={formData}
+              setFormData     ={setFormData}
+            />
+          </div>
+
+          <div className="flex flex-basis-1/4">
+            <aside className="h-screen sticky top-0 bg-gray-300 p-5 overflow-scroll">
+              <SideBar
+                selectedItems   ={selectedItems}
+                setSelectedItems={setSelectedItems}
+                formData        ={formData}
+                setFormData     ={setFormData}
+              />
+            </aside>
+          </div>
+      </div>
     )
 }
