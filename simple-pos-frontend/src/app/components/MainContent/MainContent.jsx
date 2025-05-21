@@ -90,6 +90,6 @@ export default function MainContent({categories, formData, setFormData, selected
                 {/* <button type="submit" className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-red-600 m-2">SAVE!</button> */}
             </form>
         </div>
+    )
                 )
-
 }

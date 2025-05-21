@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import MainContent from "../MainContent/MainContent";
 import SideBar from "../SideBar/SideBar";
 import { v4 as uuidv4 } from 'uuid';
+import Invoice from "../Invoice/Invoice";
 
 const categories = [
       {
@@ -18,12 +19,23 @@ const categories = [
           },
           {
             id : uuidv4(),
+            title : "deceased_date_of_death",
             name: "deceased_date_of_death",
             display_text : "Date of Death",
             type : "date"
           },
           {
             id : uuidv4(),
+            title : "LastAddress",
+            type : "text"
+          }]
+        },
+        {
+        title : "Client Details",
+        id: uuidv4(),
+          fields : [{
+            id : uuidv4(),
+            title : "ClientName",
             name: "deceased_last_address",
             display_text : "Last Address",
             type : "text"
@@ -41,6 +53,7 @@ const categories = [
           },
           {
             id : uuidv4(),
+            title : "BillingAddress",
             name : "client_billing_address",
             display_text : "Billing Address",
             type : "text"
@@ -184,15 +197,26 @@ export default function Layout() {
     const [formData, setFormData] = useState({})
 
     return(
-          <div className=" pd-2 flex basis-1/2">
-                <MainContent 
-                    categories={categories} 
-                    formData={formData} 
-                    setFormData={setFormData} 
-                    selectedItems={selectedItems} 
-                    setSelectedItems={setSelectedItems}
-                />        
-
+        <Invoice />
+        //   <div className=" pd-2 flex basis-1/2">
+        //         <MainContent 
+        //             categories={categories} 
+        //             formData={formData} 
+        //             setFormData={setFormData} 
+        //             selectedItems={selectedItems} 
+        //             setSelectedItems={setSelectedItems}
+        //         />        
+        //         <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
+        //             <aside className="h-screen sticky top-0 overflow-y-auto">
+        //               <SideBar 
+        //                   selectedItems={selectedItems}
+        //                   setSelectedItems={setSelectedItems}
+        //                   formData={formData}
+        //                   setFormData={setFormData}
+        //               />
+        //             </aside>
+        //         </div>
+        // </div>
                 <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
                     <aside className="h-screen sticky top-0 overflow-y-auto">
                       <SideBar 
