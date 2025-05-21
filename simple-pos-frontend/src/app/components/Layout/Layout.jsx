@@ -20,6 +20,8 @@ const categories = [
           {
             id : uuidv4(),
             title : "deceased_date_of_death",
+            name: "deceased_date_of_death",
+            display_text : "Date of Death",
             type : "date"
           },
           {
@@ -34,11 +36,26 @@ const categories = [
           fields : [{
             id : uuidv4(),
             title : "ClientName",
+            name: "deceased_last_address",
+            display_text : "Last Address",
+            type : "text"
+          }]},
+      {
+        name: "client_details",
+        id: uuidv4(),
+        type: 'information',
+        display_text : "Client Details",
+        fields : [{
+            id : uuidv4(),
+            name : "client_name",
+            display_text : "Client Name",
             type : "text"
           },
           {
             id : uuidv4(),
             title : "BillingAddress",
+            name : "client_billing_address",
+            display_text : "Billing Address",
             type : "text"
           },
           {
@@ -189,7 +206,6 @@ export default function Layout() {
         //             selectedItems={selectedItems} 
         //             setSelectedItems={setSelectedItems}
         //         />        
-
         //         <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
         //             <aside className="h-screen sticky top-0 overflow-y-auto">
         //               <SideBar 
@@ -201,5 +217,16 @@ export default function Layout() {
         //             </aside>
         //         </div>
         // </div>
+                <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
+                    <aside className="h-screen sticky top-0 overflow-y-auto">
+                      <SideBar 
+                          selectedItems={selectedItems}
+                          setSelectedItems={setSelectedItems}
+                          formData={formData}
+                          setFormData={setFormData}
+                      />
+                    </aside>
+                </div>
+        </div>
     )
 }
