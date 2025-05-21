@@ -1,6 +1,9 @@
 import React from "react";
+import { useNavigate } from 'react-router-dom';
 
 export default function MainContent({categories, formData, setFormData, selectedItems, setSelectedItems}) {
+
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -40,6 +43,8 @@ export default function MainContent({categories, formData, setFormData, selected
         catch (error) {
                 console.error("Error submitting funeral data:", error);
         }
+
+        navigate('/invoice')
     };
 
     function onItemClick(item) {
@@ -86,5 +91,5 @@ export default function MainContent({categories, formData, setFormData, selected
             </form>
         </div>
     )
-
+                )
 }
