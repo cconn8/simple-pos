@@ -196,10 +196,8 @@ export default function Layout() {
     const [formData, setFormData] = useState({})
 
     return(
-      <div className="pd-2 flex">
+      <div className="flex">
           <div className="flex basis-3/4">
-
-
             <MainContent
               categories      ={categories}
               selectedItems   ={selectedItems}
