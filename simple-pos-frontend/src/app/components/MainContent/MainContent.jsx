@@ -91,5 +91,4 @@ export default function MainContent({categories, formData, setFormData, selected
             </form>
         </div>
     )
-                )
 }

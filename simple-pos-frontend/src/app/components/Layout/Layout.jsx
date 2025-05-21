@@ -197,36 +197,6 @@ export default function Layout() {
     const [formData, setFormData] = useState({})
 
     return(
-        <Invoice />
-        //   <div className=" pd-2 flex basis-1/2">
-        //         <MainContent 
-        //             categories={categories} 
-        //             formData={formData} 
-        //             setFormData={setFormData} 
-        //             selectedItems={selectedItems} 
-        //             setSelectedItems={setSelectedItems}
-        //         />        
-        //         <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
-        //             <aside className="h-screen sticky top-0 overflow-y-auto">
-        //               <SideBar 
-        //                   selectedItems={selectedItems}
-        //                   setSelectedItems={setSelectedItems}
-        //                   formData={formData}
-        //                   setFormData={setFormData}
-        //               />
-        //             </aside>
-        //         </div>
-        // </div>
-                <div id="sidebar-container" className="flex basis-1/2 p-5 shadow-md bg-gray-200"> 
-                    <aside className="h-screen sticky top-0 overflow-y-auto">
-                      <SideBar 
-                          selectedItems={selectedItems}
-                          setSelectedItems={setSelectedItems}
-                          formData={formData}
-                          setFormData={setFormData}
-                      />
-                    </aside>
-                </div>
-        </div>
+      <Layout />
     )
 }
