@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException} from '@nestjs/common';
 import { CreateFuneralDto } from './dto/create-funeral.dto';
 import { UpdateFuneralDto } from './dto/update-funeral.dto';
 import { Funeral } from './schemas/funeral.schema';
@@ -18,8 +18,12 @@ export class FuneralsService {
     return Response.json({ success: true, message: `This action returns all funerals`});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} funeral`;
+  async findOneById(id: string) {
+    const funeral = await this.funeralModel.findById(id).exec();
+    if (!funeral) {
+      throw new NotFoundException(`Funeral with id ${id} not found`);
+    }
+    return funeral;
   }
 
   update(id: number, updateFuneralDto: UpdateFuneralDto) {

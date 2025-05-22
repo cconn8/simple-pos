@@ -19,8 +19,8 @@ export class FuneralsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.funeralsService.findOne(+id);
+  findOneById(@Param('id') id: string) {
+    return this.funeralsService.findOneById(id);
   }
 
   @Patch(':id')

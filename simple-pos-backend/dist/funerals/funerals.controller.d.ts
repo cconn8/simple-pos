@@ -9,7 +9,11 @@ export declare class FuneralsController {
         message: string;
     }>;
     findAll(): Response;
-    findOne(id: string): string;
+    findOneById(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
     update(id: string, updateFuneralDto: UpdateFuneralDto): string;
     remove(id: string): string;
 }

@@ -28,8 +28,8 @@ let FuneralsController = class FuneralsController {
     findAll() {
         return this.funeralsService.findAll();
     }
-    findOne(id) {
-        return this.funeralsService.findOne(+id);
+    findOneById(id) {
+        return this.funeralsService.findOneById(id);
     }
     update(id, updateFuneralDto) {
         return this.funeralsService.update(+id, updateFuneralDto);
@@ -58,7 +58,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], FuneralsController.prototype, "findOne", null);
+], FuneralsController.prototype, "findOneById", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
