@@ -4,9 +4,23 @@ import { AppService } from './app.service';
 import { FormTemplatesModule } from './form-templates/form-templates.module';
 import { FuneralsModule } from './funerals/funerals.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 
 @Module({
-  imports: [FormTemplatesModule, FuneralsModule, MongooseModule.forRoot('mongodb+srv://colm:@Hellmans4167@cluster0.zi4dix8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')],
+  imports: [
+      ConfigModule.forRoot({isGlobal: true}),
+      MongooseModule.forRootAsync({
+        imports: [ConfigModule],
+        useFactory: async (configService: ConfigService) => ({
+          uri: configService.get<string>('MONGO_URI'),
+        }),
+        inject: [ConfigService],
+      }),
+      FormTemplatesModule, 
+      FuneralsModule
+    ],
+
   controllers: [AppController],
   providers: [AppService],
 })
