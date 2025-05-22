@@ -21,9 +21,9 @@ let FuneralsController = class FuneralsController {
     constructor(funeralsService) {
         this.funeralsService = funeralsService;
     }
-    create(createFuneralDto) {
-        console.log('Server here! - Post Funerals api hit! Calling funeral service!');
-        return this.funeralsService.create(createFuneralDto);
+    async create(createFuneralDto) {
+        const funeral = await this.funeralsService.create(createFuneralDto);
+        return { id: funeral._id, message: 'Funeral created successfully!' };
     }
     findAll() {
         return this.funeralsService.findAll();
@@ -44,7 +44,7 @@ __decorate([
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_funeral_dto_1.CreateFuneralDto]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], FuneralsController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),

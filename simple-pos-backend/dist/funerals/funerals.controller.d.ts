@@ -4,7 +4,10 @@ import { UpdateFuneralDto } from './dto/update-funeral.dto';
 export declare class FuneralsController {
     private readonly funeralsService;
     constructor(funeralsService: FuneralsService);
-    create(createFuneralDto: CreateFuneralDto): Response;
+    create(createFuneralDto: CreateFuneralDto): Promise<{
+        id: unknown;
+        message: string;
+    }>;
     findAll(): Response;
     findOne(id: string): string;
     update(id: string, updateFuneralDto: UpdateFuneralDto): string;

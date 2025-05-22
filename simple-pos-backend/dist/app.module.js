@@ -12,12 +12,25 @@ const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
 const form_templates_module_1 = require("./form-templates/form-templates.module");
 const funerals_module_1 = require("./funerals/funerals.module");
+const mongoose_1 = require("@nestjs/mongoose");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [form_templates_module_1.FormTemplatesModule, funerals_module_1.FuneralsModule],
+        imports: [
+            config_1.ConfigModule.forRoot({ isGlobal: true }),
+            mongoose_1.MongooseModule.forRootAsync({
+                imports: [config_1.ConfigModule],
+                useFactory: async (configService) => ({
+                    uri: configService.get('MONGO_URI'),
+                }),
+                inject: [config_1.ConfigService],
+            }),
+            form_templates_module_1.FormTemplatesModule,
+            funerals_module_1.FuneralsModule
+        ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
     })

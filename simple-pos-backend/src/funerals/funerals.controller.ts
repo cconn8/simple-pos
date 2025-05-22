@@ -8,9 +8,9 @@ export class FuneralsController {
   constructor(private readonly funeralsService: FuneralsService) {}
 
   @Post()
-  create(@Body() createFuneralDto: CreateFuneralDto) {
-    console.log('Server here! - Post Funerals api hit! Calling funeral service!')
-    return this.funeralsService.create(createFuneralDto);
+  async create(@Body() createFuneralDto: CreateFuneralDto) {
+    const funeral = await this.funeralsService.create(createFuneralDto);
+    return { id: funeral._id, message: 'Funeral created successfully!'}
   }
 
   @Get()

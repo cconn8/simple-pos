@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { CreateFuneralDto } from './dto/create-funeral.dto';
 import { UpdateFuneralDto } from './dto/update-funeral.dto';
+import { Funeral } from './schemas/funeral.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class FuneralsService {
-  create(createFuneralDto: CreateFuneralDto) {
-    console.log('Server here! Your funeral object was received : ', createFuneralDto)
-    return Response.json({ success: true, message: "Funeral Service Added Successfully" });
+  constructor(@InjectModel(Funeral.name) private funeralModel: Model<Funeral>) {}
+
+
+  async create(data: CreateFuneralDto) : Promise<Funeral> {
+    return this.funeralModel.create(data)
   }
 
   findAll() {

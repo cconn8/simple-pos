@@ -10,11 +10,14 @@ exports.FuneralsModule = void 0;
 const common_1 = require("@nestjs/common");
 const funerals_service_1 = require("./funerals.service");
 const funerals_controller_1 = require("./funerals.controller");
+const mongoose_1 = require("@nestjs/mongoose");
+const funeral_schema_1 = require("./schemas/funeral.schema");
 let FuneralsModule = class FuneralsModule {
 };
 exports.FuneralsModule = FuneralsModule;
 exports.FuneralsModule = FuneralsModule = __decorate([
     (0, common_1.Module)({
+        imports: [mongoose_1.MongooseModule.forFeature([{ name: funeral_schema_1.Funeral.name, schema: funeral_schema_1.FuneralSchema }])],
         controllers: [funerals_controller_1.FuneralsController],
         providers: [funerals_service_1.FuneralsService],
     })
