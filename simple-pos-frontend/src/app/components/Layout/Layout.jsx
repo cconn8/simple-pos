@@ -199,7 +199,7 @@ export default function Layout() {
 
     return(
       <div className="flex">
-          <div className="flex basis-3/4">
+          <div className="flex-basis-2/3">
             <MainContent
               categories      ={categories}
               selectedItems   ={selectedItems}
@@ -213,7 +213,7 @@ export default function Layout() {
             />
           </div>
 
-          <div className="flex flex-basis-1/4">
+          <div className="flex-basis-1/3">
             <aside className="h-screen sticky top-0 bg-gray-300 p-5 overflow-scroll">
               <SideBar
                 selectedItems   ={selectedItems}

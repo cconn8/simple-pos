@@ -17,7 +17,7 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
         // Get funeral by id
         try {
 
-            const response = await fetch(`https://localhost:3005/funerals/${funeralId}`);
+            const response = await fetch(`http://localhost:3005/funerals/${funeralId}`);
 
             if (!response.ok) throw new Error(`Server error: ${response.status}`); 
 
