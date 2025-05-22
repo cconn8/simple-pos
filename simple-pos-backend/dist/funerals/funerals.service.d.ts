@@ -7,7 +7,11 @@ export declare class FuneralsService {
     constructor(funeralModel: Model<Funeral>);
     create(data: CreateFuneralDto): Promise<Funeral>;
     findAll(): Response;
-    findOne(id: number): string;
+    findOneById(id: string): Promise<import("mongoose").Document<unknown, {}, Funeral, {}> & Funeral & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
     update(id: number, updateFuneralDto: UpdateFuneralDto): string;
     remove(id: number): string;
 }
