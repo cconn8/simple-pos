@@ -194,6 +194,8 @@ export default function Layout() {
 
     const [selectedItems, setSelectedItems] = useState([])
     const [formData, setFormData] = useState({})
+    const [funeralId, setFuneralId] = useState()
+    const [funeralSaved, setFuneralSaved] = useState(false)
 
     return(
       <div className="flex">
@@ -204,6 +206,10 @@ export default function Layout() {
               setSelectedItems={setSelectedItems}
               formData        ={formData}
               setFormData     ={setFormData}
+              funeralId       ={funeralId}
+              setFuneralId    ={setFuneralId}
+              funeralSaved    ={funeralSaved}
+              setFuneralSaved = {setFuneralSaved}
             />
           </div>
 
@@ -214,6 +220,10 @@ export default function Layout() {
                 setSelectedItems={setSelectedItems}
                 formData        ={formData}
                 setFormData     ={setFormData}
+                funeralId       ={funeralId}
+                setFuneralId    ={setFuneralId}
+                funeralSaved    ={funeralSaved}
+                setFuneralSaved = {setFuneralSaved}
               />
             </aside>
           </div>
