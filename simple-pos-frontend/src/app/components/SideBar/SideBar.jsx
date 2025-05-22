@@ -1,7 +1,7 @@
 import React from "react";
-import Link from "next/link";
+import { useRouter } from "next/router";
 
-export default function SideBar({setSelectedItems, selectedItems, formData, setFormData}) {
+export default function SideBar({setSelectedItems, selectedItems, formData, setFormData, funeralId, funeralSaved, setFuneralSaved}) {
 
     function onDeleteSelectedItemButtonClick(id) {
         setSelectedItems( (prevItems) => 
@@ -13,8 +13,25 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
         setSelectedItems([])
     }
 
-    function onGenerateInvoiceButtonClick() {
-        // Get funeral
+    async function onGenerateInvoiceButtonClick(funeralId) {
+        // Get funeral by id
+        try {
+
+            const response = await fetch(`https://localhost:3005/funerals/${funeralId}`);
+
+            if (!response.ok) throw new Error(`Server error: ${response.status}`); 
+
+            const funeralData = await response.json();
+
+            localStorage.getItem(invoiceData, JSON.stringify(funeralData));
+
+            window.location.href = '/invoice';
+
+            console.log("Invoice data returned", funeralData);
+        }
+        catch(error) {
+            console.error("Error generating invoice: ", error);
+        }
     }
     
     return(
@@ -23,7 +40,7 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
             <h1 className="my-5 underline"><b>Funeral Summary</b></h1>
             <div className="grid">
                 {formData.deceased_name && <label className="bg-white my-1 p-2 rounded">Deceased : {formData.deceased_name}</label>}
-                {formData.deceased_date_of_death && <label className="bg-white my-1 p-2 rounded"lassName="">Date of Death : {formData.deceased_date_of_death}</label>}
+                {formData.deceased_date_of_death && <label className="bg-white my-1 p-2 rounded">Date of Death : {formData.deceased_date_of_death}</label>}
                 {formData.client_name && <label className="bg-white my-1 p-2 rounded">Client Name : {formData.client_name}</label>}
                 {formData.client_phone && <label className="bg-white my-1 p-2 rounded">Client Phone : {formData.client_phone}</label>}
             </div>
@@ -49,7 +66,10 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
                 <div id="sidebar-buttons-dive" className="my-2">
                     <button form="create-funeral-form" type="submit" className="mx-2 underline">Save</button>
                     <button className="mx-2 underline" onClick={() => onClearAllButtonClick()}>Clear All</button>  
-                    <button className="mx-2 underline">Generate Invoice</button>  
+                    
+                    {funeralSaved && 
+                        <button className="mx-2 underline" onClick={ () => onGenerateInvoiceButtonClick(funeralId)}>Generate Invoice</button>
+                    }  
                 </div> 
 
             </div>

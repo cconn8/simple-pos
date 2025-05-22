@@ -1,7 +1,7 @@
 import React from "react";
 // import { useNavigate } from 'react-router-dom';
 
-export default function MainContent({categories, formData, setFormData, selectedItems, setSelectedItems}) {
+export default function MainContent({categories, formData, setFormData, selectedItems, setSelectedItems, funeralId, setFuneralId, funeralSaved, setFuneralSaved}) {
 
     // const navigate = useNavigate();
 
@@ -36,6 +36,8 @@ export default function MainContent({categories, formData, setFormData, selected
             }
 
             const data = await response.json();
+            setFuneralId(data.id)
+            setFuneralSaved(true)
 
             console.log("Success Message received on the client side - Lets GO!!!:", data);
         } 
