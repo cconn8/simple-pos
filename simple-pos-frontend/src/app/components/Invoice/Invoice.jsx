@@ -27,8 +27,8 @@ export default function Invoice({formData}) {
 
       {/* Client Details */}
       <section className="">
-        <h2>Client Name</h2>
-        <p>Client Address</p>
+        <h2>{formData.clientName}</h2>
+        <p>{formData.clientAddress}</p>
       </section>
       {/* End of Client Details */}
 
