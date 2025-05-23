@@ -1,7 +1,12 @@
+'use client';
+
 import React from "react";
-import { useRouter } from "next/router";
+import { useRouter } from 'next/navigation';
+
 
 export default function SideBar({setSelectedItems, selectedItems, formData, setFormData, funeralId, funeralSaved, setFuneralSaved}) {
+
+    const router = useRouter();
 
     function onDeleteSelectedItemButtonClick(id) {
         setSelectedItems( (prevItems) => 
@@ -23,11 +28,13 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
 
             const funeralData = await response.json();
 
-            localStorage.getItem(invoiceData, JSON.stringify(funeralData));
+            localStorage.setItem('invoiceData', JSON.stringify(funeralData));
+            router.push('/invoice')
+            // localStorage.getItem(invoiceData, JSON.stringify(funeralData));
 
-            window.location.href = '/invoice';
+            // window.location.href = '/invoice';
 
-            console.log("Invoice data returned", funeralData);
+            console.log("Invoice data returned :", funeralData);
         }
         catch(error) {
             console.error("Error generating invoice: ", error);
@@ -39,10 +46,10 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
         <div>
             <h1 className="my-5 underline"><b>Funeral Summary</b></h1>
             <div className="grid">
-                {formData.deceased_name && <label className="bg-white my-1 p-2 rounded">Deceased : {formData.deceased_name}</label>}
-                {formData.deceased_date_of_death && <label className="bg-white my-1 p-2 rounded">Date of Death : {formData.deceased_date_of_death}</label>}
-                {formData.client_name && <label className="bg-white my-1 p-2 rounded">Client Name : {formData.client_name}</label>}
-                {formData.client_phone && <label className="bg-white my-1 p-2 rounded">Client Phone : {formData.client_phone}</label>}
+                {formData.deceasedName && <label className="bg-white my-1 p-2 rounded">Deceased : {formData.deceasedName}</label>}
+                {formData.dateOfDeath && <label className="bg-white my-1 p-2 rounded">Date of Death : {formData.dateOfDeath}</label>}
+                {formData.clientName && <label className="bg-white my-1 p-2 rounded">Client Name : {formData.clientName}</label>}
+                {formData.phoneNumber && <label className="bg-white my-1 p-2 rounded">Client Phone : {formData.phoneNumber}</label>}
             </div>
             
             
@@ -56,7 +63,6 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
                             <h3 className="my-1">{item.title} : </h3>
                             <p className="my-1">{item.currency}{item.price}</p>
                             <button className="my-1 underline" onClick={( () => onDeleteSelectedItemButtonClick(item.id))}>Delete</button>
-                            {console.log('Sidebar item:', item)}
                         </div>
                         )
                     )) : 

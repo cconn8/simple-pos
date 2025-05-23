@@ -1,3 +1,4 @@
+'use client';
 import React from "react";
 // import { useNavigate } from 'react-router-dom';
 
@@ -12,14 +13,16 @@ export default function MainContent({categories, formData, setFormData, selected
             ...prev,
             [name] : value,
         }));
-        console.log('setting form data: ', formData)
+        // console.log('setting form data: ', formData)
     };
 
     const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log('Submitting form: ', {...formData, selectedItems})
         
         formData['selectedItems'] = selectedItems;
+
+        console.log('Submitting form: ', formData)
+
         const payload = formData;
 
         try {
@@ -50,7 +53,7 @@ export default function MainContent({categories, formData, setFormData, selected
     };
 
     function onItemClick(item) {
-        console.log('Item Button clicked! Here is what is passed : ', item);
+        // console.log('Item Button clicked! Here is what is passed : ', item);
         setSelectedItems((prevItems) => [...prevItems, {...item, id : item.id || item.title + Date.now()}]);
     };
 
