@@ -22,6 +22,7 @@ let FuneralsController = class FuneralsController {
         this.funeralsService = funeralsService;
     }
     async create(createFuneralDto) {
+        console.log('Data received on the server is: ', createFuneralDto);
         const funeral = await this.funeralsService.create(createFuneralDto);
         return { id: funeral._id, message: 'Funeral created successfully!' };
     }

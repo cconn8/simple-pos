@@ -22,7 +22,9 @@ let FuneralsService = class FuneralsService {
         this.funeralModel = funeralModel;
     }
     async create(data) {
-        return this.funeralModel.create(data);
+        const funeral = await this.funeralModel.create({ formData: data });
+        console.log("Saved funeral : ", funeral);
+        return funeral;
     }
     findAll() {
         return Response.json({ success: true, message: `This action returns all funerals` });

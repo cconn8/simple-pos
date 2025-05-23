@@ -11,7 +11,9 @@ export class FuneralsService {
 
 
   async create(data: CreateFuneralDto) : Promise<Funeral> {
-    return this.funeralModel.create(data)
+    const funeral = await this.funeralModel.create({formData : data})
+    console.log("Saved funeral : ", funeral)
+    return funeral
   }
 
   findAll() {

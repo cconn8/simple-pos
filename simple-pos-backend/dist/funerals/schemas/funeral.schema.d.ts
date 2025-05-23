@@ -1,8 +1,5 @@
 import { Document } from 'mongoose';
 export declare class Funeral extends Document {
-    deceasedName: string;
-    dateOfDeath: Date;
-    clientName: string;
     formData: Record<string, any>;
 }
 export declare const FuneralSchema: import("mongoose").Schema<Funeral, import("mongoose").Model<Funeral, any, any, any, Document<unknown, any, Funeral, any> & Funeral & Required<{
