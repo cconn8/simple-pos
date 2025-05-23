@@ -9,6 +9,7 @@ export class FuneralsController {
 
   @Post()
   async create(@Body() createFuneralDto: CreateFuneralDto) {
+    console.log('Data received on the server is: ', createFuneralDto);
     const funeral = await this.funeralsService.create(createFuneralDto);
     return { id: funeral._id, message: 'Funeral created successfully!'}
   }

@@ -16,18 +16,6 @@ let Funeral = class Funeral extends mongoose_2.Document {
 };
 exports.Funeral = Funeral;
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Funeral.prototype, "deceasedName", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Date)
-], Funeral.prototype, "dateOfDeath", void 0);
-__decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", String)
-], Funeral.prototype, "clientName", void 0);
-__decorate([
     (0, mongoose_1.Prop)({ type: Object }),
     __metadata("design:type", Object)
 ], Funeral.prototype, "formData", void 0);
