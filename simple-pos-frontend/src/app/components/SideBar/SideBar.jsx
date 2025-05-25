@@ -24,15 +24,13 @@ export default function SideBar({setSelectedItems, selectedItems, formData, setF
 
             const response = await fetch(`http://localhost:3005/funerals/${funeralId}`);
 
+            router.push('/invoice')
+
             if (!response.ok) throw new Error(`Server error: ${response.status}`); 
 
             const funeralData = await response.json();
 
             localStorage.setItem('invoiceData', JSON.stringify(funeralData));
-            router.push('/invoice')
-            // localStorage.getItem(invoiceData, JSON.stringify(funeralData));
-
-            // window.location.href = '/invoice';
 
             console.log("Invoice data returned :", funeralData);
         }
