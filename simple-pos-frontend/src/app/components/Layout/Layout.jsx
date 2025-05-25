@@ -9,7 +9,7 @@ const categories = [
       {
         name: 'deceasedDetails',
         id: uuidv4(),
-        type: 'information',
+        type: 'information',    
         display_text : "Deceased Details",
         fields : [{
             id : uuidv4(),
@@ -189,35 +189,37 @@ export default function Layout() {
     const [funeralSaved, setFuneralSaved] = useState(false)
 
     return(
-      <div className="flex flex-row">
-          <div className="basis-3/4">
-            <MainContent
-              categories      ={categories}
-              selectedItems   ={selectedItems}
-              setSelectedItems={setSelectedItems}
-              formData        ={formData}
-              setFormData     ={setFormData}
-              funeralId       ={funeralId}
-              setFuneralId    ={setFuneralId}
-              funeralSaved    ={funeralSaved}
-              setFuneralSaved = {setFuneralSaved}
-            />
-          </div>
 
-          <div className="basis-1/4">
-            <aside className="h-screen sticky top-0 bg-gray-300 p-5 overflow-scroll">
-              <SideBar
-                selectedItems   ={selectedItems}
-                setSelectedItems={setSelectedItems}
-                formData        ={formData}
-                setFormData     ={setFormData}
-                funeralId       ={funeralId}
-                setFuneralId    ={setFuneralId}
-                funeralSaved    ={funeralSaved}
-                setFuneralSaved = {setFuneralSaved}
-              />
-            </aside>
-          </div>
-      </div>
+      <Invoice categories={categories}/>
+      // <div className="flex flex-row">
+      //     <div className="basis-3/4">
+      //       <MainContent
+      //         categories      ={categories}
+      //         selectedItems   ={selectedItems}
+      //         setSelectedItems={setSelectedItems}
+      //         formData        ={formData}
+      //         setFormData     ={setFormData}
+      //         funeralId       ={funeralId}
+      //         setFuneralId    ={setFuneralId}
+      //         funeralSaved    ={funeralSaved}
+      //         setFuneralSaved = {setFuneralSaved}
+      //       />
+      //     </div>
+
+      //     <div className="basis-1/4">
+      //       <aside className="h-screen sticky top-0 bg-gray-300 p-5 overflow-scroll">
+      //         <SideBar
+      //           selectedItems   ={selectedItems}
+      //           setSelectedItems={setSelectedItems}
+      //           formData        ={formData}
+      //           setFormData     ={setFormData}
+      //           funeralId       ={funeralId}
+      //           setFuneralId    ={setFuneralId}
+      //           funeralSaved    ={funeralSaved}
+      //           setFuneralSaved = {setFuneralSaved}
+      //         />
+      //       </aside>
+      //     </div>
+      // </div>
     )
 }
