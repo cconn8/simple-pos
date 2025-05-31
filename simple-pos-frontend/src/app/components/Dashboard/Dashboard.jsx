@@ -150,16 +150,16 @@ export default function Dashboard() {
                         </div>
                         <div id="summaryContents">
                             <div className="my-1 py-1">
-                                <h2>Deceased : {summaryItem.formData.deceasedName}</h2>
+                                <h2><span className="font-bold">Deceased : </span>{summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2>Date of Death : {summaryItem.formData.dateOfDeath}</h2>
+                                <h2><span className="font-bold">Date of Death :</span> {summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2>Client : {summaryItem.formData.clientName}</h2>
+                                <h2><span className="font-bold">Client : </span>{summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2>Client Address : {summaryItem.formData.clientAddress}</h2>
+                                <h2><span className="font-bold">Client Address :</span> {summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
                             </div>
                         </div>
                     </div>
