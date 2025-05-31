@@ -17,14 +17,14 @@ export class FuneralsService {
   }
 
   findAll() {
-    return Response.json({ success: true, message: `This action returns all funerals`});
+    const funerals = this.funeralModel.find().exec();
+    if (!funerals) throw new NotFoundException(`No funerals found!`);
+    return funerals;
   }
 
   async findOneById(id: string) {
     const funeral = await this.funeralModel.findById(id).exec();
-    if (!funeral) {
-      throw new NotFoundException(`Funeral with id ${id} not found`);
-    }
+    if (!funeral) throw new NotFoundException(`Funeral with id ${id} not found`);
     return funeral;
   }
 

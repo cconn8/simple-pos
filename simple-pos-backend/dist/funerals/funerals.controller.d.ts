@@ -8,7 +8,11 @@ export declare class FuneralsController {
         id: unknown;
         message: string;
     }>;
-    findAll(): Response;
+    findAll(): Promise<(import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
     findOneById(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{
         _id: unknown;
     }> & {

@@ -27,13 +27,15 @@ let FuneralsService = class FuneralsService {
         return funeral;
     }
     findAll() {
-        return Response.json({ success: true, message: `This action returns all funerals` });
+        const funerals = this.funeralModel.find().exec();
+        if (!funerals)
+            throw new common_1.NotFoundException(`No funerals found!`);
+        return funerals;
     }
     async findOneById(id) {
         const funeral = await this.funeralModel.findById(id).exec();
-        if (!funeral) {
+        if (!funeral)
             throw new common_1.NotFoundException(`Funeral with id ${id} not found`);
-        }
         return funeral;
     }
     update(id, updateFuneralDto) {
