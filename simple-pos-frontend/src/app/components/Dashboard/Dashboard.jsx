@@ -191,9 +191,9 @@ export default function Dashboard() {
                 </div>
                 
                 <div id="mainMenu" className="py-5">
-                    <div className="m-2 p-1 bold bg-gray-200 rounded-sm"><h2>Funerals</h2></div>
-                    <div className="m-2 p-1 bold bg-gray-200 rounded-sm"><h2>Inventory</h2></div>
-                    <div className="m-2 p-1 bold bg-gray-200 rounded-sm"><h2>Invoices</h2></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Funerals</h2></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Inventory</h2></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Invoices</h2></div>
                 </div>
             </aside>
 
@@ -221,7 +221,7 @@ export default function Dashboard() {
 
                         <tbody>
                             {data.map( (data) => (
-                                <tr key={data._id}>
+                                <tr key={data._id} className="hover:font-bold">
                                     <td className="px-4 py-2 text-left border-r">{data.formData.deceasedName}</td>
                                     <td className="px-4 py-2 text-left border-r">{data.formData.dateOfDeath}</td>
                                     <td className="px-4 py-2 text-left border-r">{data.formData.invoice }</td>
@@ -237,7 +237,7 @@ export default function Dashboard() {
             </div>
 
             {/* Drawer Section */}
-                <aside id="summaryDrawer" className={`transition-all basis-1/3 duration-300 ease-in-out bg-gray-100 p-4 m-1 rounded-sm ${isDrawerVisible ? 'visible' : 'hidden'}`}>
+                <aside id="summaryDrawer" className={`transition-all basis-1/3 duration-500 ease-in-out bg-gray-100 p-4 m-1 rounded-sm ${isDrawerVisible ? 'visible' : 'hidden'}`}>
                     <div id="drawerTopSection" className="flex flex-row py-5 justify-between">
                         <div id="summaryHeading" className="py-5">
                             <h2 className="bold font-lg">Funeral Summary </h2>
@@ -265,52 +265,62 @@ export default function Dashboard() {
                 </aside>
 
             {/* CreateFuneralModal */}
-            <div id="createFuneralModal" className={`p-10 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 shadow-md rounded-sm w-19/20 h-19/20 flex-col border ${isModalVisible ? 'visible' : 'hidden'} overflow-scroll`} >
+            <div id="createFuneralModal" className={`p-10 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isModalVisible ? 'visible' : 'hidden'} overflow-scroll`} >
                 <div id="modalTopSection" className="flex flex-row justify-between py-5">
-                    <h2>Create Funeral</h2>
-                    <div>
-                        <button className="hover:font-bold" onClick={(e) => {handleOpenModal(e)}}>X</button>
-                    </div>
+                    <h2>Create Funeral</h2>                  
+                    <button className="hover:font-bold" onClick={(e) => {handleOpenModal(e)}}>X</button>
                 </div>
-                <form>
-                    {/* Deceased Details */}
-                    <div id="formInfoSection" className="flex flex-col bg-gray-200 rounded-sm my-1">
-                        <h2>Deceased Details</h2>
-                        <div id="deceasedDetailsDiv" className="flex-row justify-between py-5 mx-2">
-                            <input id="deceasedName" type="text" placeholder="Deceased Name" className="bg-white rounded-sm p-2 mx-2"/>
-                            <input id="dateOfDeath" type="date" placeholder="Date of Death"  className="bg-white rounded-sm p-2 mx-2"/>
-                            <input id="lastAddress" type="text" placeholder="Last Address"  className="bg-white rounded-sm p-2 mx-2"/>
+
+                <div id="modalContent" className="flex flex-row">
+
+                    <form>
+                        {/* Deceased Details */}
+                        <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
+                            <h2>Deceased Details</h2>
+                            <div id="deceasedDetailsDiv" className="flex-row justify-between py-5 mx-2">
+                                <input id="deceasedName" type="text" placeholder="Deceased Name" className="bg-white rounded-sm p-2 mx-2"/>
+                                <input id="dateOfDeath" type="date" placeholder="Date of Death"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input id="lastAddress" type="text" placeholder="Last Address"  className="bg-white rounded-sm p-2 mx-2"/>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Client Details */}
-                     <div id="formInfoSection" className="flex flex-col bg-gray-200 rounded-sm my-1">
-                        <h2>Client Details</h2>
-                        <div id="clientDetailsDiv" className="flex-row justify-between py-5 mx-2">
-                            <input id="clientName" type="text" placeholder="Client Name" className="bg-white rounded-sm p-2 mx-2"/>
-                            <input id="clientAddress" type="text" placeholder="Client Address"  className="bg-white rounded-sm p-2 mx-2"/>
-                            <input id="clientPhone" type="number" placeholder="Phone"  className="bg-white rounded-sm p-2 mx-2"/>
-                            <input id="clientEmail" type="email" placeholder="Email"  className="bg-white rounded-sm p-2 mx-2"/>
+                        {/* Client Details */}
+                        <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
+                            <h2>Client Details</h2>
+                            <div id="clientDetailsDiv" className="flex-row justify-between py-5 mx-2">
+                                <input id="clientName" type="text" placeholder="Client Name" className="bg-white rounded-sm p-2 mx-2"/>
+                                <input id="clientAddress" type="text" placeholder="Client Address"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input id="clientPhone" type="number" placeholder="Phone"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input id="clientEmail" type="email" placeholder="Email"  className="bg-white rounded-sm p-2 mx-2"/>
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Products & Services */}
-                    <div id="productsAndServicesSection" className="flex-col p-2 bg-gray-200 rounded-sm my-1">
-                        <h2>Products</h2>
-                        {products.map( (product) => (
-                            <button  
-                                type="button"
-                                key={product.id || product.name + Date.now()}
-                                className="bg-blue-500 text-white p-10 rounded hover:bg-blue-600 m-1" 
-                                >
-                                    {product.name}
-                            </button>
+                        {/* Products & Services */}
+                        <div id="productsAndServicesSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
+                            <h2>Products</h2>
+                            {products.map( (product) => (
+                                <button  
+                                    type="button"
+                                    key={product.id || product.name + Date.now()}
+                                    className="bg-blue-500 text-white p-8 rounded hover:bg-blue-600 m-1" 
+                                    >
+                                        {product.name}
+                                </button>
 
-                        ))}
-                        <button className="bg-red-500 text-white p-3 rounded hover:bg-blue-600 m-1">+ Add Item</button>
+                            ))}
+                            <button className="bg-red-500 text-white p-3 rounded hover:bg-blue-600 m-1">+ Add Item</button>
 
-                    </div>
-                </form>
+                        </div>
+                    </form>
+                    <aside id="modalSidebar" className="top-0 sticky basis-1/3 flex-col p-2 bg-gray-200 rounded-sm m-1">
+                        <div id="modalSidebarHeading">
+                            <h2>Funeral Summary</h2>
+                        </div>
+                        <div id="modalSidebarContent">
+                            <div></div>
+                        </div>
+                    </aside>
+                </div>
             </div>
         </div>
 
