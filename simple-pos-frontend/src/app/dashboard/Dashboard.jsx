@@ -13,58 +13,11 @@ Dashboard
 */
 
 import { useEffect, useState } from "react"
-import Invoice from "../Invoice/Invoice"
+import Invoice from "../components/Invoice/Invoice"
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import { useRouter } from "next/navigation";
 
-
-const funeralData = [{
-    deceasedName : 'John Doe',
-    dateOfDeath : '23 March 2025',
-    invoice : 'Generate Invoice',
-    clientName : 'Martha Murphy',
-    clientPhone : '091 7364839',
-    clientAddress : '54 The Meadows, Ballybrit, Galway',
-    selectedItems : [{
-        billingCategory : 'Product',
-        itemCategory : 'Coffin',
-    }]
-    },{
-    deceasedName : 'Jane Doe',
-    dateOfDeath : '27 May 2025',
-    invoice : 'Generate Invoice',
-    clientName : 'Martha Murphy',
-    clientPhone : '091 7364839',
-    clientAddress : '54 The Meadows, Ballybrit, Galway',
-    selectedItems : [{
-        billingCategory : 'Product',
-        itemCategory : 'Coffin',
-    }]
-    },{
-    deceasedName : 'Mary Murphy',
-    dateOfDeath : '28 January 2025',
-    invoice : 'Invoice Link',
-    clientName : 'Martha Murphy',
-    clientPhone : '091 7364839',
-    clientAddress : '54 The Meadows, Ballybrit, Galway',
-    selectedItems : [{
-        billingCategory : 'Product',
-        itemCategory : 'Coffin',
-    }]
-    },{
-    deceasedName : 'Henry Black',
-    dateOfDeath : '23 April 2025',
-    invoice : 'Generate Invoice',
-    clientName : 'Martha Murphy',
-    clientPhone : '091 7364839',
-    clientAddress : '54 The Meadows, Ballybrit, Galway',
-    selectedItems : [{
-        billingCategory : 'Product',
-        itemCategory : 'Coffin',
-    }]
-    },
-]
 
 const inventory = {
     id : uuidv4(),
@@ -106,13 +59,22 @@ export default function Dashboard() {
     const [formData, setFormData] = useState({});
 
     const router = useRouter();
+
+    const fetchData = async() => {
+        try{
+            fetch('http://localhost:3005/funerals')
+            .then(res => res.json())
+            .then(data => setExistingFuneralData(data))
+            .catch(err => console.error('Error fetching data from funerals : ', err));
+            console.log('use effect and fetched called');
+        }
+        catch (err) {
+            console.error('Error fetching data from funerals : ', err);
+        }
+    }
     
     useEffect( () => {
-        fetch('http://localhost:3005/funerals')
-        .then(res => res.json())
-        .then(data => setExistingFuneralData(data))
-        .catch(err => console.error('Error fetching data from funerals : ', err));
-        console.log('use effect and fetched called');
+        fetchData();
     }, []);
 
     if (!existingFuneralData) return <p>Loading...</p>
@@ -186,7 +148,10 @@ export default function Dashboard() {
                 console.error("Error submitting funeral data:", error);
         }
 
-        router.refresh();
+        // refresh the table with a fetch, and close the modal
+        await fetchData();
+        setIsModalVisible(!isModalVisible);
+;
     };
 
     // Arrange the product / service categories by displayOrder
