@@ -1,3 +1,4 @@
+"use client"
 /* 
 Dashboard
     - MainSidebar
@@ -15,6 +16,7 @@ import { useEffect, useState } from "react"
 import Invoice from "../Invoice/Invoice"
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
+import { useRouter } from "next/navigation";
 
 
 const funeralData = [{
@@ -102,6 +104,8 @@ export default function Dashboard() {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [summaryItem, setSummaryItem] = useState(null);
     const [formData, setFormData] = useState({});
+
+    const router = useRouter();
     
     useEffect( () => {
         fetch('http://localhost:3005/funerals')
@@ -152,6 +156,37 @@ export default function Dashboard() {
                 selectedItems : []
             }
         });
+    };
+
+    // Submit form
+    const handleSubmit = async(e) => {
+        e.preventDefault();
+        console.log('Submitting form: ', formData)
+
+        const payload = formData;
+
+        try {
+            const response = await fetch('http://localhost:3005/funerals', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                    },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Success Message received on the client side - Lets GO!!!:", data);
+        } 
+        
+        catch (error) {
+                console.error("Error submitting funeral data:", error);
+        }
+
+        router.refresh();
     };
 
     // Arrange the product / service categories by displayOrder
@@ -250,13 +285,13 @@ export default function Dashboard() {
                                 <h2><span className="font-bold">Deceased : </span>{summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2><span className="font-bold">Date of Death :</span> {summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
+                                <h2><span className="font-bold">Date of Death :</span> {summaryItem ? summaryItem.formData.dateOfDeath : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2><span className="font-bold">Client : </span>{summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
+                                <h2><span className="font-bold">Client : </span>{summaryItem ? summaryItem.formData.clientName : ''}</h2>
                             </div>
                             <div className="my-1 py-1">
-                                <h2><span className="font-bold">Client Address :</span> {summaryItem ? summaryItem.formData.deceasedName : ''}</h2>
+                                <h2><span className="font-bold">Client Address :</span> {summaryItem ? summaryItem.formData.clientAddress : ''}</h2>
                             </div>
                         </div>
                     </div>
@@ -270,7 +305,7 @@ export default function Dashboard() {
                 </div>
 
                 <div id="modalContent" className="flex flex-row overflow-auto">
-                        <form className="overflow-scroll">
+                        <form id="createFuneralForm" className="overflow-scroll" onSubmit={handleSubmit}>
                             {/* Deceased Details */}
                             <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                                 <h2>Deceased Details</h2>
@@ -314,9 +349,9 @@ export default function Dashboard() {
                         </form>
 
                     {/* Modal Mini Sidebar */}
-                    <aside id="modalSidebar" className="top-0 sticky basis-1/2 flex-col p-2 bg-gray-200 rounded-sm m-1">
+                    <aside id="modalSidebar" className="top-0 sticky basis-1/2 flex-col p-2 bg-gray-200 rounded-sm m-1 overflow-auto">
                         <div id="modalSidebarHeading" className="my-1">
-                            <h2>Funeral Summary</h2>
+                            <h2 className="font-bold">Funeral Summary</h2>
                         </div>
 
                         <div id="modalSidebarContent">
@@ -366,7 +401,7 @@ export default function Dashboard() {
                         </div>
                         
                         <div id="modalSidebarSelectedItems" className="my-1 mt-3 flex-col">
-                            <h2>Selected Items</h2>
+                            <h2 className="font-bold">Selected Items</h2>
                             {formData.selectedItems ? (
                                 formData.selectedItems.map( (item, index) => (
                                     <div key={index} className="flex flex-row bg-white p-1 my-1 justify-between text-sm"> 
@@ -374,11 +409,11 @@ export default function Dashboard() {
                                         <button onClick={() => {handleDeleteSelectedItem(item.id)}} className="underline">Delete</button>
                                     </div>
                                 ))) :
-                                    <div><h3>No items selected!</h3></div>
+                                    <div className="my-2"><h3>No items selected!</h3></div>
                             }
                         </div>
                         <div id="buttonsDiv" className="flex flex-row justify-around">
-                            <button id="saveFuneralButton" className="m-5 underline hover:font-bold justify-center align-bottom">Save</button>
+                            <button id="saveFuneralButton" type="submit" form="createFuneralForm" className="m-5 underline hover:font-bold justify-center align-bottom">Save</button>
                             <button id="clearAllButton" onClick={handleClearAll} className="m-5 underline hover:font-bold justify-center align-bottom">Clear All</button>
                         </div>
                     </aside>
