@@ -191,9 +191,9 @@ export default function Dashboard() {
                 </div>
                 
                 <div id="mainMenu" className="py-5">
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Funerals</h2></div>
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Inventory</h2></div>
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><h2>Invoices</h2></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button onClick={() => {router.push('./dashboard')}}>Funerals</button></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button>Inventory</button></div>
+                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button>Invoices</button></div>
                 </div>
             </aside>
 
@@ -210,7 +210,7 @@ export default function Dashboard() {
 
                  {/* Table Section */}
                 <div id="tableSection" className="bg-gray-300 my-2  m-1 rounded-sm">
-                    <table className="table-fixed">
+                    <table className="table-auto w-full">
                         <thead>
                             <tr>
                                 <th className="px-4 py-2 text-left">Deceased Name</th>
