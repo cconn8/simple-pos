@@ -4,6 +4,7 @@ import MainContent from "../MainContent/MainContent";
 import SideBar from "../SideBar/SideBar";
 import { v4 as uuidv4 } from 'uuid';
 import Invoice from "../Invoice/Invoice";
+import Dashboard from "../Dashboard/Dashboard";
 
 const categories = [
       {
@@ -190,7 +191,9 @@ export default function Layout() {
 
     return(
 
-      <Invoice categories={categories}/>
+
+      <Dashboard />
+      // <Invoice categories={categories}/>
       // <div className="flex flex-row">
       //     <div className="basis-3/4">
       //       <MainContent

@@ -2,7 +2,7 @@
 
 'use client';
 import { useEffect, useState } from 'react';
-import Invoice from '../components/Invoice/Invoice.jsx';
+import Invoice from '../../components/Invoice/Invoice.jsx';
 
 export default function InvoicePage() {
   const [invoiceData, setInvoiceData] = useState(null);
