@@ -4,7 +4,7 @@ import MainContent from "../MainContent/MainContent";
 import SideBar from "../SideBar/SideBar";
 import { v4 as uuidv4 } from 'uuid';
 import Invoice from "../Invoice/Invoice";
-import Dashboard from "../Dashboard/Dashboard";
+import Dashboard from "../../Dashboard/Dashboard";
 
 const categories = [
       {
