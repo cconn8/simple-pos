@@ -16,9 +16,16 @@ export class FuneralsService {
     return funeral
   }
 
-  findAll() {
-    const funerals = this.funeralModel.find().exec();
-    if (!funerals) throw new NotFoundException(`No funerals found!`);
+  async findAll() {
+    const funerals = await this.funeralModel
+      .find()
+      .sort({ createdAt: -1 }) // newest first
+      .exec();
+
+    if (!funerals || funerals.length === 0) {
+      throw new NotFoundException(`No funerals found!`);
+    }
+
     return funerals;
   }
 
