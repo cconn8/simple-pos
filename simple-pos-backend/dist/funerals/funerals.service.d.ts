@@ -6,7 +6,11 @@ export declare class FuneralsService {
     private funeralModel;
     constructor(funeralModel: Model<Funeral>);
     create(data: CreateFuneralDto): Promise<Funeral>;
-    findAll(): Response;
+    findAll(): Promise<(import("mongoose").Document<unknown, {}, Funeral, {}> & Funeral & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    })[]>;
     findOneById(id: string): Promise<import("mongoose").Document<unknown, {}, Funeral, {}> & Funeral & Required<{
         _id: unknown;
     }> & {

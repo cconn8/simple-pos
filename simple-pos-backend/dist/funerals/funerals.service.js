@@ -26,14 +26,20 @@ let FuneralsService = class FuneralsService {
         console.log("Saved funeral : ", funeral);
         return funeral;
     }
-    findAll() {
-        return Response.json({ success: true, message: `This action returns all funerals` });
+    async findAll() {
+        const funerals = await this.funeralModel
+            .find()
+            .sort({ createdAt: -1 })
+            .exec();
+        if (!funerals || funerals.length === 0) {
+            throw new common_1.NotFoundException(`No funerals found!`);
+        }
+        return funerals;
     }
     async findOneById(id) {
         const funeral = await this.funeralModel.findById(id).exec();
-        if (!funeral) {
+        if (!funeral)
             throw new common_1.NotFoundException(`Funeral with id ${id} not found`);
-        }
         return funeral;
     }
     update(id, updateFuneralDto) {
