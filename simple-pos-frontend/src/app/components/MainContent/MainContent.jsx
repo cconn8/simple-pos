@@ -12,7 +12,7 @@ export default function MainContent({categories, formData, setFormData, selected
         setFormData( (prev) => ({
             ...prev,
             [name] : value,
-        }));
+    }));
         // console.log('setting form data: ', formData)
     };
 

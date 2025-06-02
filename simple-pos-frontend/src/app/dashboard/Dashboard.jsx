@@ -210,7 +210,7 @@ export default function Dashboard() {
 
                  {/* Table Section */}
                 <div id="tableSection" className="bg-gray-300 my-2  m-1 rounded-sm">
-                    <table className="table-auto">
+                    <table className="table-fixed">
                         <thead>
                             <tr>
                                 <th className="px-4 py-2 text-left">Deceased Name</th>
@@ -221,11 +221,17 @@ export default function Dashboard() {
 
                         <tbody>
                             {existingFuneralData.map( (data) => (
-                                <tr key={data._id} className="hover:font-bold" onClick={() => handleOpenDrawer(isDrawerVisible, data)}>
-                                    <td className="px-4 py-2 text-left border-r">{data.formData.deceasedName}</td>
-                                    <td className="px-4 py-2 text-left border-r">{data.formData.dateOfDeath}</td>
-                                    <td className="px-4 py-2 text-left border-r">{data.formData.invoice }</td>
-                                    <td className="px-4 py-2 text-left underline hover:font-bold">View / Edit</td>
+                                <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm" onClick={() => handleOpenDrawer(isDrawerVisible, data)}>
+                                    <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
+                                    <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
+                                    <td className="px-4 py-2 text-left underline hover:font-bold">
+                                        {data.formData.invoice ? 
+                                            <button>{data.formData.invoice}</button> : <button>Generate Invoice</button>
+                                        }
+                                     </td>
+                                    <td className="px-4 py-2 text-left underline hover:font-bold">
+                                        <button>View / Edit</button>
+                                    </td>
                                 </tr>
                             ))
                             }
