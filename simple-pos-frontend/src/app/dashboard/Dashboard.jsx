@@ -141,6 +141,9 @@ export default function Dashboard() {
             }
         });
     };
+    function handleDeleteInvoice(funeralId){
+
+    }
     // Submit form
     const handleSubmit = async(e) => {
         e.preventDefault();
