@@ -17,6 +17,7 @@ import Invoice from "../components/Invoice/Invoice"
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 const inventory = {
@@ -100,7 +101,29 @@ export default function Dashboard() {
         }));
     };
 
+    const handleGenerateInvoice = async (funeralId) => {
+        console.log('generate invoice handle clicked - making post request')
+        try {
+            const response = await fetch(`http://localhost:3005/invoice/${funeralId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                }
+            });
 
+            if (!response.ok) { throw new Error('Failed to generate Invoice')};
+            
+            const data = await response.json();
+            console.log('Invoice URL:', data.url);
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+        await fetchData();
+        setIsDrawerVisible(false);
+        setIsModalVisible(false);
+    }
     function handleDeleteSelectedItem(id) {
         setFormData( (prevItems) => {
             const updatedSelectedItems = prevItems.selectedItems.filter((item) => item.id != id);
@@ -110,7 +133,6 @@ export default function Dashboard() {
             };
         });
     };
-
     function handleClearAll() {
         setFormData((prev) => {
             return {
@@ -119,7 +141,6 @@ export default function Dashboard() {
             }
         });
     };
-
     // Submit form
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -153,32 +174,26 @@ export default function Dashboard() {
         setIsModalVisible(!isModalVisible);
 ;
     };
-
     // Arrange the product / service categories by displayOrder
     const sortedCategories = inventory.categories.sort((a,b) => a.displayOrder - b.displayOrder);
-
     // Group products by type (eg. coffin)
     const groupedProductsByType = inventory.products.reduce((acc, product) => {
         if (!acc[product.type]) acc[product.type] = [];
         acc[product.type].push(product);
         return acc;
     }, {});
-
     // Group services by type
     const groupedServicesByType = inventory.services.reduce((acc, service) => {
         if(!acc[service.type]) acc[service.type] = [];
         acc[service.type].push(service);
         return acc;
     }, {});
-
     // Grouped disbursements by type
     const groupedDisbursementsByType = inventory.disbursements.reduce((acc, disbursement) => {
         if(!acc[disbursement.type]) acc[disbursement.type] = [];
         acc[disbursement.type].push(disbursement);
         return acc;
     }, {});
-
-
 
     return(
 
@@ -221,16 +236,16 @@ export default function Dashboard() {
 
                         <tbody>
                             {existingFuneralData.map( (data) => (
-                                <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm" onClick={() => handleOpenDrawer(isDrawerVisible, data)}>
+                                <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
                                     <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
                                     <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
                                     <td className="px-4 py-2 text-left underline hover:font-bold">
                                         {data.formData.invoice ? 
-                                            <button>{data.formData.invoice}</button> : <button>Generate Invoice</button>
+                                            <Link href={data.formData.invoice} rel="noopener noreferrer" target="_blank" className="underline">{data.formData.deceasedName}-invoice</Link> : <button onClick={() => {handleGenerateInvoice(data._id)}}>Generate Invoice</button>
                                         }
                                      </td>
                                     <td className="px-4 py-2 text-left underline hover:font-bold">
-                                        <button>View / Edit</button>
+                                        <button onClick={() => handleOpenDrawer(isDrawerVisible, data)}>View / Edit</button>
                                     </td>
                                 </tr>
                             ))
