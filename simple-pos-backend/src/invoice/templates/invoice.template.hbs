@@ -6,10 +6,10 @@
   <style>
     body { font-family: sans-serif; margin: 2rem; }
     table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #ccc; }
-    th { background-color: #f5f5f5; }
+    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #ccc; font-size: small;}
+    th { font-size: medium; background-color: #f5f5f5; }
     h2 { margin: 1rem 0 0.5rem; }
-    .section-title { font-style: italic; font-weight: bold; margin-top: 2rem; }
+    .section-title { font-style: italic; font-weight: bold; margin-top: 2rem; padding-top: 2rem; padding-bottom: 1rem;}
     .header, .company-details, .client-dates, footer { display: flex; justify-content: space-between; }
     footer ul { display: flex; list-style: none; padding: 0; margin: 1rem 0; gap: 1rem; }
   </style>
@@ -31,21 +31,19 @@
   </div>
 
   <!-- Client + Dates -->
-  <div class="client-dates" style="margin-top: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 1rem;">
+  <div class="client-dates" style="margin-top: 1rem;">
     <div>
-      <h3>C/O Representatives of the late {{deceasedName}}</h3>
-      <h3>{{clientName}}</h3>
-      <p>{{clientAddress}}</p>
+      <p>C/O Representatives of the late {{data.deceasedName}}</p>
+      <p>{{data.clientName}}</p>
+      <p>{{data.clientAddress}}</p>
     </div>
     <div style="text-align: right;">
-      <p><strong>Invoice Number:</strong> {{invoiceNumber}}</p>
-      <p><strong>Invoice Date:</strong> {{invoiceDate}}</p>
-      <p><strong>Due Date:</strong> {{dueDate}}</p>
+      <p><strong>Invoice Number:</strong> {{data.invoiceNumber}}</p>
+      <p><strong>Invoice Date:</strong> {{data.invoiceDate}}</p>
+      <p><strong>Due Date:</strong> {{data.dueDate}}</p>
     </div>
   </div>
 
-  <!-- Services -->
-  <div class="section-title">Our Services</div>
   <table>
     <thead>
       <tr>
@@ -55,44 +53,44 @@
       </tr>
     </thead>
     <tbody>
-      {{#each serviceItems}}
+      <!-- Services Section -->
+      <tr>
+        <td colspan="3" class="section-title" style="border: none;">Our Services</td>
+      </tr>
+      {{#each services}}
       <tr>
         <td>
-          <strong>{{title}}</strong><br />
+          <strong>{{name}}</strong><br />
           {{description}}
         </td>
         <td>{{price}}</td>
         <td>{{price}}</td>
       </tr>
       {{/each}}
-    </tbody>
-  </table>
 
-  <!-- Products -->
-  <div class="section-title">Selection of Funeral Items</div>
-  <table>
-    <tbody>
-      {{#each productItems}}
+      <!-- Products Section -->
+      <tr>
+        <td colspan="3" class="section-title" style="border: none;">Selection of Funeral Items</td>
+      </tr>
+      {{#each products}}
       <tr>
         <td>
-          <strong>{{title}}</strong><br />
+          <strong>{{name}}</strong><br />
           {{description}}
         </td>
         <td>{{price}}</td>
         <td>{{price}}</td>
       </tr>
       {{/each}}
-    </tbody>
-  </table>
 
-  <!-- Disbursements -->
-  <div class="section-title">External Payments on the client's behalf</div>
-  <table>
-    <tbody>
-      {{#each disbursementItems}}
+      <!-- Disbursements Section -->
+      <tr>
+        <td colspan="3" class="section-title" style="border: none;">External Payments on the client's behalf</td>
+      </tr>
+      {{#each disbursements}}
       <tr>
         <td>
-          <strong>{{title}}</strong><br />
+          <strong>{{name}}</strong><br />
           {{description}}
         </td>
         <td>{{price}}</td>
