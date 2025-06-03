@@ -14,6 +14,7 @@ const form_templates_module_1 = require("./form-templates/form-templates.module"
 const funerals_module_1 = require("./funerals/funerals.module");
 const mongoose_1 = require("@nestjs/mongoose");
 const config_1 = require("@nestjs/config");
+const invoice_module_1 = require("./invoice/invoice.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -29,7 +30,8 @@ exports.AppModule = AppModule = __decorate([
                 inject: [config_1.ConfigService],
             }),
             form_templates_module_1.FormTemplatesModule,
-            funerals_module_1.FuneralsModule
+            funerals_module_1.FuneralsModule,
+            invoice_module_1.InvoiceModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],
