@@ -16,6 +16,6 @@ export declare class FuneralsService {
     }> & {
         __v: number;
     }>;
-    update(id: number, updateFuneralDto: UpdateFuneralDto): string;
+    findByIdAndUpdate(id: string, updateFuneralDto: UpdateFuneralDto): Promise<any>;
     remove(id: number): string;
 }

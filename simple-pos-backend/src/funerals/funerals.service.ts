@@ -30,13 +30,15 @@ export class FuneralsService {
   }
 
   async findOneById(id: string) {
+    console.log('funerals service findOneById called')
     const funeral = await this.funeralModel.findById(id).exec();
     if (!funeral) throw new NotFoundException(`Funeral with id ${id} not found`);
     return funeral;
   }
 
-  update(id: number, updateFuneralDto: UpdateFuneralDto) {
-    return `This action updates a #${id} funeral`;
+  async findByIdAndUpdate(id: string, updateFuneralDto: UpdateFuneralDto) : Promise<any>{
+    console.log('funerals service updateFuneralById called')
+    return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
   }
 
   remove(id: number) {

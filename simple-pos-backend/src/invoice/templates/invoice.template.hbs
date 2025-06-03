@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #ccc; }
+    th { background-color: #f5f5f5; }
+    h2 { margin: 1rem 0 0.5rem; }
+    .section-title { font-style: italic; font-weight: bold; margin-top: 2rem; }
+    .header, .company-details, .client-dates, footer { display: flex; justify-content: space-between; }
+    footer ul { display: flex; list-style: none; padding: 0; margin: 1rem 0; gap: 1rem; }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div style="text-align: right;">
+      <img src="/offd-logo.png" alt="logo" width="150" />
+    </div>
+  </div>
+
+  <!-- Company Details -->
+  <div class="company-details">
+    <div style="margin-left: auto; text-align: right;">
+      <h2>O'Flaherty Funeral Directors</h2>
+      <p>Munster Avenue, Galway</p>
+    </div>
+  </div>
+
+  <!-- Client + Dates -->
+  <div class="client-dates" style="margin-top: 1rem; border-bottom: 1px solid #ccc; padding-bottom: 1rem;">
+    <div>
+      <h3>C/O Representatives of the late {{deceasedName}}</h3>
+      <h3>{{clientName}}</h3>
+      <p>{{clientAddress}}</p>
+    </div>
+    <div style="text-align: right;">
+      <p><strong>Invoice Number:</strong> {{invoiceNumber}}</p>
+      <p><strong>Invoice Date:</strong> {{invoiceDate}}</p>
+      <p><strong>Due Date:</strong> {{dueDate}}</p>
+    </div>
+  </div>
+
+  <!-- Services -->
+  <div class="section-title">Our Services</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Unit Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each serviceItems}}
+      <tr>
+        <td>
+          <strong>{{title}}</strong><br />
+          {{description}}
+        </td>
+        <td>{{price}}</td>
+        <td>{{price}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Products -->
+  <div class="section-title">Selection of Funeral Items</div>
+  <table>
+    <tbody>
+      {{#each productItems}}
+      <tr>
+        <td>
+          <strong>{{title}}</strong><br />
+          {{description}}
+        </td>
+        <td>{{price}}</td>
+        <td>{{price}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Disbursements -->
+  <div class="section-title">External Payments on the client's behalf</div>
+  <table>
+    <tbody>
+      {{#each disbursementItems}}
+      <tr>
+        <td>
+          <strong>{{title}}</strong><br />
+          {{description}}
+        </td>
+        <td>{{price}}</td>
+        <td>{{price}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <footer>
+    <ul>
+      <li>{{companyName}}</li>
+      <li>{{companyEmail}}</li>
+      <li>{{companyPhone}}</li>
+      <li>{{bankName}}</li>
+      <li>{{bankAccount}}</li>
+    </ul>
+  </footer>
+</body>
+</html>
