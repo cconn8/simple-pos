@@ -24,3 +24,6 @@ gulpfile.js
 /sample
 
 yarn.lock
+
+# exclude secrets
+/Users/colmconneely/Documents/Projects/simplePOS/secrets
