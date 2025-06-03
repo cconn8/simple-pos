@@ -28,6 +28,7 @@ export class InvoiceService {
         const funeral = funeralObj.formData
 
         const { deceasedName } = funeral;
+
         const pdf = await this.generatePDF(funeral);                //generate pdf
         const url = await this.uploadToGCS(pdf, deceasedName);      //upload to google cloud platform
 
@@ -39,18 +40,24 @@ export class InvoiceService {
 
     async generatePDF(data: any): Promise<Buffer> {
         console.log('generating PDF...')
-        // const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template.html');
-        // let html = fs.readFileSync(templatePath, 'utf-8');
+        
+        const { selectedItems } = data;
+        
+        const services = selectedItems.filter((item) => item.category == 'service')
+        const products = selectedItems.filter((item) => item.category == 'product')
+        const disbursements = selectedItems.filter((item) => item.category == 'disbursement')
+
+        const templateData = {
+            data,
+            services,
+            products,
+            disbursements
+        }
 
         const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = Handlebars.compile(source);
-        const html = template(data)
-
-        
-        // Object.entries(data).forEach(([key, value]) => {
-        // html = html.replaceAll(`{{${key}}}`, String(value));
-        // });
+        const html = template(templateData);
 
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
