@@ -26,7 +26,8 @@ export class FuneralsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFuneralDto: UpdateFuneralDto) {
-    return this.funeralsService.update(+id, updateFuneralDto);
+    // return this.funeralsService.update(+id, updateFuneralDto);
+    return 'funeral update controller called'
   }
 
   @Delete(':id')

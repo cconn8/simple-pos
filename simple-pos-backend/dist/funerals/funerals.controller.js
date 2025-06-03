@@ -33,7 +33,7 @@ let FuneralsController = class FuneralsController {
         return this.funeralsService.findOneById(id);
     }
     update(id, updateFuneralDto) {
-        return this.funeralsService.update(+id, updateFuneralDto);
+        return 'funeral update controller called';
     }
     remove(id) {
         return this.funeralsService.remove(+id);

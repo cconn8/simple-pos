@@ -5,6 +5,7 @@ import { FormTemplatesModule } from './form-templates/form-templates.module';
 import { FuneralsModule } from './funerals/funerals.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { InvoiceModule } from './invoice/invoice.module';
 
 
 @Module({
@@ -18,7 +19,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         inject: [ConfigService],
       }),
       FormTemplatesModule, 
-      FuneralsModule
+      FuneralsModule, 
+      InvoiceModule
     ],
 
   controllers: [AppController],

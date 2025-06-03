@@ -8,5 +8,6 @@ import { Funeral, FuneralSchema } from './schemas/funeral.schema';
   imports : [MongooseModule.forFeature([{name : Funeral.name, schema: FuneralSchema}])],
   controllers: [FuneralsController],
   providers: [FuneralsService],
+  exports: [FuneralsService]
 })
 export class FuneralsModule {}
