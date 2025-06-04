@@ -28,24 +28,24 @@ const inventory = {
         {name: 'disbursement', displayText: 'External Payments on the clients behalf', displayOrder: 2}
     ],
     products : [
-        {id : uuidv4(),name : "Light Leinster",     category : 'product' ,  type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Dark Leinster",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Timber Leinster",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Wax Macroom",        category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Solid Oak Antique",  category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : ""}],
+        {id : uuidv4(),name : "Light Leinster",     category : 'product' ,  type: 'Coffin', price : 250,    currency : "€", description : "A classic light-toned coffin with a clean, elegant finish for a timeless tribute."},
+        {id : uuidv4(),name : "Dark Leinster",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A rich, dark wood coffin offering a dignified and traditional appearance."},
+        {id : uuidv4(),name : "Timber Leinster",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "Crafted from quality timber, this coffin combines rustic charm with durability"},
+        {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A natural oak coffin with a rustic finish, ideal for a warm and earthy farewell."},
+        {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A finely crafted coffin named after Irish heritage, offering traditional style and grace."},
+        {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A distinguished coffin with regional character and a finely polished finish."},
+        {id : uuidv4(),name : "Wax Macroom",        category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A wax-finished coffin providing a smooth texture and subtle sheen."},
+        {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "An eco-friendly, woven coffin for a natural and sustainable burial option."},
+        {id : uuidv4(),name : "Solid Oak Antique",  category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A solid oak coffin with antique detailing, perfect for a classic and refined memorial."}],
     services : [
-        {id : uuidv4(),name : "Hygienic Preparation",          category : 'service' ,  type: 'Embalming', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Funeral Administration & Bookings",      category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Service Charge",     category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : ""},
+        {id : uuidv4(),name : "Hygienic Preparation",          category : 'service' ,  type: 'Embalming', price : 250,    currency : "€", description : "Professional embalming and preparation of the deceased for viewing and services."},
+        {id : uuidv4(),name : "Funeral Administration & Bookings",      category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : "Coordination of paperwork, venue bookings, and logistical arrangements."},
+        {id : uuidv4(),name : "Service Charge",     category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
     ],
     disbursements : [
-        {id : uuidv4(),name : "Memorial Bookmarks",          category : 'disbursement' ,  type: 'Disbursements', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Flowers",      category : 'disbursement',   type: 'Disbursements', price : 250,    currency : "€", description : ""},
-        {id : uuidv4(),name : "Mourning Car",     category : 'disbursement',   type: 'Disbursements', price : 250,    currency : "€", description : ""},
+        {id : uuidv4(),name : "Memorial Bookmarks",          category : 'disbursement' ,  type: 'Disbursements', price : 250,    currency : "€", description : "Personalized keepsakes with a tribute to the departed, given to mourners."},
+        {id : uuidv4(),name : "Flowers",      category : 'disbursement',   type: 'Disbursements', price : 250,    currency : "€", description : "Floral arrangements provided for the ceremony or graveside as a gesture of remembrance"},
+        {id : uuidv4(),name : "Mourning Car",     category : 'disbursement',   type: 'Disbursements', price : 250,    currency : "€", description : "A designated vehicle for close family or mourners, ensuring respectful transport."},
     ]
 
 }
@@ -141,9 +141,30 @@ export default function Dashboard() {
             }
         });
     };
-    function handleDeleteInvoice(funeralId){
+    async function handleDeleteFuneral(funeralId){
+        console.log('Deleting funeral with id : ', funeralId);
+        try {
+            const response = await fetch(`http://localhost:3005/funerals/${funeralId}`, {
+                method: "DELETE",
+                headers: {
+                    'Content-Type' : 'application/json',
+                }
+            });
 
+            if (!response.ok) { throw new Error('Failed to generate Invoice')};
+            
+            const data = await response.json();
+            console.log('Invoice URL:', data.url);
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+
+        await fetchData();
+        setIsDrawerVisible(false);
+        setIsModalVisible(false);
     }
+           
     // Submit form
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -244,7 +265,12 @@ export default function Dashboard() {
                                     <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
                                     <td className="px-4 py-2 text-left underline hover:font-bold">
                                         {data.formData.invoice ? 
-                                            <Link href={data.formData.invoice} rel="noopener noreferrer" target="_blank" className="underline">{data.formData.deceasedName}-invoice</Link> : <button onClick={() => {handleGenerateInvoice(data._id)}}>Generate Invoice</button>
+                                            <div>
+                                                <Link href={data.formData.invoice} rel="noopener noreferrer" target="_blank" className="underline">{data.formData.deceasedName}-invoice</Link>
+                                                <button onClick={() => {handleDeleteFuneral(data._id)}} className="px-2">X</button>
+                                            </div>    
+                                            
+                                            : <button onClick={() => {handleGenerateInvoice(data._id)}}>Generate Invoice</button>
                                         }
                                      </td>
                                     <td className="px-4 py-2 text-left underline hover:font-bold">
