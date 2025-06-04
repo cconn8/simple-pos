@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    .header { display: flex; justify-content: space-between; }
+    .clientDetailsRow { display: flex; flex-direction: column;  border-bottom:  1px solid #ccc; font-size: small; padding: 0.5rem; justify-content: center;}
+    .logoSection {width: 250px; height: 250px; border: 1px solid #ccc;}
+    .topTableMessage {font-style: italic; font-size: small;}
+    .tableHeadingText {font-family: 'Segoe UI'; font-weight: bold; border-right: 1px solid #ccc;}
+    .tableHeadingRow { padding: 1rem; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc; }
+    .tableRow { border-right: 1px solid #ccc;}
+    .tableSectionTitle { font-weight: bold; border-right: 1px solid #ccc;}
+
+
+    body { font-family: sans-serif; margin: 2rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; text-align: left; font-size: small;}
+    th { font-size: medium; background-color: #f5f5f5; }
+    footer ul { display: flex; list-style: none; padding: 0; gap: 0.5rem; font-size: x-small;}
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="clientDetails" style="padding-top: 3rem;"> 
+      <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
+      <div class="clientDetailsRow">c/o Mr / Mrs Paul Flynn and Family</div>
+      <div class="clientDetailsRow">Oranhill,</div>
+      <div class="clientDetailsRow">Bushypark,</div>
+      <div class="clientDetailsRow">Galway</div>
+    </div>
+
+    <div class="logoSection">
+      <div><p>Invoice No. 3254</p></div>
+      <div style="padding: 3rem;"><h3>O'Flaherty Logo Here</h3></div>
+    </div>
+  </div>
+
+
+  {{!-- Table section (Main Invoice Section) --}}
+  <div class="topTableMessage">
+    <h4>24 March 2025 - 27 March 2025</h4>
+    <h4>Most Suitably appointed Funeral Parlour Facilities Available - All preparations and arrangements made.</h4>
+  </div>
+
+  <table>
+    <thead>
+      <tr class="tableHeadingRow">
+        <td colspan="2" class="tableHeadingText">Funeral arrangements of the late {{data.deceasedName}}, deceased</td>
+        <td colspan="1" class="tableHeadingText">Amount</td>
+      </tr>
+    </thead>
+    <tbody>
+      {{!-- Our Services Section --}}
+      <tr>
+        <td colspan="2" class="tableSectionTitle" style="border-right: 1px solid #ccc;">Our Services</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      {{#each services}}
+      <tr>
+        <td class="tableRow"></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+
+      <!-- Products Section -->
+      <tr>
+        <td colspan="2" class="tableSectionTitle">Selection of Funeral Items</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      {{#each products}}
+      <tr>
+        <td class="tableRow"></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+
+      <!-- Disbursements Section -->
+      <tr>
+        <td colspan="2" class="tableSectionTitle">External Payments on the client's behalf</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      {{#each disbursements}}
+      <tr>
+        <td class="tableRow"></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+  </table>
+
+  <!-- Footer -->
+  <footer>
+    <ul>
+      <li>Bank of Ireland, Eyre Sq. Galway</li>
+      <li>90384026374873</li>
+    </ul>
+    <ul>
+      <li>O'Flaherty Funeral Directors Ltd.</li>
+      <li>accounts@oflahertyfunerals.ie</li>
+      <li>091 582349</li>
+    </ul>
+  </footer>
+</body>
+</html>
