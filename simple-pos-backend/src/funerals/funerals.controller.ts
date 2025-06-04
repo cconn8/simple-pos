@@ -32,6 +32,6 @@ export class FuneralsController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.funeralsService.remove(+id);
+    return this.funeralsService.deleteById(+id);
   }
 }

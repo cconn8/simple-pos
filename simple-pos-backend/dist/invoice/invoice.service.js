@@ -53,7 +53,7 @@ let InvoiceService = class InvoiceService {
             products,
             disbursements
         };
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template.hbs');
+        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template2.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars_1.default.compile(source);
         const html = template(templateData);

@@ -36,7 +36,7 @@ let FuneralsController = class FuneralsController {
         return 'funeral update controller called';
     }
     remove(id) {
-        return this.funeralsService.remove(+id);
+        return this.funeralsService.deleteById(+id);
     }
 };
 exports.FuneralsController = FuneralsController;

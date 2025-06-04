@@ -47,8 +47,8 @@ let FuneralsService = class FuneralsService {
         console.log('funerals service updateFuneralById called');
         return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
     }
-    remove(id) {
-        return `This action removes a #${id} funeral`;
+    async deleteById(id) {
+        return this.funeralModel.findByIdAndDelete(id);
     }
 };
 exports.FuneralsService = FuneralsService;

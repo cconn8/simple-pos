@@ -54,7 +54,7 @@ export class InvoiceService {
             disbursements
         }
 
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template.hbs');
+        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template2.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = Handlebars.compile(source);
         const html = template(templateData);
@@ -62,6 +62,7 @@ export class InvoiceService {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.setContent(html);
+
         const pdf = await page.pdf({ format: 'A4' });
         await browser.close();
 
