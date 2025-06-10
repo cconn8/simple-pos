@@ -9,9 +9,9 @@
     .logoSection {width: 250px; height: 250px;}
     .topTableMessage {font-style: italic; font-size: small;}
     .tableHeadingText {font-family: 'Segoe UI'; font-weight: bold; } 
-    .tableHeadingRow { padding: 1rem; border-top: 1px solid #ccc;  }
-    .tableRow { border-right: 1px solid #ccc; max-width: 150px;}
-    .tableSectionTitle { font-weight: bold; font-style: italic; padding-left: 50px; padding-bottom: 10px;}
+    .tableHeadingRow { padding: 1rem;  }
+    .tableRow { max-width: 150px;}
+    .tableSectionTitle { font-size: medium; font-weight:  bold; font-style: italic; padding-left: 50px; padding-bottom: 10px;}
     .subtotalRow {display: flex; position: absolute; bottom: 10px; right: 50px; padding: 0.5rem; }
     .tableHeadingText p {margin: 0;}
 
@@ -26,8 +26,8 @@
 </head>
 <body>
   <!-- Header -->
-  <div><p style="font-size: small;">Invoice No. 3254</p></div>
-  <div><p style="font-size: small;">Dates of Service : 25 March 2025 - 27 March 2025</p></div>
+  <div><p style="font-size: small; font-weight: bold;">Invoice No. 3254</p></div>
+  <div><p style="font-size: small; font-weight: bold;">Dates of Services : 25 March 2025 - 27 March 2025</p></div>
   <div class="header">
     <div class="clientDetails" style="padding-top: 1.5rem;"> 
       <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
@@ -62,7 +62,7 @@
     <tbody>
       {{!-- Our Services Section --}}
       <tr>
-        <td colspan="2" class="tableSectionTitle" style="border-right: 1px solid #ccc; padding-left: 50px; padding-top: 50px;">Our Services</td>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px; padding-top: 50px;  text-decoration: underline">Our Services</td>
         <td class="tableSectionTitle"></td>
       </tr>
       {{#each services}}
@@ -75,7 +75,7 @@
 
       <!-- Products Section -->
       <tr>
-        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px;">Selection of Funeral Items</td>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px; text-decoration: underline">Selection of Funeral Items</td>
         <td class="tableSectionTitle"></td>
       </tr>
       {{#each products}}
@@ -86,9 +86,16 @@
       </tr>
       {{/each}}
 
+      {{!-- services & products total row --}}
+      <tr>
+        <td></td>
+        <td style="text-align: right;">Total for our services</td>
+        <td style="text-align: right;  border-bottom: 1px solid #ccc;">€2450</td>
+      </tr>
+
       <!-- Disbursements Section -->
       <tr>
-        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px;">External Payments on the client's behalf</td>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px;  text-decoration: underline">External Payments on the client's behalf</td>
         <td class="tableSectionTitle"></td>
       </tr>
       {{#each disbursements}}
@@ -98,6 +105,13 @@
         <td class="tableRow">{{price}}</td>
       </tr>
       {{/each}}
+
+      {{!-- disbursements total row --}}
+      <tr st>
+        <td></td>
+        <td style="text-align: right; ">Total payments on your behalf</td>
+        <td style="text-align: right;  border-bottom: 1px solid #ccc;">€2450</td>
+      </tr>
 
     </tbody>
   </table>
