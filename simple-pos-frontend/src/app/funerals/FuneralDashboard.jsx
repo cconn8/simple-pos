@@ -18,6 +18,7 @@ import Link from "next/link";
 import { SummaryDrawer } from "./SummaryDrawer";
 import { CreateFuneralModal } from "./CreateFuneralModal";
 import { RefreshCw } from "@deemlol/next-icons";
+import MainSidebar from "../components/MainSidebar/MainSidebar";
 
 
 
@@ -122,17 +123,7 @@ export default function Dashboard() {
         <div id="pageContainer" className="flex flex-row p-5">
 
             {/* MainSidebar */}
-            <aside id="mainSidebarContainer" className="top-0 sticky basis-1/8 bg-gray-500 m-1 rounded-sm">
-                <div id="sidebarLogo" className="p-2 justify-center">
-                    <img src="/offd-logo.png" width="75" height="50"></img>
-                </div>
-                
-                <div id="mainMenu" className="py-5">
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button onClick={() => {router.push('./dashboard')}}>Funerals</button></div>
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button>Inventory</button></div>
-                    <div className="m-2 p-1 text-gray-300 border-b border-gray hover:text-white hover:border-white hover:font-bold transition-all duration-300 rounded-sm"><button>Invoices</button></div>
-                </div>
-            </aside>
+            <MainSidebar />
 
             {/* MainContent */}
             <div id="mainContentContainer" className="bg-gray-200 flex-auto m-1 rounded-sm">

@@ -1,7 +1,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
-import fetchData from './Dashboard'
+import fetchData from './FuneralDashboard'
 
 
 
