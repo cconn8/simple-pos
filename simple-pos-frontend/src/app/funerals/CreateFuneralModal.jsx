@@ -95,7 +95,6 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
         // refresh the table with a fetch, and close the modal
         await fetchData();
         setIsModalVisible(!isModalVisible);
-;
     };
 
     const handleDeleteSelectedItem = (id) => {
