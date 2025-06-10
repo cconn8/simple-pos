@@ -1,5 +1,4 @@
 
-import MainContent from "./components/MainContent/MainContent";
 import Layout from "./components/Layout/Layout";
 import './index.css'
 
