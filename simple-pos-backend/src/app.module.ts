@@ -6,7 +6,6 @@ import { FuneralsModule } from './funerals/funerals.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InvoiceModule } from './invoice/invoice.module';
-import { InventoryModuleTsModule } from './inventory/inventory.module.ts.module';
 import { InventoryModule } from './inventory/inventory.module';
 
 
@@ -22,7 +21,8 @@ import { InventoryModule } from './inventory/inventory.module';
       }),
       FormTemplatesModule, 
       FuneralsModule, 
-      InvoiceModule, InventoryModuleTsModule, InventoryModule
+      InvoiceModule, 
+      InventoryModule
     ],
 
   controllers: [AppController],
