@@ -54,7 +54,7 @@ export class InvoiceService {
             disbursements
         }
 
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template2.hbs');
+        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template3.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = Handlebars.compile(source);
         const html = template(templateData);
