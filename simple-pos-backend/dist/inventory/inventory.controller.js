@@ -12,71 +12,69 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FuneralsController = void 0;
+exports.InventoryController = void 0;
 const common_1 = require("@nestjs/common");
-const funerals_service_1 = require("./funerals.service");
-const create_funeral_dto_1 = require("./dto/create-funeral.dto");
-const update_funeral_dto_1 = require("./dto/update-funeral.dto");
-let FuneralsController = class FuneralsController {
-    constructor(funeralsService) {
-        this.funeralsService = funeralsService;
+const inventory_service_1 = require("./inventory.service");
+const create_inventory_dto_1 = require("./dto/create-inventory.dto");
+const update_inventory_dto_1 = require("./dto/update-inventory.dto");
+let InventoryController = class InventoryController {
+    constructor(inventoryService) {
+        this.inventoryService = inventoryService;
     }
-    async create(createFuneralDto) {
-        console.log('Data received on the server is: ', createFuneralDto);
-        const funeral = await this.funeralsService.create(createFuneralDto);
-        return { id: funeral._id, message: 'Funeral created successfully!' };
+    create(createInventoryDto) {
+        return this.inventoryService.create(createInventoryDto);
     }
     findAll() {
-        return this.funeralsService.findAll();
+        return this.inventoryService.findAll();
     }
-    findOneById(id) {
-        return this.funeralsService.findOneById(id);
+    findOne(id) {
+        return this.inventoryService.findOne(+id);
     }
-    update(id, updateFuneralDto) {
-        return 'funeral update controller called';
+    update(id, updateInventoryDto) {
+        return this.inventoryService.update(+id, updateInventoryDto);
     }
     remove(id) {
-        return this.funeralsService.deleteById(+id);
+        return this.inventoryService.remove(id);
     }
 };
-exports.FuneralsController = FuneralsController;
+exports.InventoryController = InventoryController;
 __decorate([
     (0, common_1.Post)(),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_funeral_dto_1.CreateFuneralDto]),
-    __metadata("design:returntype", Promise)
-], FuneralsController.prototype, "create", null);
+    __metadata("design:paramtypes", [create_inventory_dto_1.CreateInventoryDto]),
+    __metadata("design:returntype", void 0)
+], InventoryController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
-], FuneralsController.prototype, "findAll", null);
+], InventoryController.prototype, "findAll", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], FuneralsController.prototype, "findOneById", null);
+], InventoryController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_funeral_dto_1.UpdateFuneralDto]),
+    __metadata("design:paramtypes", [String, update_inventory_dto_1.UpdateInventoryDto]),
     __metadata("design:returntype", void 0)
-], FuneralsController.prototype, "update", null);
+], InventoryController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], FuneralsController.prototype, "remove", null);
-exports.FuneralsController = FuneralsController = __decorate([
-    (0, common_1.Controller)('funerals'),
-    __metadata("design:paramtypes", [funerals_service_1.FuneralsService])
-], FuneralsController);
-//# sourceMappingURL=funerals.controller.js.map
+], InventoryController.prototype, "remove", null);
+exports.InventoryController = InventoryController = __decorate([
+    (0, common_1.Controller)('inventory'),
+    __metadata("design:paramtypes", [inventory_service_1.InventoryService])
+], InventoryController);
+//# sourceMappingURL=inventory.controller.js.map

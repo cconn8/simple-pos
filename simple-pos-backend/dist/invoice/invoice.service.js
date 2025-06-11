@@ -43,10 +43,20 @@ let InvoiceService = class InvoiceService {
     }
     async generatePDF(data) {
         console.log('generating PDF...');
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template.hbs');
+        const { selectedItems } = data;
+        const services = selectedItems.filter((item) => item.category == 'service');
+        const products = selectedItems.filter((item) => item.category == 'product');
+        const disbursements = selectedItems.filter((item) => item.category == 'disbursement');
+        const templateData = {
+            data,
+            services,
+            products,
+            disbursements
+        };
+        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template2.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars_1.default.compile(source);
-        const html = template(data);
+        const html = template(templateData);
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.setContent(html);

@@ -17,5 +17,9 @@ export declare class FuneralsService {
         __v: number;
     }>;
     findByIdAndUpdate(id: string, updateFuneralDto: UpdateFuneralDto): Promise<any>;
-    remove(id: number): string;
+    deleteById(id: number): Promise<import("mongoose").Document<unknown, {}, Funeral, {}> & Funeral & Required<{
+        _id: unknown;
+    }> & {
+        __v: number;
+    }>;
 }
