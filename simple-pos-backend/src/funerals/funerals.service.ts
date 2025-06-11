@@ -41,7 +41,7 @@ export class FuneralsService {
     return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} funeral`;
+  async deleteById(id: number) {
+    return this.funeralModel.findByIdAndDelete(id);
   }
 }

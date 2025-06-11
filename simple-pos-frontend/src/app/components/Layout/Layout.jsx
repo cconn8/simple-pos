@@ -1,10 +1,7 @@
 'use client';
 import React, { useState } from "react";
-import MainContent from "../MainContent/MainContent";
-import SideBar from "../SideBar/SideBar";
 import { v4 as uuidv4 } from 'uuid';
-import Invoice from "../Invoice/Invoice";
-import Dashboard from "../../dashboard/Dashboard";
+import Dashboard from "../../funerals/FuneralDashboard";
 
 const categories = [
       {
@@ -190,39 +187,6 @@ export default function Layout() {
     const [funeralSaved, setFuneralSaved] = useState(false)
 
     return(
-
-
       <Dashboard />
-      // <Invoice categories={categories}/>
-      // <div className="flex flex-row">
-      //     <div className="basis-3/4">
-      //       <MainContent
-      //         categories      ={categories}
-      //         selectedItems   ={selectedItems}
-      //         setSelectedItems={setSelectedItems}
-      //         formData        ={formData}
-      //         setFormData     ={setFormData}
-      //         funeralId       ={funeralId}
-      //         setFuneralId    ={setFuneralId}
-      //         funeralSaved    ={funeralSaved}
-      //         setFuneralSaved = {setFuneralSaved}
-      //       />
-      //     </div>
-
-      //     <div className="basis-1/4">
-      //       <aside className="h-screen sticky top-0 bg-gray-300 p-5 overflow-scroll">
-      //         <SideBar
-      //           selectedItems   ={selectedItems}
-      //           setSelectedItems={setSelectedItems}
-      //           formData        ={formData}
-      //           setFormData     ={setFormData}
-      //           funeralId       ={funeralId}
-      //           setFuneralId    ={setFuneralId}
-      //           funeralSaved    ={funeralSaved}
-      //           setFuneralSaved = {setFuneralSaved}
-      //         />
-      //       </aside>
-      //     </div>
-      // </div>
     )
 }
