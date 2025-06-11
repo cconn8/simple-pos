@@ -1,18 +1,20 @@
 import { useState } from "react"
-import { NewItem } from "./NewItem";
+import { RowItem } from "./RowItem";
+import { v4 as uuidv4 } from 'uuid';
 
-export function CreateInventoryModal({formData, setFormData, isModalVisible, setIsModalVisible}) {
+export function CreateInventoryModal({isModalVisible, setIsModalVisible, fetchData}) {
 
-    const [categoryDropdown, setCategoryDropdown] = useState('Inventory Category');
     const [rowItems, setRowItems] = useState([
-        {id: 0, name: '' , inventoryCategory : '', itemCategory : '', description : '', isBillable : '', price : ''}
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
     ]);
-
         
     const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log('submit!');
+        console.log('Submit called - checking for empty rows!');
+
         const payload = rowItems;
+
+        console.log('payload is  : ', payload)
 
         try {
             const response = await fetch('http://localhost:3005/inventory',{
@@ -39,14 +41,27 @@ export function CreateInventoryModal({formData, setFormData, isModalVisible, set
     const handleAddItem = () => {
         setRowItems((prev) => [
             ...prev, 
-            {id: index + Date.now(), name: '' , inventoryCategory : '', itemCategory : '', description : '', isBillable : '', price : ''}
+            {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
         ]); 
     };
+
+
+    const handleRemoveItem = (id) => {
+        console.log('discard button clicked!')
+        const updatedItems = rowItems.filter((item) => item._id != id);
+        setRowItems(updatedItems);
+    }
 
     const handleItemChange = (index, field, value) => {
         const updatedItems = [...rowItems];
         updatedItems[index][field] = value;
         setRowItems(updatedItems)
+    }
+
+    const handleDiscard = () => {
+        setRowItems([
+            {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+        ]);
     }
 
 
@@ -58,18 +73,21 @@ export function CreateInventoryModal({formData, setFormData, isModalVisible, set
             </div>
 
             <div id="modalContent" className="flex flex-row overflow-auto">
-                    <form id="createInventoryForm" className="overflow-scroll" onSubmit={handleSubmit}>
+                    <form id="createInventoryForm" className="flex-row" onSubmit={handleSubmit}>
                         {/* Item Details */}
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             {rowItems.map( (item, index) => (
-                                <NewItem 
-                                    key={item.id}
+                                <RowItem 
+                                    key={item._id}
                                     itemData={item}
                                     onChange={(field, value) => handleItemChange(index, field, value)}
+                                    handleRemoveItem={(id) => handleRemoveItem(id)}
                                 />
                             ))}
                             <button type="button" className="bg-blue-300 text-white p-1 rounded hover:bg-blue-500 m-1" onClick={handleAddItem}>+ Add Item</button>
                         </div>
+                        <button type="button" className="bg-red-400 text-white p-1 rounded hover:bg-red-500 m-1" onClick={handleDiscard}>Discard</button>
+                        <button type="submit" className="bg-gray-400 text-white p-1 rounded hover:bg-green-500 m-1" onClick={() => handleSubmit}>Save All</button>
                     </form>
                 </div>
         </div>

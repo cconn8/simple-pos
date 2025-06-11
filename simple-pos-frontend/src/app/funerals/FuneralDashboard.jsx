@@ -1,26 +1,13 @@
-"use client"
-/* 
-Dashboard
-    - MainSidebar
-        - Menu
-    - MainContent
-        - TopSection
-        - TableSection
-            - Table
-            - Drawer
-    - CreateFuneralModal
-    
-*/
+"use client"    
 
-import { useEffect, useState } from "react"
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useEffect } from "react";
+import MainSidebar from "../components/MainSidebar/MainSidebar";
 import { SummaryDrawer } from "./SummaryDrawer";
 import { CreateFuneralModal } from "./CreateFuneralModal";
+import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
-import MainSidebar from "../components/MainSidebar/MainSidebar";
-
-
 
 export default function Dashboard() {
 
@@ -57,7 +44,6 @@ export default function Dashboard() {
         setSummaryItem(data);
         console.log('Handle Open Drawer clicked and Summary Item is set : ', data);
     };
-
     const handleGenerateInvoice = async (funeralId) => {
         console.log('generate invoice handle clicked - making post request')
         setInvoiceLoading(funeralId)
@@ -83,17 +69,14 @@ export default function Dashboard() {
         setIsDrawerVisible(false);
         setIsModalVisible(false);
     }
-
     const handleOpenModal= (e) => {
         console.log('Open Modal Handle clicked!');
         e.preventDefault();
         setIsModalVisible(!isModalVisible);
     };
-
     const handleInvoiceLoading = (id) => {
 
     }
-
     async function handleDeleteFuneral(funeralId){
         console.log('Deleting funeral with id : ', funeralId);
         try {
