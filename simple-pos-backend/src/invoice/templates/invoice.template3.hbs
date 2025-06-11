@@ -1,0 +1,152 @@
+{{!-- Hard Coded template for Our Services --}}
+{{!-- 1. Remove Selection of Funeral Items Title --}}
+{{!-- 2. Hard Code the services --}}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    .header { display: flex; justify-content: space-between; }
+    .clientDetailsRow { display: flex; flex-direction: column; font-size: small; padding-left: 1rem; padding-top: 1rem; padding-bottom: 0.5rem; justify-content: center;}
+    .logoSection {width: 250px; height: 250px;}
+    .topTableMessage {font-style: italic; font-size: small;}
+    .tableHeadingText {font-family: 'Segoe UI'; font-weight: bold; } 
+    .tableHeadingRow { padding: 1rem;  }
+    .tableRow { max-width: 150px;}
+    .tableSectionTitle { font-size: medium; font-weight:  bold; font-style: italic; padding-left: 50px; padding-bottom: 10px;}
+    .subtotalRow {display: flex; position: absolute; bottom: 10px; right: 50px; padding: 0.5rem; }
+    .tableHeadingText p {margin: 0;}
+
+    body { font-family: sans-serif; margin: 2rem;}
+    table { width: 90%; border-collapse: collapse; margin: 1rem 0; }
+    th, td { padding: 0.5rem; text-align: left; font-size: small;}
+    th { font-size: medium; background-color: #f5f5f5; }
+    footer {position: fixed; bottom: 0;}
+    ul { display: flex; list-style: none; padding: 0; gap: 0.5rem; font-size: x-small;}
+    td p {padding: 0.2rem; margin: 0rem;}
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div><p style="font-size: small; font-weight: bold;">Invoice No. 3254</p></div>
+  <div><p style="font-size: small; font-weight: bold;">Dates of Services : 25 March 2025 - 27 March 2025</p></div>
+  <div class="header">
+    <div class="clientDetails" style="padding-top: 1.5rem;"> 
+      <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
+      <div class="clientDetailsRow">c/o Mr / Mrs Paul Flynn and Family</div>
+      <div class="clientDetailsRow">Oranhill,</div>
+      <div class="clientDetailsRow">Bushypark,</div>
+      <div class="clientDetailsRow">Galway</div>
+    </div>
+
+    <div class="logoSection">
+      {{!-- <div style="padding: 3rem;"><h3>O'Flaherty Logo Here</h3></div> --}}
+    </div>
+  </div>
+
+
+  {{!-- Table section (Main Invoice Section) --}}
+  <div id="spacer" style="margin-top: 2.5rem;"></div>
+  <div class="topTableMessage">
+    {{!-- <h4>Most Suitably appointed Funeral Parlour Facilities Available - All preparations and arrangements made.</h4> --}}
+  </div>
+
+
+  <table >
+    <thead>
+      <tr class="tableHeadingRow">
+        <td colspan="2" class="tableHeadingText">
+          <p style="padding-left: 200px; padding-top: 10px;">{{data.deceasedName}}, deceased</p>
+        </td>
+        <td colspan="1" class="tableHeadingText"></td>
+      </tr>
+    </thead>
+    <tbody>
+      {{!-- Our Services Section --}}
+      <tr>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px; padding-top: 5px;  text-decoration: underline">Our Services</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      <tr id="hardcodedOurServices">
+        <td></td>
+        <td class="tableRow">
+            <p>Professional Transport & Care of the deceased</p>
+            <p>Professional Hygienic Preparation</p> 
+            <p>Funeral Planning, Administration & Bookings</p>
+            <p>Liaising with all 3rd parties on the clients behalf including handling of payments</p>
+            <p>Funeral Vehicles & Equipment</p>
+            <p>Professional staff to attend, oversee and officiate at all transfers, removals, funeral services, burials and cremations</p>
+            <p>Use of our purpose built funeral parlour facilities</p>  
+            <p>24hr phone attendance and availability</p>
+        </td>
+        <td class="tableRow" style="vertical-align: bottom;">€2500</td>
+      </tr>
+      {{#each services}}
+      <tr>
+        <td></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+
+      {{#each products}}
+      <tr>
+        <td></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+
+      {{!-- services & products total row --}}
+      <tr>
+        <td></td>
+        <td style="text-align: right;">Total for our services</td>
+        <td style="text-align: right;  border-bottom: 1px solid #ccc;">€2450</td>
+      </tr>
+
+      <!-- Disbursements Section -->
+      <tr>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 50px;  text-decoration: underline">External Payments on the client's behalf</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      {{#each disbursements}}
+      <tr>
+        <td></td>
+        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">{{price}}</td>
+      </tr>
+      {{/each}}
+
+      {{!-- disbursements total row --}}
+      <tr st>
+        <td></td>
+        <td style="text-align: right; ">Total payments on your behalf</td>
+        <td style="text-align: right;  border-bottom: 1px solid #ccc;">€2450</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="subtotalRow">
+        <span>€4000</span>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    {{!-- <ul>
+      <li>Bank of Ireland, Eyre Sq. Galway</li>
+      <li>90384026374873</li>
+    </ul>
+    <ul>
+      <li>O'Flaherty Funeral Directors Ltd.</li>
+      <li>accounts@oflahertyfunerals.ie</li>
+      <li>091 582349</li>
+    </ul> --}}
+  </footer>
+</body>
+</html>
