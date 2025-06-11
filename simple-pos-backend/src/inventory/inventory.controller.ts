@@ -29,6 +29,6 @@ export class InventoryController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.inventoryService.remove(+id);
+    return this.inventoryService.remove(id);
   }
 }
