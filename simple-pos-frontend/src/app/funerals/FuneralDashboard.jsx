@@ -55,29 +55,6 @@ export default function Dashboard() {
         setCurrentFuneralId(funeralId);
         setCurrentDeceasedName(deceasedName);
         console.log('calling edit invoice modal... data passed is :', funeralId, deceasedName)
-
-        // try {
-        //     const response = await fetch(`http://localhost:3005/invoice/${funeralId}`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type' : 'application/json',
-        //         }
-        //     });
-
-        //     if (!response.ok) { throw new Error('Failed to generate Invoice')};
-            
-        //     const data = await response.json();
-        //     console.log('Invoice URL:', data.url);
-
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
-
-        // setInvoiceLoading(null)
-        // await fetchData();
-        // setIsDrawerVisible(false);
-        // setIsModalVisible(false);
-
         setIsEditInvoiceModalVisible(true);
     }
     const handleOpenModal= (e) => {
