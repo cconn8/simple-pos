@@ -13,19 +13,19 @@ const inventory = {
         {name: 'disbursement', displayText: 'External Payments on the clients behalf', displayOrder: 2}
     ],
     products : [
-        {id : uuidv4(),name : "Light Leinster",     category : 'product' ,  type: 'Coffin', price : 250,    currency : "€", description : "A classic light-toned coffin with a clean, elegant finish for a timeless tribute."},
-        {id : uuidv4(),name : "Dark Leinster",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A rich, dark wood coffin offering a dignified and traditional appearance."},
-        {id : uuidv4(),name : "Timber Leinster",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "Crafted from quality timber, this coffin combines rustic charm with durability"},
-        {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A natural oak coffin with a rustic finish, ideal for a warm and earthy farewell."},
-        {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A finely crafted coffin named after Irish heritage, offering traditional style and grace."},
-        {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A distinguished coffin with regional character and a finely polished finish."},
-        {id : uuidv4(),name : "Wax Macroom",        category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A wax-finished coffin providing a smooth texture and subtle sheen."},
-        {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "An eco-friendly, woven coffin for a natural and sustainable burial option."},
-        {id : uuidv4(),name : "Solid Oak Antique",  category : 'product',   type: 'Coffin', price : 250,    currency : "€", description : "A solid oak coffin with antique detailing, perfect for a classic and refined memorial."}],
+        {id : uuidv4(),name : "Light Leinster",     category : 'product' ,  type: 'Coffin', price : 1750,    currency : "€", description : "A classic light-toned coffin with a clean, elegant finish for a timeless tribute."},
+        {id : uuidv4(),name : "Dark Leinster",      category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A rich, dark wood coffin offering a dignified and traditional appearance."},
+        {id : uuidv4(),name : "Timber Leinster",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Crafted from quality timber, this coffin combines rustic charm with durability"},
+        {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A natural oak coffin with a rustic finish, ideal for a warm and earthy farewell."},
+        {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A finely crafted coffin named after Irish heritage, offering traditional style and grace."},
+        {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A distinguished coffin with regional character and a finely polished finish."},
+        {id : uuidv4(),name : "Wax Macroom",        category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A wax-finished coffin providing a smooth texture and subtle sheen."},
+        {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "An eco-friendly, woven coffin for a natural and sustainable burial option."},
+        {id : uuidv4(),name : "Solid Oak Antique",  category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "A solid oak coffin with antique detailing, perfect for a classic and refined memorial."}],
     services : [
         {id : uuidv4(),name : "Hygienic Preparation",          category : 'service' ,  type: 'Embalming', price : 250,    currency : "€", description : "Professional embalming and preparation of the deceased for viewing and services."},
-        {id : uuidv4(),name : "Funeral Administration & Bookings",      category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : "Coordination of paperwork, venue bookings, and logistical arrangements."},
-        {id : uuidv4(),name : "Service Charge",     category : 'service',   type: 'Service fees', price : 250,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
+        {id : uuidv4(),name : "Funeral Administration & Bookings",      category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "Coordination of paperwork, venue bookings, and logistical arrangements."},
+        {id : uuidv4(),name : "Service Charge",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
     ],
     disbursements : [
         {id : uuidv4(),name : "Memorial Bookmarks",          category : 'disbursement' ,  type: 'Disbursements', price : 250,    currency : "€", description : "Personalized keepsakes with a tribute to the departed, given to mourners."},
@@ -36,7 +36,7 @@ const inventory = {
 }
 
 
-export function CreateFuneralModal({formData, setFormData, isModalVisible, setIsModalVisible}) {
+export function CreateFuneralModal({formData, setFormData, isModalVisible, setIsModalVisible, fetchData}) {
 
 
     // Insert Fetch Inventory method here to replace hardcoded data

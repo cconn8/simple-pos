@@ -69,7 +69,7 @@ const categories = [
               {
                 id : uuidv4(),
                 title : "Dark Leinster",
-                price : 250,
+                price : 1750,
                 currency : "€",
                 description : ""
               },
@@ -111,14 +111,14 @@ const categories = [
               {
                 id : uuidv4(),
                 title : "Wicker Basket",
-                price : 250,
+                price : 1750,
                 currency : "€",
                 description : ""
               },
               {
                 id : uuidv4(),
                 title : "Solid Oak Antique",
-                price : 250,
+                price : 1750,
                 currency : "€",
                 description : ""
               }]},

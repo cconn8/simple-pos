@@ -8,6 +8,7 @@ import { SummaryDrawer } from "./SummaryDrawer";
 import { CreateFuneralModal } from "./CreateFuneralModal";
 import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
+import { EditInvoiceModal } from "./EditInvoiceModal";
 
 export default function Dashboard() {
 
@@ -17,6 +18,10 @@ export default function Dashboard() {
     const [summaryItem, setSummaryItem] = useState(null);
     const [formData, setFormData] = useState({});
     const [invoiceLoading, setInvoiceLoading] = useState(null);
+    const [isEditInvoiceModalVisible, setIsEditInvoiceModalVisible] = useState(false);
+    const [editInvoiceData, setEditInvoiceData] = useState({});
+    const [currentFuneralId, setCurrentFuneralId] = useState('');
+    const [currentDeceasedName, setCurrentDeceasedName] = useState('');
 
     const router = useRouter();
 
@@ -44,39 +49,43 @@ export default function Dashboard() {
         setSummaryItem(data);
         console.log('Handle Open Drawer clicked and Summary Item is set : ', data);
     };
-    const handleGenerateInvoice = async (funeralId) => {
-        console.log('generate invoice handle clicked - making post request')
-        setInvoiceLoading(funeralId)
-        try {
-            const response = await fetch(`http://localhost:3005/invoice/${funeralId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type' : 'application/json',
-                }
-            });
+    const handleGenerateInvoice = async (funeralId, deceasedName) => {
+        console.log('generate invoice handle clicked - Edit invoice?')
+        setIsEditInvoiceModalVisible(true);
+        setCurrentFuneralId(funeralId);
+        setCurrentDeceasedName(deceasedName);
+        console.log('calling edit invoice modal... data passed is :', funeralId, deceasedName)
 
-            if (!response.ok) { throw new Error('Failed to generate Invoice')};
+        // try {
+        //     const response = await fetch(`http://localhost:3005/invoice/${funeralId}`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type' : 'application/json',
+        //         }
+        //     });
+
+        //     if (!response.ok) { throw new Error('Failed to generate Invoice')};
             
-            const data = await response.json();
-            console.log('Invoice URL:', data.url);
+        //     const data = await response.json();
+        //     console.log('Invoice URL:', data.url);
 
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
 
-        setInvoiceLoading(null)
-        await fetchData();
-        setIsDrawerVisible(false);
-        setIsModalVisible(false);
+        // setInvoiceLoading(null)
+        // await fetchData();
+        // setIsDrawerVisible(false);
+        // setIsModalVisible(false);
+
+        setIsEditInvoiceModalVisible(true);
     }
     const handleOpenModal= (e) => {
         console.log('Open Modal Handle clicked!');
         e.preventDefault();
         setIsModalVisible(!isModalVisible);
     };
-    const handleInvoiceLoading = (id) => {
 
-    }
     async function handleDeleteFuneral(funeralId){
         console.log('Deleting funeral with id : ', funeralId);
         try {
@@ -152,11 +161,11 @@ export default function Dashboard() {
                                                     className="px-2"
                                                     size={36}
                                                     color="black"
-                                                    onClick={() => handleGenerateInvoice(data._id)}
+                                                    onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}
                                                 />
                                             </div>
                                         ) : (
-                                            <button onClick={() => handleGenerateInvoice(data._id)}>
+                                            <button onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}>
                                                 Generate Invoice
                                             </button>
                                         )}
@@ -186,7 +195,24 @@ export default function Dashboard() {
                 setFormData={setFormData}
                 isModalVisible={isModalVisible}
                 setIsModalVisible={setIsModalVisible}
+                fetchData={fetchData}
             />
+
+
+            {/* Edit Invoice Modal  */}
+            <EditInvoiceModal 
+                isEditInvoiceModalVisible={isEditInvoiceModalVisible}
+                setIsEditInvoiceModalVisible={setIsEditInvoiceModalVisible}
+                editInvoiceData={editInvoiceData}
+                setEditInvoiceData={setEditInvoiceData}
+                setInvoiceLoading={setInvoiceLoading}
+                funeralId={currentFuneralId}
+                deceasedName={currentDeceasedName}
+                fetchData={fetchData}
+                setIsDrawerVisible={setIsDrawerVisible}
+                setIsModalVisible={setIsModalVisible}
+            />
+
   
         </div>
 
