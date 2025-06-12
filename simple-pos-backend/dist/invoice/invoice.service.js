@@ -30,12 +30,13 @@ let InvoiceService = class InvoiceService {
         }
         this.storage = new storage_1.Storage({ keyFilename: keyPath });
     }
-    async generateInvoice(funeralId) {
+    async generateInvoice(funeralId, data) {
         console.log('invoice service here - generating invoice');
         const funeralDoc = await this.funeralsService.findOneById(funeralId);
         const funeralObj = funeralDoc.toObject();
-        const funeral = funeralObj.formData;
+        let funeral = funeralObj.formData;
         const { deceasedName } = funeral;
+        funeral['additionalInvoiceData'] = data;
         const pdf = await this.generatePDF(funeral);
         const url = await this.uploadToGCS(pdf, deceasedName);
         await this.funeralsService.findByIdAndUpdate(funeralId, { $set: { 'formData.invoice': url } });
@@ -44,16 +45,31 @@ let InvoiceService = class InvoiceService {
     async generatePDF(data) {
         console.log('generating PDF...');
         const { selectedItems } = data;
-        const services = selectedItems.filter((item) => item.category == 'service');
+        let serviceCharge = selectedItems.find((item) => item.name == 'Service Charge' || item.name == 'Funeral Administration & Bookings');
+        const services = selectedItems.filter((item) => item.category == 'service' && item._id != serviceCharge._id);
         const products = selectedItems.filter((item) => item.category == 'product');
         const disbursements = selectedItems.filter((item) => item.category == 'disbursement');
+        let productsAndServicesTotal = 0;
+        let disbursementsTotal = 0;
+        console.log('service charge is :', serviceCharge.price);
+        products.forEach((product) => { productsAndServicesTotal += product.price; });
+        services.forEach((service) => { productsAndServicesTotal += service.price; });
+        disbursements.forEach((disbursement) => { disbursementsTotal += disbursement.price; });
+        productsAndServicesTotal += serviceCharge.price;
+        let subtotal = productsAndServicesTotal + disbursementsTotal;
+        const { fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
         const templateData = {
             data,
             services,
             products,
-            disbursements
+            disbursements,
+            productsAndServicesTotal,
+            disbursementsTotal,
+            subtotal,
+            serviceCharge,
+            fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         };
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template2.hbs');
+        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template4.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars_1.default.compile(source);
         const html = template(templateData);

@@ -19,8 +19,9 @@ let InvoiceController = class InvoiceController {
     constructor(invoiceService) {
         this.invoiceService = invoiceService;
     }
-    async generateInvoice(id) {
-        const url = await this.invoiceService.generateInvoice(id);
+    async generateInvoice(id, body) {
+        console.log('received on the server Param , and Body :', id, body);
+        const url = await this.invoiceService.generateInvoice(id, body);
         return url;
     }
 };
@@ -28,8 +29,9 @@ exports.InvoiceController = InvoiceController;
 __decorate([
     (0, common_1.Post)(':funeral_id'),
     __param(0, (0, common_1.Param)('funeral_id')),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], InvoiceController.prototype, "generateInvoice", null);
 exports.InvoiceController = InvoiceController = __decorate([

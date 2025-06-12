@@ -6,7 +6,7 @@ export declare class InvoiceService {
     private storage;
     private bucketName;
     constructor(configService: ConfigService, funeralsService: FuneralsService);
-    generateInvoice(funeralId: string): Promise<any>;
+    generateInvoice(funeralId: string, data: any): Promise<any>;
     generatePDF(data: any): Promise<Buffer>;
     uploadToGCS(buffer: Buffer, deceasedName: string): Promise<string>;
 }
