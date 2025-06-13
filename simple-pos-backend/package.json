@@ -31,7 +31,7 @@
     "googleapis": "^150.0.1",
     "handlebars": "^4.7.8",
     "mongoose": "^8.15.0",
-    "puppeteer": "^24.10.0",
+    "puppeteer": "^24.10.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
