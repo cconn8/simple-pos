@@ -53,6 +53,10 @@ const inventory = {
         {id : uuidv4(),name : "5 x Roses",      category : 'disbursement',   type: 'Flowers', price : 23,    currency : "€", description : ""},
         {id : uuidv4(),name : "Professional Livestreaming",      category : 'disbursement',   type: 'Other', price : 23,    currency : "€", description : ""},
         {id : uuidv4(),name : "Mourning Car",     category : 'disbursement',   type: 'Other', price : 250,    currency : "€", description : ""},
+        {id : uuidv4(),name : "Irish Times",     category : 'disbursement',   type: 'Other', price : 250,    currency : "€", description : ""},
+        {id : uuidv4(),name : "Large Print & Frame - Cregal Art",     category : 'disbursement',   type: 'Other', price : 150,    currency : "€", description : ""},
+        {id : uuidv4(),name : "Small Print & Frame",     category : 'disbursement',   type: 'Other', price : 25,    currency : "€", description : ""},
+        {id : uuidv4(),name : "RIP.ie",     category : 'disbursement',   type: 'Other', price : 128,    currency : "€", description : ""},
     ]
 
 }
