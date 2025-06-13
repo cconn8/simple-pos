@@ -1,5 +1,6 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
+import { InternalServerErrorException } from '@nestjs/common';
 
 @Controller('invoice')
 export class InvoiceController {
@@ -8,9 +9,20 @@ export class InvoiceController {
 
     @Post(':funeral_id')
     async generateInvoice(@Param('funeral_id') id: string, @Body() body: any) {
-        console.log('received on the server Param , and Body :', id, body);
+    console.log('Received invoice request for funeral ID:', id);
+    console.log('Payload body:', JSON.stringify(body, null, 2));
+
+    try {
         const url = await this.invoiceService.generateInvoice(id, body);
-        return url;
+        console.log('Invoice URL generated:', url);
+        return { url };
+    } catch (error) {
+        console.error('Error generating invoice:', error.message);
+        console.error(error.stack);
+        throw new InternalServerErrorException('Failed to generate invoice.');
     }
+    
+
+    
 
 }
