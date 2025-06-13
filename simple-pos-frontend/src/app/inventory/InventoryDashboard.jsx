@@ -14,19 +14,24 @@ export default function InventoryDashboard() {
     const router = useRouter();
     // const apiUrl = process.env.API_URL;
 
-    const fetchData = async() => {
-        console.log('await fetchData called - fetching from inventory');
-        try{
-            fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory`)
-            .then(res => res.json())
-            .then(data => setInventoryData(data))
-            .catch(err => console.error('Error fetching data from inventory : ', err));
+    const fetchData = async () => {
+        try {
+            const res = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory`);
+            const data = await res.json();
+
             console.log('use effect and fetch called');
+
+            if (Array.isArray(data)) {
+                setInventoryData(data);
+            } else {
+                console.error('Unexpected response format (not an array):', data);
+                setInventoryData([]); // or handle accordingly
+            }
+        } catch (err) {
+            console.error('Error fetching data from funerals:', err);
+            setInventoryData([]); // optionally reset or show fallback
         }
-        catch (err) {
-            console.error('Error fetching data from inventory : ', err);
-        }
-    }
+    };
     
     useEffect( () => {
         fetchData();
