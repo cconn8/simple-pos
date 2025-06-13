@@ -28,11 +28,11 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
             console.error('Error:', error);
         }
 
-        setInvoiceLoading(null)
-        await fetchData();
+        setInvoiceLoading(false)
         setIsDrawerVisible(false);
         setIsModalVisible(false);
         setEditInvoiceData({})
+        await fetchData();
     }
 
     const handleChange = (e) => {
