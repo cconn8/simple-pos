@@ -88,7 +88,7 @@ export class InvoiceService {
             fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         }
 
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template4.hbs');
+        const templatePath = path.join(process.cwd(), 'templates', 'invoice.template4.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = Handlebars.compile(source);
         const html = template(templateData);

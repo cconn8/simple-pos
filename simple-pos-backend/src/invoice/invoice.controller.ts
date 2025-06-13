@@ -15,11 +15,12 @@ export class InvoiceController {
     try {
         const url = await this.invoiceService.generateInvoice(id, body);
         console.log('Invoice URL generated:', url);
-        return { url };
+        return url ;
     } catch (error) {
         console.error('Error generating invoice:', error.message);
         console.error(error.stack);
         throw new InternalServerErrorException('Failed to generate invoice.');
+    }
     }
     
 
