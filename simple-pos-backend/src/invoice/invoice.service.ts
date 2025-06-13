@@ -4,7 +4,7 @@ import { Storage } from '@google-cloud/storage';
 import { FuneralsService } from 'src/funerals/funerals.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
-import * as puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import Handlebars from "handlebars";
 import { GoogleAuthService } from 'src/google/google-auth.service';
@@ -15,12 +15,6 @@ export class InvoiceService {
     private storage : Storage;
     private bucketName = 'invoice-app-storage';
 
-    // constructor(private configService : ConfigService, private funeralsService: FuneralsService) {
-    //     const keyPath = this.configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
-    //     if (!keyPath) {throw new Error('Missing GOOGLE_APPLICATION_CREDENTIALS path in env config')}
-    //     this.storage = new Storage( {keyFilename: keyPath})
-    // }
-
     constructor(
         private readonly configService: ConfigService,
         private readonly funeralsService: FuneralsService,
@@ -30,6 +24,11 @@ export class InvoiceService {
 
     async onModuleInit() {
         const client = await this.googleAuthService.getClient();
+        console.log('Auth Client is: ', client);
+
+        // Verify token is fresh
+        const token = await client.getAccessToken();
+        console.log('Current Access Token:', token);
         this.storage = new Storage({authClient: client});
     }
 
@@ -93,17 +92,25 @@ export class InvoiceService {
         const template = Handlebars.compile(source);
         const html = template(templateData);
 
-        const browser = await puppeteer.launch({
-                            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-                            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                        });
-        const page = await browser.newPage();
-        await page.setContent(html);
+        try {
+            console.log('Checking Chromium at:', process.env.PUPPETEER_EXECUTABLE_PATH);
+            const browser = await puppeteer.launch({
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
 
-        const pdf = await page.pdf({ format: 'A4' });
-        await browser.close();
+            const page = await browser.newPage();
+            await page.setContent(html, {waitUntil: 'networkidle0'});
 
-        return Buffer.from(pdf);
+            const pdf = await page.pdf({ format: 'a4' });
+            await browser.close();
+            return Buffer.from(pdf);
+        }
+        catch(error) {
+        console.error('Puppeteer launch failed:', error);
+        throw new Error(`PDF generation failed: ${error.message}`);
+        }
+        
     }
 
 

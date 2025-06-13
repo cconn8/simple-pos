@@ -2,6 +2,7 @@ import { Body, Controller, Param, Post } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { InternalServerErrorException } from '@nestjs/common';
 
+
 @Controller('invoice')
 export class InvoiceController {
     constructor(private readonly invoiceService: InvoiceService) {}
@@ -16,6 +17,7 @@ export class InvoiceController {
         const url = await this.invoiceService.generateInvoice(id, body);
         console.log('Invoice URL generated:', url);
         return url ;
+
     } catch (error) {
         console.error('Error generating invoice:', error.message);
         console.error(error.stack);
