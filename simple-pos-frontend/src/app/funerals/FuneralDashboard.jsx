@@ -73,7 +73,7 @@ export default function Dashboard() {
     async function handleDeleteFuneral(funeralId){
         console.log('Deleting funeral with id : ', funeralId);
         try {
-            const response = await fetch(`http://localhost:3005/funerals/${funeralId}`, {
+            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals/${funeralId}`, {
                 method: "DELETE",
                 headers: {
                     'Content-Type' : 'application/json',
