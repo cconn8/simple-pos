@@ -9,6 +9,7 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
         setIsEditInvoiceModalVisible(false);
         setInvoiceLoading(funeralId)
         const payload = editInvoiceData;
+        console.log(`fetch url is ${funeralId}`);
         console.log('sending body payload to server: ', payload);
         try {
             const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/invoice/${funeralId}`, {
