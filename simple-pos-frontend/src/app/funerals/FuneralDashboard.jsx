@@ -26,18 +26,24 @@ export default function Dashboard() {
     const router = useRouter();
     // const apiUrl = process.env.API_URL;
 
-    const fetchData = async() => {
-        try{
-            fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals`)
-            .then(res => res.json())
-            .then(data => setExistingFuneralData(data))
-            .catch(err => console.error('Error fetching data from funerals : ', err));
-            console.log('use effect and fetched called');
+    const fetchData = async () => {
+        try {
+            const res = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals`);
+            const data = await res.json();
+
+            console.log('use effect and fetch called');
+
+            if (Array.isArray(data)) {
+                setExistingFuneralData(data);
+            } else {
+                console.error('Unexpected response format (not an array):', data);
+                setExistingFuneralData([]); // or handle accordingly
+            }
+        } catch (err) {
+            console.error('Error fetching data from funerals:', err);
+            setExistingFuneralData([]); // optionally reset or show fallback
         }
-        catch (err) {
-            console.error('Error fetching data from funerals : ', err);
-        }
-    }
+    };
     
     useEffect( () => {
         fetchData();
