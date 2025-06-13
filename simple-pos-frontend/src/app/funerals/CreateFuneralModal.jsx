@@ -98,7 +98,7 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
         const payload = formData;
 
         try {
-            const response = await fetch('http://localhost:3005/funerals', {
+            const response = await fetch('https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
