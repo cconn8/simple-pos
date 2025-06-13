@@ -4,7 +4,7 @@ import { Storage } from '@google-cloud/storage';
 import { FuneralsService } from 'src/funerals/funerals.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
-import * as puppeteer from 'puppeteer';
+import chromium from 'chrome-aws-lambda';
 import * as fs from 'fs';
 import Handlebars from "handlebars";
 import { GoogleAuthService } from 'src/google/google-auth.service';
@@ -14,12 +14,6 @@ import { GoogleAuthService } from 'src/google/google-auth.service';
 export class InvoiceService {
     private storage : Storage;
     private bucketName = 'invoice-app-storage';
-
-    // constructor(private configService : ConfigService, private funeralsService: FuneralsService) {
-    //     const keyPath = this.configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
-    //     if (!keyPath) {throw new Error('Missing GOOGLE_APPLICATION_CREDENTIALS path in env config')}
-    //     this.storage = new Storage( {keyFilename: keyPath})
-    // }
 
     constructor(
         private readonly configService: ConfigService,
@@ -93,12 +87,16 @@ export class InvoiceService {
         const template = Handlebars.compile(source);
         const html = template(templateData);
 
-        const browser = await puppeteer.launch({
-                            executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium-browser',
-                            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-                        });
+        const browser = await chromium.puppeteer.launch({
+                args: chromium.args,
+                executablePath: await chromium.executablePath,
+                headless: chromium.headless,
+                defaultViewport: chromium.defaultViewport,
+                protocolTimeout: 30000
+            });
+
         const page = await browser.newPage();
-        await page.setContent(html);
+        await page.setContent(html, {waitUntil: 'networkidle0'});
 
         const pdf = await page.pdf({ format: 'A4' });
         await browser.close();
