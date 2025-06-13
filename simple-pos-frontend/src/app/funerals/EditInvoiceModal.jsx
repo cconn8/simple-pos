@@ -11,7 +11,7 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
         const payload = editInvoiceData;
         console.log('sending body payload to server: ', payload);
         try {
-            const response = await fetch(`http://localhost:3005/invoice/${funeralId}`, {
+            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/invoice/${funeralId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json',

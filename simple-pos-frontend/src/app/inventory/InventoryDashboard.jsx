@@ -47,7 +47,7 @@ export default function InventoryDashboard() {
     const deleteItem = async(id) => {
         console.log('Deleting item with id : ', id);
         try {
-            const response = await fetch(`http://localhost:3005/inventory/${id}`, {
+            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Content-Type' : 'application/json',

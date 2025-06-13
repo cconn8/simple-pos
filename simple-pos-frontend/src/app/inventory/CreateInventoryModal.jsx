@@ -17,7 +17,7 @@ export function CreateInventoryModal({isModalVisible, setIsModalVisible, fetchDa
         console.log('payload is  : ', payload)
 
         try {
-            const response = await fetch('http://localhost:3005/inventory',{
+            const response = await fetch('https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory',{
                     method: "POST",
                     headers : {
                         "content-type" : "application/json"
