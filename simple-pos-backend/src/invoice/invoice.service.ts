@@ -4,7 +4,7 @@ import { Storage } from '@google-cloud/storage';
 import { FuneralsService } from 'src/funerals/funerals.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
-import chromium from 'chrome-aws-lambda';
+import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import Handlebars from "handlebars";
 import { GoogleAuthService } from 'src/google/google-auth.service';
@@ -24,6 +24,11 @@ export class InvoiceService {
 
     async onModuleInit() {
         const client = await this.googleAuthService.getClient();
+        console.log('Auth Client is: ', client);
+
+        // Verify token is fresh
+        const token = await client.getAccessToken();
+        console.log('Current Access Token:', token);
         this.storage = new Storage({authClient: client});
     }
 
@@ -87,21 +92,25 @@ export class InvoiceService {
         const template = Handlebars.compile(source);
         const html = template(templateData);
 
-        const browser = await chromium.puppeteer.launch({
-                args: chromium.args,
-                executablePath: await chromium.executablePath,
-                headless: chromium.headless,
-                defaultViewport: chromium.defaultViewport,
-                protocolTimeout: 30000
+        try {
+            console.log('Checking Chromium at:', process.env.PUPPETEER_EXECUTABLE_PATH);
+            const browser = await puppeteer.launch({
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
             });
 
-        const page = await browser.newPage();
-        await page.setContent(html, {waitUntil: 'networkidle0'});
+            const page = await browser.newPage();
+            await page.setContent(html, {waitUntil: 'networkidle0'});
 
-        const pdf = await page.pdf({ format: 'A4' });
-        await browser.close();
-
-        return Buffer.from(pdf);
+            const pdf = await page.pdf({ format: 'a4' });
+            await browser.close();
+            return Buffer.from(pdf);
+        }
+        catch(error) {
+        console.error('Puppeteer launch failed:', error);
+        throw new Error(`PDF generation failed: ${error.message}`);
+        }
+        
     }
 
 

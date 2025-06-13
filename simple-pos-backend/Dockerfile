@@ -18,31 +18,33 @@ RUN npm run build
 # ---- Runtime stage ----
 FROM node:18-slim
 
-# Install Chromium dependencies
-RUN apt-get update && apt-get install -y \
+# Install Chromium and dependencies
+RUN apt-get update && \
+    apt-get install -y \
     chromium \
     fonts-liberation \
-    libappindicator3-1 \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
+    libglib2.0-0 \
     libnss3 \
-    libx11-xcb1 \
+    libx11-6 \
+    libxcb1 \
     libxcomposite1 \
+    libxcursor1 \
     libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxi6 \
     libxrandr2 \
-    xdg-utils \
-    wget \
-    ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    libxss1 \
+    libxtst6 \
+    --no-install-recommends
 
-# Required env for chrome-aws-lambda
+RUN chmod -R o+rx /usr/bin/chromium
+
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD node -e "require('puppeteer-core').launch({args:['--no-sandbox']}).then(b => b.close())"
 
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
