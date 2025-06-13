@@ -24,12 +24,11 @@ export default function Dashboard() {
     const [currentDeceasedName, setCurrentDeceasedName] = useState('');
 
     const router = useRouter();
-    const apiUrl = process.env.API_URL;
+    // const apiUrl = process.env.API_URL;
 
     const fetchData = async() => {
-        console.log('api url is ', apiUrl);
         try{
-            fetch(`${apiUrl}/funerals`)
+            fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals`)
             .then(res => res.json())
             .then(data => setExistingFuneralData(data))
             .catch(err => console.error('Error fetching data from funerals : ', err));

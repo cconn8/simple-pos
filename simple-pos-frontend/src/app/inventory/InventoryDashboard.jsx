@@ -12,12 +12,12 @@ export default function InventoryDashboard() {
     const [inventoryData, setInventoryData] = useState([]);
 
     const router = useRouter();
-    const apiUrl = process.env.API_URL;
+    // const apiUrl = process.env.API_URL;
 
     const fetchData = async() => {
         console.log('await fetchData called - fetching from inventory');
         try{
-            fetch(`${apiUrl}/inventory`)
+            fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory`)
             .then(res => res.json())
             .then(data => setInventoryData(data))
             .catch(err => console.error('Error fetching data from inventory : ', err));
