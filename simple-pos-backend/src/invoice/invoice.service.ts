@@ -7,6 +7,7 @@ import * as path from 'path';
 import * as puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import Handlebars from "handlebars";
+import { GoogleAuthService } from 'src/google/google-auth.service';
 
 
 @Injectable()
@@ -14,12 +15,23 @@ export class InvoiceService {
     private storage : Storage;
     private bucketName = 'invoice-app-storage';
 
-    constructor(private configService : ConfigService, private funeralsService: FuneralsService) {
-        const keyPath = this.configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
-        if (!keyPath) {throw new Error('Missing GOOGLE_APPLICATION_CREDENTIALS path in env config')}
-        this.storage = new Storage( {keyFilename: keyPath})
-    }
+    // constructor(private configService : ConfigService, private funeralsService: FuneralsService) {
+    //     const keyPath = this.configService.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
+    //     if (!keyPath) {throw new Error('Missing GOOGLE_APPLICATION_CREDENTIALS path in env config')}
+    //     this.storage = new Storage( {keyFilename: keyPath})
+    // }
 
+    constructor(
+        private readonly configService: ConfigService,
+        private readonly funeralsService: FuneralsService,
+        private readonly googleAuthService: GoogleAuthService
+    ) {}
+
+
+    async onModuleInit() {
+        const client = await this.googleAuthService.getClient();
+        this.storage = new Storage({authClient: client});
+    }
 
     async generateInvoice(funeralId: string, data: any) : Promise<any> {
         console.log('invoice service here - generating invoice')
@@ -44,7 +56,7 @@ export class InvoiceService {
         
         const { selectedItems } = data;
 
-        let serviceCharge = selectedItems.find((item) => item.name == 'Service Charge' || item.name == 'Funeral Administration & Bookings');
+        let serviceCharge = selectedItems.find((item) => item.type == 'Service fees');
         
         const services = selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
         const products = selectedItems.filter((item) => item.category == 'product')
