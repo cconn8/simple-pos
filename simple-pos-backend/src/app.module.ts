@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InvoiceModule } from './invoice/invoice.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { GoogleAuthService } from './google/google-auth.service';
 
 
 @Module({
@@ -26,6 +27,7 @@ import { InventoryModule } from './inventory/inventory.module';
     ],
 
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, GoogleAuthService],
+  exports: [GoogleAuthService]
 })
 export class AppModule {}
