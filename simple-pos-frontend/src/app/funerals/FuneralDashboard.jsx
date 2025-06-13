@@ -27,6 +27,7 @@ export default function Dashboard() {
     const apiUrl = process.env.API_URL;
 
     const fetchData = async() => {
+        console.log('api url is ', apiUrl);
         try{
             fetch(`${apiUrl}/funerals`)
             .then(res => res.json())
