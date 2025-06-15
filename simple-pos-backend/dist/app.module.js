@@ -16,13 +16,14 @@ const mongoose_1 = require("@nestjs/mongoose");
 const config_1 = require("@nestjs/config");
 const invoice_module_1 = require("./invoice/invoice.module");
 const inventory_module_1 = require("./inventory/inventory.module");
+const google_auth_service_1 = require("./google/google-auth.service");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true }),
+            config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: `.env.${process.env.NODE_ENV}`, }),
             mongoose_1.MongooseModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
@@ -36,7 +37,8 @@ exports.AppModule = AppModule = __decorate([
             inventory_module_1.InventoryModule
         ],
         controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        providers: [app_service_1.AppService, google_auth_service_1.GoogleAuthService],
+        exports: [google_auth_service_1.GoogleAuthService]
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

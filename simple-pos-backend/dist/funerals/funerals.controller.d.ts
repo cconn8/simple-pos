@@ -1,9 +1,11 @@
 import { FuneralsService } from './funerals.service';
 import { CreateFuneralDto } from './dto/create-funeral.dto';
 import { UpdateFuneralDto } from './dto/update-funeral.dto';
+import { InvoiceService } from 'src/invoice/invoice.service';
 export declare class FuneralsController {
     private readonly funeralsService;
-    constructor(funeralsService: FuneralsService);
+    private readonly invoiceService;
+    constructor(funeralsService: FuneralsService, invoiceService: InvoiceService);
     create(createFuneralDto: CreateFuneralDto): Promise<{
         id: unknown;
         message: string;
@@ -19,7 +21,9 @@ export declare class FuneralsController {
         __v: number;
     }>;
     update(id: string, updateFuneralDto: UpdateFuneralDto): string;
-    remove(id: string): Promise<import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{
+    remove(id: string, body: {
+        invoiceUrl: string;
+    }): Promise<import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{
         _id: unknown;
     }> & {
         __v: number;

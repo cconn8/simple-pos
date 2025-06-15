@@ -15,14 +15,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InvoiceController = void 0;
 const common_1 = require("@nestjs/common");
 const invoice_service_1 = require("./invoice.service");
+const common_2 = require("@nestjs/common");
 let InvoiceController = class InvoiceController {
     constructor(invoiceService) {
         this.invoiceService = invoiceService;
     }
     async generateInvoice(id, body) {
-        console.log('received on the server Param , and Body :', id, body);
-        const url = await this.invoiceService.generateInvoice(id, body);
-        return url;
+        console.log('Received invoice request for funeral ID:', id);
+        console.log('Payload body:', JSON.stringify(body, null, 2));
+        try {
+            const url = await this.invoiceService.generateInvoice(id, body);
+            console.log('Invoice URL generated:', url);
+            return url;
+        }
+        catch (error) {
+            console.error('Error generating invoice:', error.message);
+            console.error(error.stack);
+            throw new common_2.InternalServerErrorException('Failed to generate invoice.');
+        }
     }
 };
 exports.InvoiceController = InvoiceController;
