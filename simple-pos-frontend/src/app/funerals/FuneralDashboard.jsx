@@ -9,6 +9,7 @@ import { CreateFuneralModal } from "./CreateFuneralModal";
 import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
 import { EditInvoiceModal } from "./EditInvoiceModal";
+import DeleteModal from "../components/DeleteModal";
 
 export default function Dashboard() {
 
@@ -19,16 +20,21 @@ export default function Dashboard() {
     const [formData, setFormData] = useState({});
     const [invoiceLoading, setInvoiceLoading] = useState(null);
     const [isEditInvoiceModalVisible, setIsEditInvoiceModalVisible] = useState(false);
-    const [editInvoiceData, setEditInvoiceData] = useState({});
+    const [editInvoiceData, setEditInvoiceData] = useState({"misterMisses" : ''});
     const [currentFuneralId, setCurrentFuneralId] = useState('');
     const [currentDeceasedName, setCurrentDeceasedName] = useState('');
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
+
 
     const router = useRouter();
-    // const apiUrl = process.env.API_URL;
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;    
+    console.log('API is : ', API_URL);
 
     const fetchData = async () => {
         try {
-            const res = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals`);
+            const res = await fetch(`${API_URL}/funerals`);
+            console.log(`fetching from ${API_URL}/funerals`);
             const data = await res.json();
 
             console.log('use effect and fetch called');
@@ -36,7 +42,7 @@ export default function Dashboard() {
             if (Array.isArray(data)) {
                 setExistingFuneralData(data);
             } else {
-                console.error('Unexpected response format (not an array):', data);
+                console.error('Funerals Array empty', data);
                 setExistingFuneralData([]); // or handle accordingly
             }
         } catch (err) {
@@ -69,29 +75,13 @@ export default function Dashboard() {
         e.preventDefault();
         setIsModalVisible(!isModalVisible);
     };
-
-    async function handleDeleteFuneral(funeralId){
-        console.log('Deleting funeral with id : ', funeralId);
-        try {
-            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals/${funeralId}`, {
-                method: "DELETE",
-                headers: {
-                    'Content-Type' : 'application/json',
-                }
-            });
-
-            if (!response.ok) { throw new Error('Failed to generate Invoice')};
-            
-            const data = await response.json();
-            console.log('Invoice URL:', data.url);
-
-        } catch (error) {
-            console.error('Error:', error);
-        }
-
-        await fetchData();
-        setIsDrawerVisible(false);
-        setIsModalVisible(false);
+    
+    const handleOpenDeleteFuneralModal = (funeralId, deceasedName, invoiceUrl) => {
+        console.log('Handle Delete Funeral Modal called with : ', funeralId, deceasedName)
+        setCurrentFuneralId(funeralId);
+        setCurrentDeceasedName(deceasedName);
+        setCurrentInvoiceUrl(invoiceUrl)
+        setIsDeleteModalVisible(true);
     }
            
     return(
@@ -157,6 +147,9 @@ export default function Dashboard() {
                                     <td className="px-4 py-2 text-left underline hover:font-bold">
                                         <button onClick={() => handleOpenDrawer(isDrawerVisible, data)}>View / Edit</button>
                                     </td>
+                                    <td className="px-4 py-2 text-left underline hover:font-bold">
+                                        <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
+                                    </td>
                                 </tr>
                             ))
                             }
@@ -195,6 +188,18 @@ export default function Dashboard() {
                 fetchData={fetchData}
                 setIsDrawerVisible={setIsDrawerVisible}
                 setIsModalVisible={setIsModalVisible}
+            />
+
+            <DeleteModal
+                isDeleteModalVisible={isDeleteModalVisible}
+                setIsDeleteModalVisible={setIsDeleteModalVisible} 
+                currentDeceasedName={currentDeceasedName}
+                setCurrentDeceasedName={setCurrentDeceasedName}
+                currentFuneralId={currentFuneralId}
+                setCurrentFuneralId={setCurrentFuneralId}
+                currentInvoiceUrl={currentInvoiceUrl}
+                setCurrentInvoiceUrl={setCurrentInvoiceUrl}
+                fetchData={fetchData}
             />
 
   

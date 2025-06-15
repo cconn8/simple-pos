@@ -3,6 +3,8 @@
 
 export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceModalVisible, editInvoiceData, setEditInvoiceData, setInvoiceLoading, funeralId, deceasedName, fetchData, setIsDrawerVisible, setIsModalVisible}) {
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
     const handleSubmit = async(e) => {
         e.preventDefault();
         console.log('Invoice confirmed, generating an invoice ...')
@@ -12,7 +14,7 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
         console.log(`fetch url is ${funeralId}`);
         console.log('sending body payload to server: ', payload);
         try {
-            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/invoice/${funeralId}`, {
+            const response = await fetch(`${API_URL}/invoice/${funeralId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type' : 'application/json',
@@ -68,10 +70,10 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
                             
                             <div id="clientDetailsDiv" className="flex-row justify-between py-5 mx-2">
                                 <label>Care Of : </label>
-                                <select onChange={handleChange} id="misterMisses"  type="dropdown" name="misterMisses"  value="" placeholder="Mr. / Mrs."  className="bg-white rounded-sm p-2 mx-2" required>
-                                    <option name="mr" value="Mr.">Mr.</option>
-                                    <option name="ms" value="Ms.">Ms.</option>
-                                    <option name="mrs" value="Mrs.">Mrs.</option>
+                                <select onChange={handleChange} id="misterMisses" name="misterMisses"  value={editInvoiceData.misterMisses} className="bg-white rounded-sm p-2 mx-2" required>
+                                    <option name="misterMisses" value="Mr.">Mr.</option>
+                                    <option name="misterMisses" value="Ms.">Ms.</option>
+                                    <option name="misterMisses" value="Mrs.">Mrs.</option>
                                 </select>
                                 <input onChange={handleChange} id="clientName"  type="text" name="clientName"  value={editInvoiceData["clientName"] || ""} placeholder="Client Name"  className="bg-white rounded-sm p-2 mx-2" required/>
                             </div>
