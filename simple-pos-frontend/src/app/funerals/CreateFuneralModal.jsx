@@ -66,6 +66,7 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
 
 
     // Insert Fetch Inventory method here to replace hardcoded data
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     const sortedCategories = inventory.categories.sort((a,b) => a.displayOrder - b.displayOrder); // Arrange the product / service categories by displayOrder
 
@@ -102,7 +103,7 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
         const payload = formData;
 
         try {
-            const response = await fetch('https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/funerals', {
+            const response = await fetch(`${API_URL}/funerals`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

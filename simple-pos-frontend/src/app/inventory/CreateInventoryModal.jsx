@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 export function CreateInventoryModal({isModalVisible, setIsModalVisible, fetchData}) {
 
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
     const [rowItems, setRowItems] = useState([
         {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
     ]);
@@ -17,7 +19,7 @@ export function CreateInventoryModal({isModalVisible, setIsModalVisible, fetchDa
         console.log('payload is  : ', payload)
 
         try {
-            const response = await fetch('https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory',{
+            const response = await fetch(`${API_URL}/inventory`,{
                     method: "POST",
                     headers : {
                         "content-type" : "application/json"

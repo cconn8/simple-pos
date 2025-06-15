@@ -2,10 +2,14 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { FuneralsService } from './funerals.service';
 import { CreateFuneralDto } from './dto/create-funeral.dto';
 import { UpdateFuneralDto } from './dto/update-funeral.dto';
+import { InvoiceService } from 'src/invoice/invoice.service';
 
 @Controller('funerals')
 export class FuneralsController {
-  constructor(private readonly funeralsService: FuneralsService) {}
+  constructor(
+    private readonly funeralsService: FuneralsService,
+    private readonly invoiceService: InvoiceService
+  ) {}
 
   @Post()
   async create(@Body() createFuneralDto: CreateFuneralDto) {
@@ -31,7 +35,12 @@ export class FuneralsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.funeralsService.deleteById(+id);
+  async remove(@Param('id') id: string, @Body() body : {invoiceUrl : string}) {
+    const { invoiceUrl } = body;
+    console.log('DELETE request received for id & url : ', id, invoiceUrl)
+    await this.invoiceService.deleteFileGCS(invoiceUrl);
+    console.log('invoice deleted');
+
+    return this.funeralsService.deleteById(id);
   }
 }

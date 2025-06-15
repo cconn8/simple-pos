@@ -1,13 +1,16 @@
-import { Injectable, NotFoundException} from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException} from '@nestjs/common';
 import { CreateFuneralDto } from './dto/create-funeral.dto';
 import { UpdateFuneralDto } from './dto/update-funeral.dto';
 import { Funeral } from './schemas/funeral.schema';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel} from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { InvoiceService } from 'src/invoice/invoice.service';
 
 @Injectable()
 export class FuneralsService {
-  constructor(@InjectModel(Funeral.name) private funeralModel: Model<Funeral>) {}
+  constructor(
+    @InjectModel(Funeral.name) private funeralModel: Model<Funeral>,
+  ) {}
 
 
   async create(data: CreateFuneralDto) : Promise<Funeral> {
@@ -23,7 +26,7 @@ export class FuneralsService {
       .exec();
 
     if (!funerals || funerals.length === 0) {
-      throw new NotFoundException(`No funerals found!`);
+      throw new NotFoundException(`No funerals found! Tasetfully returning 404!`);
     }
 
     return funerals;
@@ -41,7 +44,8 @@ export class FuneralsService {
     return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
   }
 
-  async deleteById(id: number) {
-    return this.funeralModel.findByIdAndDelete(id);
+  async deleteById(id: string) {
+    const deleted = this.funeralModel.findByIdAndDelete(id);
+    return deleted;
   }
 }

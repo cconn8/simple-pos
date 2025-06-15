@@ -12,11 +12,10 @@ export default function InventoryDashboard() {
     const [inventoryData, setInventoryData] = useState([]);
 
     const router = useRouter();
-    // const apiUrl = process.env.API_URL;
-
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const fetchData = async () => {
         try {
-            const res = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory`);
+            const res = await fetch(`${API_URL}/inventory`);
             const data = await res.json();
 
             console.log('use effect and fetch called');
@@ -47,7 +46,7 @@ export default function InventoryDashboard() {
     const deleteItem = async(id) => {
         console.log('Deleting item with id : ', id);
         try {
-            const response = await fetch(`https://simple-pos-nest-backend-q4npngatjq-nw.a.run.app/inventory/${id}`, {
+            const response = await fetch(`${API_URL}/inventory/${id}`, {
                 method: "DELETE",
                 headers: {
                     'Content-Type' : 'application/json',
