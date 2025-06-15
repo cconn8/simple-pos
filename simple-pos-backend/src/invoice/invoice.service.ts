@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Storage } from '@google-cloud/storage';
+import { DeleteFileResponse, Storage } from '@google-cloud/storage';
 import { FuneralsService } from 'src/funerals/funerals.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
@@ -24,11 +24,9 @@ export class InvoiceService {
 
     async onModuleInit() {
         const client = await this.googleAuthService.getClient();
-        console.log('Auth Client is: ', client);
 
         // Verify token is fresh
         const token = await client.getAccessToken();
-        console.log('Current Access Token:', token);
         this.storage = new Storage({authClient: client});
     }
 
@@ -127,6 +125,33 @@ export class InvoiceService {
     });
 
     return `https://storage.googleapis.com/${this.bucketName}/${fileName}`;
+  }
+
+  async deleteFileGCS(invoiceUrl : string) : Promise<DeleteFileResponse> {
+    console.log('Deleting invoice from GCS..')
+
+    const parts = invoiceUrl.split('/');
+    const bucketName = parts[parts.length - 3];
+    const filename = parts[parts.length - 2] + '/' + parts[parts.length -1];
+
+    if (parts.length < 2) {
+        throw new Error('Invalid invoice URL format');
+    };
+
+    console.log('Splitting URL - Bucket & File : ', bucketName, filename);
+
+    const myBucket  = this.storage.bucket(bucketName);
+
+    try {
+        const file = myBucket.file(filename);
+        const deleted = await file.delete();
+        return deleted;
+
+    } catch(error){
+        console.log('no file exists in GCP :', error);
+        return;
+    }
+
   }
 
 }

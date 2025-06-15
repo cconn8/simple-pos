@@ -1,13 +1,20 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { FuneralsService } from './funerals.service';
 import { FuneralsController } from './funerals.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Funeral, FuneralSchema } from './schemas/funeral.schema';
+import { InvoiceModule } from 'src/invoice/invoice.module';
+import { InvoiceService } from 'src/invoice/invoice.service';
+import { GoogleModule } from 'src/google/google.module';
 
 @Module({
-  imports : [MongooseModule.forFeature([{name : Funeral.name, schema: FuneralSchema}])],
+  imports : [
+        MongooseModule.forFeature([{name : Funeral.name, schema: FuneralSchema}]),
+        GoogleModule,
+        forwardRef(() => InvoiceModule)
+      ],
   controllers: [FuneralsController],
-  providers: [FuneralsService],
+  providers: [FuneralsService, InvoiceService],
   exports: [FuneralsService]
 })
 export class FuneralsModule {}

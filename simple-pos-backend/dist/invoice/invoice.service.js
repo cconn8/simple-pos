@@ -16,19 +16,21 @@ const storage_1 = require("@google-cloud/storage");
 const funerals_service_1 = require("../funerals/funerals.service");
 const uuid_1 = require("uuid");
 const path = require("path");
-const puppeteer = require("puppeteer");
+const puppeteer_1 = require("puppeteer");
 const fs = require("fs");
 const handlebars_1 = require("handlebars");
+const google_auth_service_1 = require("../google/google-auth.service");
 let InvoiceService = class InvoiceService {
-    constructor(configService, funeralsService) {
+    constructor(configService, funeralsService, googleAuthService) {
         this.configService = configService;
         this.funeralsService = funeralsService;
+        this.googleAuthService = googleAuthService;
         this.bucketName = 'invoice-app-storage';
-        const keyPath = this.configService.get('GOOGLE_APPLICATION_CREDENTIALS');
-        if (!keyPath) {
-            throw new Error('Missing GOOGLE_APPLICATION_CREDENTIALS path in env config');
-        }
-        this.storage = new storage_1.Storage({ keyFilename: keyPath });
+    }
+    async onModuleInit() {
+        const client = await this.googleAuthService.getClient();
+        const token = await client.getAccessToken();
+        this.storage = new storage_1.Storage({ authClient: client });
     }
     async generateInvoice(funeralId, data) {
         console.log('invoice service here - generating invoice');
@@ -45,7 +47,7 @@ let InvoiceService = class InvoiceService {
     async generatePDF(data) {
         console.log('generating PDF...');
         const { selectedItems } = data;
-        let serviceCharge = selectedItems.find((item) => item.name == 'Service Charge' || item.name == 'Funeral Administration & Bookings');
+        let serviceCharge = selectedItems.find((item) => item.type == 'Service fees');
         const services = selectedItems.filter((item) => item.category == 'service' && item._id != serviceCharge._id);
         const products = selectedItems.filter((item) => item.category == 'product');
         const disbursements = selectedItems.filter((item) => item.category == 'disbursement');
@@ -69,16 +71,26 @@ let InvoiceService = class InvoiceService {
             serviceCharge,
             fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         };
-        const templatePath = path.join(process.cwd(), 'src/invoice/templates', 'invoice.template4.hbs');
+        const templatePath = path.join(process.cwd(), 'templates', 'invoice.template4.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars_1.default.compile(source);
         const html = template(templateData);
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.setContent(html);
-        const pdf = await page.pdf({ format: 'A4' });
-        await browser.close();
-        return Buffer.from(pdf);
+        try {
+            console.log('Checking Chromium at:', process.env.PUPPETEER_EXECUTABLE_PATH);
+            const browser = await puppeteer_1.default.launch({
+                headless: true,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            const page = await browser.newPage();
+            await page.setContent(html, { waitUntil: 'networkidle0' });
+            const pdf = await page.pdf({ format: 'a4' });
+            await browser.close();
+            return Buffer.from(pdf);
+        }
+        catch (error) {
+            console.error('Puppeteer launch failed:', error);
+            throw new Error(`PDF generation failed: ${error.message}`);
+        }
     }
     async uploadToGCS(buffer, deceasedName) {
         console.log('uploading to gcs...');
@@ -92,10 +104,33 @@ let InvoiceService = class InvoiceService {
         });
         return `https://storage.googleapis.com/${this.bucketName}/${fileName}`;
     }
+    async deleteFileGCS(invoiceUrl) {
+        console.log('Deleting invoice from GCS..');
+        const parts = invoiceUrl.split('/');
+        const bucketName = parts[parts.length - 3];
+        const filename = parts[parts.length - 2] + '/' + parts[parts.length - 1];
+        if (parts.length < 2) {
+            throw new Error('Invalid invoice URL format');
+        }
+        ;
+        console.log('Splitting URL - Bucket & File : ', bucketName, filename);
+        const myBucket = this.storage.bucket(bucketName);
+        try {
+            const file = myBucket.file(filename);
+            const deleted = await file.delete();
+            return deleted;
+        }
+        catch (error) {
+            console.log('no file exists in GCP :', error);
+            return;
+        }
+    }
 };
 exports.InvoiceService = InvoiceService;
 exports.InvoiceService = InvoiceService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [config_1.ConfigService, funerals_service_1.FuneralsService])
+    __metadata("design:paramtypes", [config_1.ConfigService,
+        funerals_service_1.FuneralsService,
+        google_auth_service_1.GoogleAuthService])
 ], InvoiceService);
 //# sourceMappingURL=invoice.service.js.map

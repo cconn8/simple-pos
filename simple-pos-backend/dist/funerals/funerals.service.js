@@ -32,7 +32,7 @@ let FuneralsService = class FuneralsService {
             .sort({ createdAt: -1 })
             .exec();
         if (!funerals || funerals.length === 0) {
-            throw new common_1.NotFoundException(`No funerals found!`);
+            throw new common_1.NotFoundException(`No funerals found! Tasetfully returning 404!`);
         }
         return funerals;
     }
@@ -48,7 +48,8 @@ let FuneralsService = class FuneralsService {
         return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
     }
     async deleteById(id) {
-        return this.funeralModel.findByIdAndDelete(id);
+        const deleted = this.funeralModel.findByIdAndDelete(id);
+        return deleted;
     }
 };
 exports.FuneralsService = FuneralsService;
