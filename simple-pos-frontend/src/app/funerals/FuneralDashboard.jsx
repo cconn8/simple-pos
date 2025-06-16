@@ -43,7 +43,7 @@ export default function Dashboard() {
                     console.log('Exisitng data contains form data : ', data)
                     setExistingFuneralData(data) ;
                 } else {
-                console.error('Funerals Array empty', data);
+                console.error('Funerals Array empty : ', data);
                 setExistingFuneralData([]); // or handle accordingly
             }
         } catch (err) {
@@ -115,46 +115,47 @@ export default function Dashboard() {
                         </thead>
 
                         <tbody>
-                            {existingFuneralData.formData ?
-                                existingFuneralData.map( (data) => (
-                                <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
-                                    <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
-                                    <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
-                                    <td className="px-4 py-2 text-left underline hover:font-bold">
-                                        {invoiceLoading === data._id ? (
-                                            <div id="loadingDiv">loading...</div>
-                                        ) : data.formData.invoice ? (
-                                            <div className="flex flex-row space-between">
-                                                <Link
-                                                    href={data.formData.invoice}
-                                                    rel="noopener noreferrer"
-                                                    target="_blank"
-                                                    className="underline"
-                                                >
-                                                    {data.formData.deceasedName}-invoice
-                                                </Link>
-                                                <RefreshCw
-                                                    className="px-2"
-                                                    size={36}
-                                                    color="black"
-                                                    onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}
-                                                />
-                                            </div>
-                                        ) : (
-                                            <button onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}>
-                                                Generate Invoice
-                                            </button>
-                                        )}
-                                    </td>
-                                    <td className="px-4 py-2 text-left underline hover:font-bold">
-                                        <button onClick={() => handleOpenDrawer(isDrawerVisible, data)}>View / Edit</button>
-                                    </td>
-                                    <td className="px-4 py-2 text-left underline hover:font-bold">
-                                        <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
-                                    </td>
-                                </tr>
-                            )) :
-                            <div>No Funerals!</div>
+                            {existingFuneralData.map( (data) => (
+                                data.formData ?
+                                    <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
+                                        <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
+                                        <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
+                                        <td className="px-4 py-2 text-left underline hover:font-bold">
+                                            {invoiceLoading === data._id ? (
+                                                <div id="loadingDiv">loading...</div>
+                                            ) : data.formData.invoice ? (
+                                                <div className="flex flex-row space-between">
+                                                    <Link
+                                                        href={data.formData.invoice}
+                                                        rel="noopener noreferrer"
+                                                        target="_blank"
+                                                        className="underline"
+                                                    >
+                                                        {data.formData.deceasedName}-invoice
+                                                    </Link>
+                                                    <RefreshCw
+                                                        className="px-2"
+                                                        size={36}
+                                                        color="black"
+                                                        onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}>
+                                                    Generate Invoice
+                                                </button>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-2 text-left underline hover:font-bold">
+                                            <button onClick={() => handleOpenDrawer(isDrawerVisible, data)}>View / Edit</button>
+                                        </td>
+                                        <td className="px-4 py-2 text-left underline hover:font-bold">
+                                            <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
+                                        </td>
+                                    </tr>
+                                
+                                : <div className="text-center">No Funerals!</div>
+                                ))
                             }
                         </tbody>
                     </table>
