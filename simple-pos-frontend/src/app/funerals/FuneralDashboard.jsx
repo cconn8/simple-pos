@@ -115,8 +115,9 @@ export default function Dashboard() {
                         </thead>
 
                         <tbody>
-                            {existingFuneralData.map( (data) => (
-                                data.formData ?
+                            {existingFuneralData.length > 0 ?
+                                existingFuneralData.map( (data) => (
+                                data.formData &&
                                     <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
                                         <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
                                         <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
@@ -153,10 +154,9 @@ export default function Dashboard() {
                                             <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
                                         </td>
                                     </tr>
-                                
-                                : <div className="text-center">No Funerals!</div>
-                                ))
-                            }
+                                )) : 
+                                <div className="text-center">No Funerals!</div>
+                            } 
                         </tbody>
                     </table>
                 </div>
