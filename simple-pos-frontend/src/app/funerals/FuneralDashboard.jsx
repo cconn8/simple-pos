@@ -114,7 +114,7 @@ export default function Dashboard() {
                         </thead>
 
                         <tbody>
-                            {existingFuneralData.formData ?
+                            {existingFuneralData.length > 1 ?
                                 existingFuneralData.map( (data) => (
                                 <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
                                     <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
