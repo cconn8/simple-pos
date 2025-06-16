@@ -142,7 +142,7 @@ export default function Dashboard() {
                                                     />
                                                 </div>
                                             ) : (
-                                                <button className="bg-gray-450 text-white hover:bg-gray-600 p-2 rounded-md" onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}>
+                                                <button className="bg-gray-500 text-white hover:bg-gray-600 p-2 rounded-md" onClick={() => handleGenerateInvoice(data._id, data.formData.deceasedName)}>
                                                     Generate Invoice
                                                 </button>
                                             )}
