@@ -39,9 +39,9 @@ export default function Dashboard() {
 
             console.log('use effect and fetch called');
 
-            if (Array.isArray(data)) {
-                setExistingFuneralData(data);
-            } else {
+            if (Array.isArray(data) && data.formData) {
+                    setExistingFuneralData(data) ;
+                } else {
                 console.error('Funerals Array empty', data);
                 setExistingFuneralData([]); // or handle accordingly
             }
@@ -114,7 +114,8 @@ export default function Dashboard() {
                         </thead>
 
                         <tbody>
-                            {existingFuneralData.map( (data) => (
+                            {existingFuneralData.length > 0 ?
+                                existingFuneralData.map( (data) => (
                                 <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
                                     <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
                                     <td className="px-4 py-2 text-left">{data.formData.dateOfDeath}</td>
@@ -151,7 +152,8 @@ export default function Dashboard() {
                                         <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
                                     </td>
                                 </tr>
-                            ))
+                            )) :
+                            <div>No Funerals!</div>
                             }
                         </tbody>
                     </table>
