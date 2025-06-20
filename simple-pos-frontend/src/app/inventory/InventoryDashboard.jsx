@@ -8,7 +8,7 @@ import { CreateInventoryModal } from "./CreateInventoryModal";
 
 export default function InventoryDashboard() {
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
     const [inventoryData, setInventoryData] = useState([]);
 
     const router = useRouter();
@@ -40,7 +40,7 @@ export default function InventoryDashboard() {
     const handleOpenModal= (e) => {
         console.log('Open Modal Handle clicked!');
         e.preventDefault();
-        setIsModalVisible(!isModalVisible);
+        setIsCreateInventoryModalVisible(!isCreateInventoryModalVisible);
     };
 
     const deleteItem = async(id) => {
@@ -64,7 +64,7 @@ export default function InventoryDashboard() {
 
         await fetchData();
         // setIsDrawerVisible(false);
-        setIsModalVisible(false);
+        setIsCreateInventoryModalVisible(false);
     }
            
     return(
@@ -124,8 +124,8 @@ export default function InventoryDashboard() {
 
             {/* CreateFuneralModal */}
             <CreateInventoryModal 
-                isModalVisible={isModalVisible}
-                setIsModalVisible={setIsModalVisible}
+                isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
                 fetchData={fetchData}
             />
 

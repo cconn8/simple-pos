@@ -2,6 +2,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import fetchData from './FuneralDashboard'
+import { useState } from 'react';
+import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
 
 
 
@@ -62,11 +64,15 @@ const inventory = {
 }
 
 
-export function CreateFuneralModal({formData, setFormData, isModalVisible, setIsModalVisible, fetchData}) {
+export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalVisible, setIsCreateFuneralModalVisible, fetchData, isCreateInventoryModalVisible, setIsCreateInventoryModalVisible}) {
 
 
     // Insert Fetch Inventory method here to replace hardcoded data
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+    // state
+    const [selectedItemCategory, setSelectedItemCategory] = useState('');
+    const [selectedItemType, setSelectedItemType] = useState('');
 
     const sortedCategories = inventory.categories.sort((a,b) => a.displayOrder - b.displayOrder); // Arrange the product / service categories by displayOrder
 
@@ -121,7 +127,7 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
 
         // refresh the table with a fetch, and close the modal
         await fetchData();
-        setIsModalVisible(!isModalVisible);
+        setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
     };
 
     const handleDeleteSelectedItem = (id) => {
@@ -143,12 +149,20 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
         });
     };
 
+    const handleAddItemButtonClick = (category, type) => {
+        // open the create inventory modal
+        console.log('Handle Add Item clicked with category and type :', category, type)
+        setIsCreateInventoryModalVisible(true);  
+        setSelectedItemCategory(category);
+        setSelectedItemType(type);   
+    }
+
     return (
 
-        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isModalVisible ? 'visible' : 'hidden'}`} >
+        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isCreateFuneralModalVisible ? 'visible' : 'hidden'}`} >
             <div id="modalTopSection" className="flex flex-row justify-between py-5">
                 <h2>Create Funeral</h2>                  
-                <button className="hover:font-bold" onClick={(e) => {setIsModalVisible(false)}}>X</button>
+                <button className="hover:font-bold" onClick={(e) => {setIsCreateFuneralModalVisible(false)}}>X</button>
             </div>
 
             <div id="modalContent" className="flex flex-row overflow-auto">
@@ -181,13 +195,14 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
                             
                             {sortedCategories.map( (category) => (
                                 <section key={category.name} className="border-b border-white p-2">
+                                    {console.log('Section Category & Type : ', category.name, category.type)}
 
                                     {/* List each product / service group items */}
                                     {category.name === 'product' && <DisplayGroupTiles groupedItemsByType={groupedProductsByType} formData={formData} setFormData={setFormData}/>}       
                                     {category.name === 'service' && <DisplayGroupTiles groupedItemsByType={groupedServicesByType} formData={formData} setFormData={setFormData} />}
                                     {category.name === 'disbursement' && <DisplayGroupTiles groupedItemsByType={groupedDisbursementsByType} formData={formData} setFormData={setFormData} />}
 
-                                    <button className="bg-red-500 text-white p-3 rounded hover:bg-blue-600 m-1">+ Add Item</button>
+                                    <button type="button" className="p-3 rounded hover:bg-blue-600 m-1" onClick={() => handleAddItemButtonClick(category.name, category.type)}>+ Add Item</button>
 
                                 </section>
                             ))}
@@ -265,6 +280,15 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
                     </div>
                 </aside>
             </div>
+
+            <CreateInventoryModal
+                isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                fetchData={fetchData}
+                category={selectedItemCategory}
+                type={selectedItemType}
+            />
+
         </div>
     )
 }
