@@ -1,7 +1,7 @@
 
 
 
-export function RowItem({itemData, onChange, handleRemoveItem}) {
+export function RowItem({itemData, onChange, handleRemoveItem, defaultCategory, defaultType}) {
 
 
 
@@ -9,7 +9,7 @@ export function RowItem({itemData, onChange, handleRemoveItem}) {
         <div id="itemDiv" className="flex-row justify-between py-5 mx-2 border rounded-sm m-1">
             <input onChange={(e) => onChange('name', e.target.value) } id="itemName" type="text" name="name" value={itemData.name} placeholder="Item Name" className="bg-white rounded-sm p-2 mx-2" required/>
             
-            <select onChange={(e) => onChange('category', e.target.value)} id="inventoryCategory"  type="dropdown" name="category" placeholder="Date"  className="bg-white rounded-sm p-2 mx-2" required>
+            <select onChange={(e) => onChange('category', e.target.value)} id="inventoryCategory"  type="dropdown" name="category" placeholder="Date"  className="bg-white rounded-sm p-2 mx-2"  defaultValue={defaultCategory} required>
                 <option name="Inventory Category" value="">Inventory Category</option>
                 <option name="product" value="Product">Product</option>
                 <option name="service" value="Service">Service</option>
