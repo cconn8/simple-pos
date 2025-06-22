@@ -108,6 +108,15 @@ export function CreateFuneralModal({
         return acc;
     }, {});
 
+    if(temporaryAddedItem.length > 0) {
+        console.log('adding temporary item to groupedByCategory object - before = ', groupedItemsByCategory)
+        temporaryAddedItem.map((item) => {
+            if(!groupedItemsByCategory[item.category.toLowerCase()]) groupedItemsByCategory[item.category.toLowerCase()] = [];
+            groupedItemsByCategory[item.category.toLowerCase()].push(item);
+        })
+        console.log('after = ', groupedItemsByCategory)
+    }
+
     const handleChange = (e) => {
         e.preventDefault();
         const {name, value} = e.target;
