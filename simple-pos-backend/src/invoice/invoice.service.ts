@@ -53,7 +53,7 @@ export class InvoiceService {
         
         const { selectedItems } = data;
 
-        let serviceCharge = selectedItems.find((item) => item.type == 'Service fees');
+        let serviceCharge = selectedItems.find((item) => item.type.toLowerCase().includes('service fee'));
         
         const services = selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
         const products = selectedItems.filter((item) => item.category == 'product')
