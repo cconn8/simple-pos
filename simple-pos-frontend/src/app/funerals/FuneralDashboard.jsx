@@ -10,6 +10,7 @@ import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
 import { EditInvoiceModal } from "./EditInvoiceModal";
 import DeleteModal from "../components/DeleteModal";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Dashboard() {
 
@@ -26,11 +27,14 @@ export default function Dashboard() {
     const [currentDeceasedName, setCurrentDeceasedName] = useState('');
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
-
+    const [rowItems, setRowItems] = useState([
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+    ]);
 
     const router = useRouter();
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;    
-    // console.log('API is : ', API_URL);
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;   
+    
+    console.log('Initial row items state is : ', rowItems);
 
     const fetchData = async () => {
         try {
@@ -181,7 +185,8 @@ export default function Dashboard() {
                 fetchData={fetchData}
                 isCreateInventoryModalVisible={isCreateInventoryModalVisible}
                 setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
-
+                rowItems={rowItems}
+                setRowItems={setRowItems}
             />
 
 

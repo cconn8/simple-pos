@@ -1,7 +1,9 @@
 
 
 
-export function RowItem({itemData, onChange, handleRemoveItem, defaultCategory, defaultType}) {
+export function RowItem({itemData, onChange, handleRemoveItem}) {
+
+    console.log('Row Item invoked with data, category, type : ', itemData);
 
 
 
@@ -9,14 +11,14 @@ export function RowItem({itemData, onChange, handleRemoveItem, defaultCategory, 
         <div id="itemDiv" className="flex-row justify-between py-5 mx-2 border rounded-sm m-1">
             <input onChange={(e) => onChange('name', e.target.value) } id="itemName" type="text" name="name" value={itemData.name} placeholder="Item Name" className="bg-white rounded-sm p-2 mx-2" required/>
             
-            <select onChange={(e) => onChange('category', e.target.value)} id="inventoryCategory"  type="dropdown" name="category" placeholder="Date"  className="bg-white rounded-sm p-2 mx-2"  defaultValue={defaultCategory} required>
-                <option name="Inventory Category" value="">Inventory Category</option>
-                <option name="product" value="Product">Product</option>
-                <option name="service" value="Service">Service</option>
-                <option name="disbursement" value="Disbursement">Disbursement</option>
+            <select onChange={(e) => onChange('category', e.target.value)} value={itemData.category} id="inventoryCategory"  type="dropdown" name="category" className="bg-white rounded-sm p-2 mx-2" required>
+                <option value="">Select Category</option>
+                <option value="product">Product</option>
+                <option value="service">Service</option>
+                <option value="disbursement">Disbursement</option>
             </select>
             
-            <input onChange={(e) => onChange('type', e.target.value) } id="itemType"  type="text" name="type"  value={itemData.type} placeholder="Item Type"  className="bg-white rounded-sm p-2 mx-2" required/>
+            <input onChange={(e) => onChange('type', e.target.value)} value={itemData.type} id="itemType"  type="text" name="type"  placeholder="Item Type"  className="bg-white rounded-sm p-2 mx-2" required/>
             
             <input onChange={(e) => onChange('description', e.target.value) } id="itemDescription"  type="text" name="description"  value={itemData.description} placeholder="Description"  className="bg-white rounded-sm p-2 mx-2"/>
             

@@ -1,8 +1,20 @@
 
 // Takes a list of item objects (eg. products) by type (eg. coffin)
 // Displays them as POS tiles in a group on the screen
+import {v4 as uuidv4} from 'uuid';
 
-export function DisplayGroupTiles({groupedItemsByType, formData, setFormData}) {
+export function DisplayGroupTiles({items, formData, setFormData, category, rowItems, setRowItems, setIsCreateInventoryModalVisible}) {
+    // console.log('Display Tiles Called...');
+    // Group by type within this category
+
+    const groupedItemsByType = items.reduce((acc, item) => {
+        if (!acc[item.type]) acc[item.type] = [];
+        acc[item.type].push(item);
+        return acc;
+    }, {});
+
+    // console.log('HELLO grouped by type is  :' , groupedItemsByType);
+
 
     const handleItemClick = (item) => {
         console.log('handleItem clicked! :', item);
@@ -17,21 +29,47 @@ export function DisplayGroupTiles({groupedItemsByType, formData, setFormData}) {
         console.log('updated form data is : ', formData)
     };
 
+    const handleAddItemButtonClick = (category, type) => {
+        // open the create inventory modal
+        // console.log('Handle Add Item clicked with category and type :', category, type);
+        setIsCreateInventoryModalVisible(true); 
+        setRowItems([
+            {
+                _id: uuidv4(), name: '' , 
+                category : category, 
+                type : type, 
+                description : '', 
+                isBillable : '', 
+                price : ''}
+        ]); 
+        console.log('Row items is set to ', rowItems);
+
+    }
+
     return (
-        Object.entries(groupedItemsByType).map( ([type, items]) => (                               
-            <div key={type}>
-                <h3>{type}</h3>
-                {items.map((item) => (
-                    <button  
-                        type="button"
-                        key={item.name + Date.now()}
-                        className="bg-blue-500 text-white p-8 rounded hover:bg-blue-600 m-1"
-                        onClick={() => handleItemClick(item)} 
+        <div>
+            {Object.entries(groupedItemsByType).map(([type, items]) => (
+                <div key={type} className="mt-4">
+                    <h4 className="text-md font-semibold mb-2">{type}</h4>
+
+                    <div className="flex flex-wrap">
+                        {items.map((item) => (
+                        <button
+                            key={item.id}
+                            type="button"
+                            className="bg-blue-500 text-white p-4 rounded hover:bg-blue-600 m-1"
+                            onClick={() => handleItemClick(item)}
                         >
                             {item.name}
-                    </button>
-                ))}
-            </div>
-        )));
+                        </button>
+                        ))}
+                    </div>
 
-}
+                    <button type="button" className="p-3 bg-red-500 text-white rounded hover:bg-red-600 m-1" onClick={() => handleAddItemButtonClick(category, type)}>
+                        + Add Item
+                    </button>
+                </div>
+            ))}
+        </div>
+    );
+};

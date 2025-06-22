@@ -8,8 +8,12 @@ import { CreateInventoryModal } from "./CreateInventoryModal";
 
 export default function InventoryDashboard() {
 
-    const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
     const [inventoryData, setInventoryData] = useState([]);
+    const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
+    const [rowItems, setRowItems] = useState([
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+    ]);
+    
 
     const router = useRouter();
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -126,6 +130,8 @@ export default function InventoryDashboard() {
             <CreateInventoryModal 
                 isCreateInventoryModalVisible={isCreateInventoryModalVisible}
                 setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                rowItems={rowItems}
+                setRowItems={setRowItems}
                 fetchData={fetchData}
             />
 

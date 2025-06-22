@@ -2,22 +2,11 @@ import { useState } from "react"
 import { RowItem } from "./RowItem";
 import { v4 as uuidv4 } from 'uuid';
 
-export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreateInventoryModalVisible, fetchData, category, type}) {
+export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreateInventoryModalVisible, rowItems, setRowItems, fetchData}) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-    if(!category) {category = "";}
-    if(!type) {type = "";}
-
-    console.log('Modal called (CreateInventoryModal) - selecteCategory & Type :', category, type);
-
-    const defaultCategory = category;
-    const defaultType = type;
-
-    const [rowItems, setRowItems] = useState([
-        {_id: uuidv4(), name: '' , category : `${category}`, type : `${type}`, description : '', isBillable : '', price : ''}
-    ]);
-        
+    console.log('createInventoryModal here, isModalVisible is set to : ', isCreateInventoryModalVisible);
     const handleSubmit = async(e) => {
         e.preventDefault();
         console.log('Submit called - checking for empty rows!');
@@ -47,10 +36,12 @@ export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreate
         setIsCreateInventoryModalVisible(!isCreateInventoryModalVisible);
     };
 
-    const handleAddItem = () => {
+    const handleAddRow = () => {
+        const category = rowItems[0].category;
+        const type = rowItems[0].type;
         setRowItems((prev) => [
             ...prev, 
-            {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+            {_id: uuidv4(), name: '' , category: category, type : type, description : '', isBillable : '', price : ''}
         ]); 
     };
 
@@ -91,11 +82,9 @@ export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreate
                                     itemData={item}
                                     onChange={(field, value) => handleItemChange(index, field, value)}
                                     handleRemoveItem={(id) => handleRemoveItem(id)}
-                                    defaultCategory={defaultCategory}
-                                    defaultType={defaultType}
                                 />
                             ))}
-                            <button type="button" className="bg-blue-300 text-white p-1 rounded hover:bg-blue-500 m-1" onClick={handleAddItem}>+ Add Item</button>
+                            <button type="button" className="bg-blue-300 text-white p-1 rounded hover:bg-blue-500 m-1" onClick={handleAddRow}>+ Add Row</button>
                         </div>
                         <button type="button" className="bg-red-400 text-white p-1 rounded hover:bg-red-500 m-1" onClick={handleDiscard}>Discard</button>
                         <button type="submit" className="bg-gray-400 text-white p-1 rounded hover:bg-green-500 m-1" onClick={() => handleSubmit}>Save All</button>
