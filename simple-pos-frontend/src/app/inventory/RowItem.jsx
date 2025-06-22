@@ -3,9 +3,7 @@
 
 export function RowItem({itemData, onChange, handleRemoveItem}) {
 
-    console.log('Row Item invoked with data, category, type : ', itemData);
-
-
+    // console.log('Row Item invoked with data, category, type : ', itemData);
 
     return (
         <div id="itemDiv" className="flex-row justify-between py-5 mx-2 border rounded-sm m-1">

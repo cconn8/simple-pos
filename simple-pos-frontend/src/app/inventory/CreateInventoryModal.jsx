@@ -2,7 +2,15 @@ import { useState } from "react"
 import { RowItem } from "./RowItem";
 import { v4 as uuidv4 } from 'uuid';
 
-export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreateInventoryModalVisible, rowItems, setRowItems, fetchData}) {
+export function CreateInventoryModal({
+                                    isCreateInventoryModalVisible, 
+                                    setIsCreateInventoryModalVisible, 
+                                    rowItems, 
+                                    setRowItems, 
+                                    fetchData,
+                                    temporaryAddedItem,
+                                    setTemporaryAddedItem
+                                }) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -10,10 +18,12 @@ export function CreateInventoryModal({isCreateInventoryModalVisible, setIsCreate
     const handleSubmit = async(e) => {
         e.preventDefault();
         console.log('Submit called - checking for empty rows!');
+        console.log('Adding items to state context temporarily')
+        setTemporaryAddedItem((prev) => [...prev, ...rowItems]);
+        
 
         const payload = rowItems;
-
-        console.log('payload is  : ', payload)
+        console.log('payload is  : ', payload);
 
         try {
             const response = await fetch(`${API_URL}/inventory`,{

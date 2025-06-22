@@ -3,15 +3,33 @@
 // Displays them as POS tiles in a group on the screen
 import {v4 as uuidv4} from 'uuid';
 
-export function DisplayGroupTiles({items, formData, setFormData, category, rowItems, setRowItems, setIsCreateInventoryModalVisible}) {
-    // console.log('Display Tiles Called...');
-    // Group by type within this category
+export function DisplayGroupTiles({
+                                    items, 
+                                    formData, 
+                                    setFormData, 
+                                    category, 
+                                    rowItems, 
+                                    setRowItems, 
+                                    isCreateInventoryModalVisible, 
+                                    setIsCreateInventoryModalVisible,
+                                    temporaryAddedItem,
+                                    setTemporaryAddedItem}) {
 
+    // console.log('Display Tiles Called...');
+
+    // Group by type within this category
     const groupedItemsByType = items.reduce((acc, item) => {
         if (!acc[item.type]) acc[item.type] = [];
         acc[item.type].push(item);
         return acc;
     }, {});
+
+    if(temporaryAddedItem.length > 0) {
+        temporaryAddedItem.map((item) => {
+            if(!groupedItemsByType[item.type]) groupedItemsByType[item.type] = [];
+            groupedItemsByType[item.type].push(item);
+        })
+    }
 
     // console.log('HELLO grouped by type is  :' , groupedItemsByType);
 
@@ -26,7 +44,7 @@ export function DisplayGroupTiles({items, formData, setFormData, category, rowIt
                 selectedItems : [...existingItems, item],
             };
         });  
-        console.log('updated form data is : ', formData)
+        // console.log('updated form data is : ', formData)
     };
 
     const handleAddItemButtonClick = (category, type) => {
@@ -42,9 +60,11 @@ export function DisplayGroupTiles({items, formData, setFormData, category, rowIt
                 isBillable : '', 
                 price : ''}
         ]); 
-        console.log('Row items is set to ', rowItems);
+        console.log('handleAddItemsButtonCliciked = items is set to ', rowItems);
 
     }
+
+    console.log('DisplayGroupTile - TemporaryAddedItem is : ', temporaryAddedItem );
 
     return (
         <div>
@@ -53,9 +73,9 @@ export function DisplayGroupTiles({items, formData, setFormData, category, rowIt
                     <h4 className="text-md font-semibold mb-2">{type}</h4>
 
                     <div className="flex flex-wrap">
-                        {items.map((item) => (
+                        {items.map((item, index) => (
                         <button
-                            key={item.id}
+                            key={`${item.name}-${index}`}
                             type="button"
                             className="bg-blue-500 text-white p-4 rounded hover:bg-blue-600 m-1"
                             onClick={() => handleItemClick(item)}
