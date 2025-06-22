@@ -10,12 +10,14 @@ import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
 import { EditInvoiceModal } from "./EditInvoiceModal";
 import DeleteModal from "../components/DeleteModal";
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Dashboard() {
 
     const [existingFuneralData, setExistingFuneralData] = useState(null);
     const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isCreateFuneralModalVisible, setIsCreateFuneralModalVisible] = useState(false);
+    const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
     const [summaryItem, setSummaryItem] = useState(null);
     const [formData, setFormData] = useState({});
     const [invoiceLoading, setInvoiceLoading] = useState(null);
@@ -25,22 +27,24 @@ export default function Dashboard() {
     const [currentDeceasedName, setCurrentDeceasedName] = useState('');
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
+    const [temporaryAddedItem, setTemporaryAddedItem] = useState([]);
+    const [rowItems, setRowItems] = useState([
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+    ]);
 
-
+    // console.log('Temp added item initiated to - ', temporaryAddedItem);
+    
     const router = useRouter();
-    const API_URL = process.env.NEXT_PUBLIC_API_URL;    
-    console.log('API is : ', API_URL);
-
+    const API_URL = process.env.NEXT_PUBLIC_API_URL;   
+    
     const fetchData = async () => {
         try {
             const res = await fetch(`${API_URL}/funerals`);
-            console.log(`fetching from ${API_URL}/funerals`);
+            console.log(`fetchData() fetching from ${API_URL}/funerals`);
             const data = await res.json();
 
-            console.log('use effect and fetch called');
-
             if (Array.isArray(data)) {
-                    console.log('Exisitng data contains form data : ', data)
+                    // console.log('Exisitng data contains form data : ', data)
                     setExistingFuneralData(data) ;
                 } else {
                 console.error('Funerals Array empty : ', data);
@@ -71,10 +75,10 @@ export default function Dashboard() {
         console.log('calling edit invoice modal... data passed is :', funeralId, deceasedName)
         setIsEditInvoiceModalVisible(true);
     }
-    const handleOpenModal= (e) => {
+    const handleOpenFuneralModal= (e) => {
         console.log('Open Modal Handle clicked!');
         e.preventDefault();
-        setIsModalVisible(!isModalVisible);
+        setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
     };
     
     const handleOpenDeleteFuneralModal = (funeralId, deceasedName, invoiceUrl) => {
@@ -100,7 +104,7 @@ export default function Dashboard() {
                         <h2>Funerals</h2>
                     </div>
                     
-                    <button className="m-2 p-2 bold bg-gray-200 rounded-md hover:bg-gray-300" onClick={(e) => {handleOpenModal(e)}}>+ Create</button>
+                    <button className="m-2 p-2 bold bg-gray-200 rounded-md hover:bg-gray-300" onClick={(e) => {handleOpenFuneralModal(e)}}>+ Create</button>
                 </div>
 
                  {/* Table Section */}
@@ -155,7 +159,10 @@ export default function Dashboard() {
                                         </td>
                                     </tr>
                                 )) : 
-                                <div className="text-center">No Funerals!</div>
+                                <tr>
+                                    <td><div className="text-center">No Funerals!</div></td>
+                                    
+                                </tr>
                             } 
                         </tbody>
                     </table>
@@ -174,9 +181,15 @@ export default function Dashboard() {
             <CreateFuneralModal 
                 formData={formData}
                 setFormData={setFormData}
-                isModalVisible={isModalVisible}
-                setIsModalVisible={setIsModalVisible}
+                isCreateFuneralModalVisible={isCreateFuneralModalVisible}
+                setIsCreateFuneralModalVisible={setIsCreateFuneralModalVisible}
                 fetchData={fetchData}
+                isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                rowItems={rowItems}
+                setRowItems={setRowItems}
+                temporaryAddedItem={temporaryAddedItem}
+                setTemporaryAddedItem={setTemporaryAddedItem}
             />
 
 
@@ -191,7 +204,6 @@ export default function Dashboard() {
                 deceasedName={currentDeceasedName}
                 fetchData={fetchData}
                 setIsDrawerVisible={setIsDrawerVisible}
-                setIsModalVisible={setIsModalVisible}
             />
 
             <DeleteModal

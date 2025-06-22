@@ -2,17 +2,11 @@
 import { v4 as uuidv4 } from 'uuid';
 import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import fetchData from './FuneralDashboard'
+import { useState } from 'react';
+import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
+import { useEffect } from 'react';
 
-
-
-const inventory = {
-    id : uuidv4(),
-    categories : [
-        {name: 'product', displayText: 'Selection of Funeral Items', displayOrder : 1},
-        {name: 'service', displayText: 'Our Services', displayOrder: 0},
-        {name: 'disbursement', displayText: 'External Payments on the clients behalf', displayOrder: 2}
-    ],
-    products : [
+const tempInventory = [
         {id : uuidv4(),name : "The Connacht Lightwood",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with high light gloss finish, fitted with golden ring mountings"},
         {id : uuidv4(),name : "The Connacht Chestnut",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with chestnut finish, fitted with oscar mountings"},
         {id : uuidv4(),name : "The Connacht Mahogany",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with a rich mahogany finish, fitted with golden ring mountings"},
@@ -25,16 +19,7 @@ const inventory = {
         {id : uuidv4(),name : "Our Lady of Lourdes",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Semi solid oak coffin with high gloss finish, our lady of lourdes figures, fitted with twisted brass mountings"},
         {id : uuidv4(),name : "The Last Supper",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Semi solid oak coffin with high gloss finish, the last supper figures, fitted with twisted brass mountings"},
         {id : uuidv4(),name : "Connemara Oak",  category : 'product',   type: 'Coffin', price : 1950,    currency : "€", description : "Beautifully profiled solid oak coffin, with clear high gloss finish and fitted with antique mountings"},
-        {id : uuidv4(),name : "Connemara Oak Antique",  category : 'product',   type: 'Coffin', price : 1950,    currency : "€", description : "Beautifully profiled solid oak coffin, with clear high gloss finish and fitted with golden barrel mountings"}],
-    
-        services : [
-        {id : uuidv4(),name : "Service Charge €2200",      category : 'service',   type: 'Service fees', price : 2200,    currency : "€", description : "Coordination of paperwork, venue bookings, and logistical arrangements."},
-        {id : uuidv4(),name : "Service Charge €2500",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
-        {id : uuidv4(),name : "Service Charge €2700",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
-        {id : uuidv4(),name : "Service Charge €3000",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
-
-    ],
-    disbursements : [
+        {id : uuidv4(),name : "Connemara Oak Antique",  category : 'product',   type: 'Coffin', price : 1950,    currency : "€", description : "Beautifully profiled solid oak coffin, with clear high gloss finish and fitted with golden barrel mountings"},
         {id : uuidv4(),name : "Music by Carla Merrigan & Carmel Kelly (Pianist / Vocalist)",          category : 'disbursement' ,  type: 'Music', price : 300,    currency : "€", description : ""},
         {id : uuidv4(),name : "Music by Ailbhe Hession (Pianist / Vocalist)",          category : 'disbursement' ,  type: 'Music', price : 250,    currency : "€", description : ""},
         {id : uuidv4(),name : "Music by Frank Naughton (Vocalist)",          category : 'disbursement' ,  type: 'Music', price : 250,    currency : "€", description : ""},
@@ -57,36 +42,80 @@ const inventory = {
         {id : uuidv4(),name : "Large Print & Frame - Cregal Art",     category : 'disbursement',   type: 'Other', price : 150,    currency : "€", description : ""},
         {id : uuidv4(),name : "Small Print & Frame",     category : 'disbursement',   type: 'Other', price : 25,    currency : "€", description : ""},
         {id : uuidv4(),name : "RIP.ie",     category : 'disbursement',   type: 'Other', price : 128,    currency : "€", description : ""},
-    ]
+        {id : uuidv4(),name : "Service Charge €2200",      category : 'service',   type: 'Service fees', price : 2200,    currency : "€", description : "Coordination of paperwork, venue bookings, and logistical arrangements."},
+        {id : uuidv4(),name : "Service Charge €2500",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
+        {id : uuidv4(),name : "Service Charge €2700",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
+        {id : uuidv4(),name : "Service Charge €3000",     category : 'service',   type: 'Service fees', price : 2500,    currency : "€", description : "A general fee covering staff, facilities, and operational costs during the funeral process."},
+    ];
 
-}
 
-
-export function CreateFuneralModal({formData, setFormData, isModalVisible, setIsModalVisible, fetchData}) {
+export function CreateFuneralModal({
+                                    formData, 
+                                    setFormData, 
+                                    isCreateFuneralModalVisible, 
+                                    setIsCreateFuneralModalVisible, 
+                                    fetchData, 
+                                    isCreateInventoryModalVisible, 
+                                    setIsCreateInventoryModalVisible, 
+                                    rowItems, 
+                                    setRowItems,
+                                    temporaryAddedItem,
+                                    setTemporaryAddedItem
+                                }) {
 
 
     // Insert Fetch Inventory method here to replace hardcoded data
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-    const sortedCategories = inventory.categories.sort((a,b) => a.displayOrder - b.displayOrder); // Arrange the product / service categories by displayOrder
+    // state
+    const [inventoryData, setInventoryData] = useState([]);
 
-    const groupedProductsByType = inventory.products.reduce((acc, product) => {
-        if (!acc[product.type]) acc[product.type] = [];
-        acc[product.type].push(product);
+    const fetchInventory = async() => {
+        console.log(`fetching inventory from ${API_URL}/inventory`);
+        try {
+            const res = await fetch(`${API_URL}/inventory`);
+            const data = await res.json();
+
+            if (Array.isArray(data)) {
+                    console.log('inventory received is : ', data)
+                    setInventoryData(data) ;
+                } else {
+                console.error('Inventory array received is empty : ', data);
+            }
+        } catch (err) {
+            console.error('Error fetching data from inventory:', err);
+        }
+
+    }
+    useEffect( () => {
+            fetchInventory();
+     }, []);
+
+    // Desired category order sets the order of categories presented to the user when creating a funeral
+    const desiredCategoryOrder = [
+        {'name' : 'service', 'displayName' : 'Our Services'}, 
+        {'name' : 'product', 'displayName' : 'Funeral Products'},
+        {'name' : 'disbursement', 'displayName' : 'External Payments on the clients Behalf'}
+    ]
+
+    const groupedItemsByCategory = inventoryData.reduce((acc, item) => {
+        if (!acc[item.category.toLowerCase()]) acc[item.category.toLowerCase()] = [];
+        try{
+            acc[item.category].push(item);
+         } catch {
+            console.log('no items to push to groups yet');
+         }
         return acc;
     }, {});
 
-    const groupedServicesByType = inventory.services.reduce((acc, service) => {
-        if(!acc[service.type]) acc[service.type] = [];
-        acc[service.type].push(service);
-        return acc;
-    }, {});
-
-    const groupedDisbursementsByType = inventory.disbursements.reduce((acc, disbursement) => {
-        if(!acc[disbursement.type]) acc[disbursement.type] = [];
-        acc[disbursement.type].push(disbursement);
-        return acc;
-    }, {});
+    if(temporaryAddedItem.length > 0) {
+        console.log('adding temporary item to groupedByCategory object - before = ', groupedItemsByCategory)
+        temporaryAddedItem.map((item) => {
+            if(!groupedItemsByCategory[item.category.toLowerCase()]) groupedItemsByCategory[item.category.toLowerCase()] = [];
+            groupedItemsByCategory[item.category.toLowerCase()].push(item);
+        })
+        console.log('after = ', groupedItemsByCategory)
+    }
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -121,7 +150,7 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
 
         // refresh the table with a fetch, and close the modal
         await fetchData();
-        setIsModalVisible(!isModalVisible);
+        setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
     };
 
     const handleDeleteSelectedItem = (id) => {
@@ -145,10 +174,10 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
 
     return (
 
-        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-10 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isModalVisible ? 'visible' : 'hidden'}`} >
+        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isCreateFuneralModalVisible ? 'visible' : 'hidden'}`} >
             <div id="modalTopSection" className="flex flex-row justify-between py-5">
                 <h2>Create Funeral</h2>                  
-                <button className="hover:font-bold" onClick={(e) => {setIsModalVisible(false)}}>X</button>
+                <button className="hover:font-bold" onClick={(e) => {setIsCreateFuneralModalVisible(false)}}>X</button>
             </div>
 
             <div id="modalContent" className="flex flex-row overflow-auto">
@@ -177,21 +206,26 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
                         {/* Products & Services */}
                         <div id="productsAndServicesSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             <h2>Billable Items</h2>
-                            
-                            
-                            {sortedCategories.map( (category) => (
+
+                            {desiredCategoryOrder.map((category) => (
                                 <section key={category.name} className="border-b border-white p-2">
+                                    <h3 className="text-lg font-bold">{category.displayName.toUpperCase()}</h3>
+                                    {/* {console.log(`grouped by type for this section ${category.name} is : `, groupedItemsByCategory[category.name])} */}
 
-                                    {/* List each product / service group items */}
-                                    {category.name === 'product' && <DisplayGroupTiles groupedItemsByType={groupedProductsByType} formData={formData} setFormData={setFormData}/>}       
-                                    {category.name === 'service' && <DisplayGroupTiles groupedItemsByType={groupedServicesByType} formData={formData} setFormData={setFormData} />}
-                                    {category.name === 'disbursement' && <DisplayGroupTiles groupedItemsByType={groupedDisbursementsByType} formData={formData} setFormData={setFormData} />}
-
-                                    <button className="bg-red-500 text-white p-3 rounded hover:bg-blue-600 m-1">+ Add Item</button>
-
+                                    <DisplayGroupTiles 
+                                        items={groupedItemsByCategory[category.name] || []} 
+                                        formData={formData} 
+                                        setFormData={setFormData} 
+                                        category={category.name}
+                                        rowItems={rowItems}
+                                        setRowItems={setRowItems}
+                                        isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                                        setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                                        temporaryAddedItem={temporaryAddedItem}
+                                        setTemporaryAddedItem={setTemporaryAddedItem}
+                                    />
                                 </section>
                             ))}
-
                         </div>
                     </form>
 
@@ -265,6 +299,17 @@ export function CreateFuneralModal({formData, setFormData, isModalVisible, setIs
                     </div>
                 </aside>
             </div>
+
+            <CreateInventoryModal
+                isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                rowItems={rowItems}
+                setRowItems={setRowItems}
+                fetchData={fetchData}
+                temporaryAddedItem={temporaryAddedItem}
+                setTemporaryAddedItem={setTemporaryAddedItem}
+            />
+
         </div>
     )
 }
