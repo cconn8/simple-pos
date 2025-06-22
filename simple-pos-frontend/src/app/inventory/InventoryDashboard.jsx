@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
 import { CreateInventoryModal } from "./CreateInventoryModal";
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 export default function InventoryDashboard() {
