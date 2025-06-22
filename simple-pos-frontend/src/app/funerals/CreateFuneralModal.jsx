@@ -4,6 +4,7 @@ import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import fetchData from './FuneralDashboard'
 import { useState } from 'react';
 import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
+import { useEffect } from 'react';
 
 const tempInventory = [
         {id : uuidv4(),name : "The Connacht Lightwood",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with high light gloss finish, fitted with golden ring mountings"},
@@ -48,8 +49,19 @@ const tempInventory = [
     ];
 
 
-
-export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalVisible, setIsCreateFuneralModalVisible, fetchData, isCreateInventoryModalVisible, setIsCreateInventoryModalVisible, rowItems, setRowItems}) {
+export function CreateFuneralModal({
+                                    formData, 
+                                    setFormData, 
+                                    isCreateFuneralModalVisible, 
+                                    setIsCreateFuneralModalVisible, 
+                                    fetchData, 
+                                    isCreateInventoryModalVisible, 
+                                    setIsCreateInventoryModalVisible, 
+                                    rowItems, 
+                                    setRowItems,
+                                    temporaryAddedItem,
+                                    setTemporaryAddedItem
+                                }) {
 
 
     // Insert Fetch Inventory method here to replace hardcoded data
@@ -57,19 +69,6 @@ export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalV
 
     // state
     const [inventoryData, setInventoryData] = useState([]);
-
-    // Desired category order sets the order of categories presented to the user when creating a funeral
-    const desiredCategoryOrder = [
-        {'name' : 'service', 'displayName' : 'Our Services'}, 
-        {'name' : 'product', 'displayName' : 'Funeral Products'},
-        {'name' : 'disbursement', 'displayName' : 'External Payments on the clients Behalf'}
-    ]
-
-    const groupedItemsByCategory = tempInventory.reduce((acc, item) => {
-        if (!acc[item.category]) acc[item.category] = [];
-        acc[item.category].push(item);
-        return acc;
-    }, {});
 
     const fetchInventory = async() => {
         console.log(`fetching inventory from ${API_URL}/inventory`);
@@ -88,6 +87,26 @@ export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalV
         }
 
     }
+    useEffect( () => {
+            fetchInventory();
+     }, []);
+
+    // Desired category order sets the order of categories presented to the user when creating a funeral
+    const desiredCategoryOrder = [
+        {'name' : 'service', 'displayName' : 'Our Services'}, 
+        {'name' : 'product', 'displayName' : 'Funeral Products'},
+        {'name' : 'disbursement', 'displayName' : 'External Payments on the clients Behalf'}
+    ]
+
+    const groupedItemsByCategory = inventoryData.reduce((acc, item) => {
+        if (!acc[item.category.toLowerCase()]) acc[item.category.toLowerCase()] = [];
+        try{
+            acc[item.category].push(item);
+         } catch {
+            console.log('no items to push to groups yet');
+         }
+        return acc;
+    }, {});
 
     const handleChange = (e) => {
         e.preventDefault();
@@ -182,10 +201,10 @@ export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalV
                             {desiredCategoryOrder.map((category) => (
                                 <section key={category.name} className="border-b border-white p-2">
                                     <h3 className="text-lg font-bold">{category.displayName.toUpperCase()}</h3>
-                                    {console.log(`grouped by type for this section ${category.name} is : `, groupedItemsByCategory[category.name])}
+                                    {/* {console.log(`grouped by type for this section ${category.name} is : `, groupedItemsByCategory[category.name])} */}
 
                                     <DisplayGroupTiles 
-                                        items={groupedItemsByCategory[category.name]} 
+                                        items={groupedItemsByCategory[category.name] || []} 
                                         formData={formData} 
                                         setFormData={setFormData} 
                                         category={category.name}
@@ -193,6 +212,8 @@ export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalV
                                         setRowItems={setRowItems}
                                         isCreateInventoryModalVisible={isCreateInventoryModalVisible}
                                         setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                                        temporaryAddedItem={temporaryAddedItem}
+                                        setTemporaryAddedItem={setTemporaryAddedItem}
                                     />
                                 </section>
                             ))}
@@ -276,6 +297,8 @@ export function CreateFuneralModal({formData, setFormData, isCreateFuneralModalV
                 rowItems={rowItems}
                 setRowItems={setRowItems}
                 fetchData={fetchData}
+                temporaryAddedItem={temporaryAddedItem}
+                setTemporaryAddedItem={setTemporaryAddedItem}
             />
 
         </div>

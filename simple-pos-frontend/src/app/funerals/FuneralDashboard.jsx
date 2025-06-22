@@ -27,15 +27,16 @@ export default function Dashboard() {
     const [currentDeceasedName, setCurrentDeceasedName] = useState('');
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
+    const [temporaryAddedItem, setTemporaryAddedItem] = useState([]);
     const [rowItems, setRowItems] = useState([
         {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
     ]);
 
+    // console.log('Temp added item initiated to - ', temporaryAddedItem);
+    
     const router = useRouter();
     const API_URL = process.env.NEXT_PUBLIC_API_URL;   
     
-    console.log('Initial row items state is : ', rowItems);
-
     const fetchData = async () => {
         try {
             const res = await fetch(`${API_URL}/funerals`);
@@ -43,7 +44,7 @@ export default function Dashboard() {
             const data = await res.json();
 
             if (Array.isArray(data)) {
-                    console.log('Exisitng data contains form data : ', data)
+                    // console.log('Exisitng data contains form data : ', data)
                     setExistingFuneralData(data) ;
                 } else {
                 console.error('Funerals Array empty : ', data);
@@ -187,6 +188,8 @@ export default function Dashboard() {
                 setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
                 rowItems={rowItems}
                 setRowItems={setRowItems}
+                temporaryAddedItem={temporaryAddedItem}
+                setTemporaryAddedItem={setTemporaryAddedItem}
             />
 
 
