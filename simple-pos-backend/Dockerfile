@@ -42,10 +42,6 @@ RUN chmod -R o+rx /usr/bin/chromium
 
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD node -e "require('puppeteer-core').launch({args:['--no-sandbox']}).then(b => b.close())"
-
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
