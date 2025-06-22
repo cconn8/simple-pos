@@ -24,16 +24,6 @@ export function DisplayGroupTiles({
         return acc;
     }, {});
 
-    if(temporaryAddedItem.length > 0) {
-        temporaryAddedItem.map((item) => {
-            if(!groupedItemsByType[item.type]) groupedItemsByType[item.type] = [];
-            groupedItemsByType[item.type].push(item);
-        })
-    }
-
-    // console.log('HELLO grouped by type is  :' , groupedItemsByType);
-
-
     const handleItemClick = (item) => {
         console.log('handleItem clicked! :', item);
         setFormData((prev) => {
@@ -53,7 +43,8 @@ export function DisplayGroupTiles({
         setIsCreateInventoryModalVisible(true); 
         setRowItems([
             {
-                _id: uuidv4(), name: '' , 
+                _id: uuidv4(), 
+                name: '' , 
                 category : category, 
                 type : type, 
                 description : '', 
@@ -64,32 +55,37 @@ export function DisplayGroupTiles({
 
     }
 
-    console.log('DisplayGroupTile - TemporaryAddedItem is : ', temporaryAddedItem );
+    // console.log('DisplayGroupTile - TemporaryAddedItem is : ', temporaryAddedItem );
 
     return (
         <div>
-            {Object.entries(groupedItemsByType).map(([type, items]) => (
-                <div key={type} className="mt-4">
-                    <h4 className="text-md font-semibold mb-2">{type}</h4>
+            {Object.entries(groupedItemsByType).length > 0 ?
+                Object.entries(groupedItemsByType).map(([type, items]) => (
+                    <div key={type} className="mt-4">
+                        <h4 className="text-md font-semibold mb-2">{type}</h4>
 
-                    <div className="flex flex-wrap">
-                        {items.map((item, index) => (
-                        <button
-                            key={`${item.name}-${index}`}
-                            type="button"
-                            className="bg-blue-500 text-white p-4 rounded hover:bg-blue-600 m-1"
-                            onClick={() => handleItemClick(item)}
-                        >
-                            {item.name}
+                        <div className="flex flex-wrap">
+                            {items.map((item, index) => (
+                            <button
+                                key={`${item.name}-${index}`}
+                                type="button"
+                                className="bg-blue-500 text-white p-4 rounded hover:bg-blue-600 m-1"
+                                onClick={() => handleItemClick(item)}
+                            >
+                                {item.name}
+                            </button>
+                            ))}
+                        </div>
+
+                        <button type="button" className="p-3 bg-red-500 text-white rounded hover:bg-red-600 m-1" onClick={() => handleAddItemButtonClick(category, type)}>
+                            + Add Item
                         </button>
-                        ))}
                     </div>
-
-                    <button type="button" className="p-3 bg-red-500 text-white rounded hover:bg-red-600 m-1" onClick={() => handleAddItemButtonClick(category, type)}>
-                        + Add Item
+            )) :
+                    <button type="button" className="p-3 bg-red-500 text-white rounded hover:bg-red-600 m-1" onClick={() => handleAddItemButtonClick('', '')}>
+                            + Add Item
                     </button>
-                </div>
-            ))}
+        }
         </div>
     );
 };
