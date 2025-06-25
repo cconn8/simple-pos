@@ -80,7 +80,10 @@ export class InvoiceService {
         console.log('Products and services total = ', productsAndServicesTotal);
         console.log('Subtotal = ', subtotal);
 
-        const {fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
+        const {fromDate, toDate , invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
+        const formattedFromDate = new Date(fromDate).toDateString();
+        const formattedToDate = new Date(toDate).toDateString();
+        console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
 
         const templateData = {
             data,
@@ -91,7 +94,7 @@ export class InvoiceService {
             disbursementsTotal,
             subtotal, 
             serviceCharge,
-            fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
+            formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         }
 
         const templatePath = path.join(process.cwd(), 'templates', 'invoice.template4.hbs');
