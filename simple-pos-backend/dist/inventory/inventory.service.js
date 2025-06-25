@@ -35,7 +35,6 @@ let InventoryService = class InventoryService {
         if (!inventory || inventory.length === 0) {
             throw new common_2.NotFoundException(`No funerals found!`);
         }
-        console.log('inventory found : ', inventory);
         return inventory;
     }
     findOne(id) {

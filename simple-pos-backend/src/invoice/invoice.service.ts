@@ -52,8 +52,14 @@ export class InvoiceService {
         console.log('generating PDF...')
         
         const { selectedItems } = data;
+        console.log('debugging selected items : ', selectedItems);
 
-        let serviceCharge = selectedItems.find((item) => item.type == 'Service fees');
+        let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee'));
+
+        if (!serviceCharge) {
+            throw new Error('Service Charge item not found in selected items.');
+        }
+        console.log('service fee selected is - : ', serviceCharge);
         
         const services = selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
         const products = selectedItems.filter((item) => item.category == 'product')
@@ -64,14 +70,20 @@ export class InvoiceService {
 
         console.log('service charge is :' , serviceCharge.price);
 
-        products.forEach( (product) => {productsAndServicesTotal += product.price}); 
-        services.forEach( (service) => {productsAndServicesTotal += service.price}); 
-        disbursements.forEach( (disbursement) => {disbursementsTotal += disbursement.price})
+        products.forEach( (product) => {productsAndServicesTotal += Number(product.itemTotal || 0)}); 
+        services.forEach( (service) => {productsAndServicesTotal += Number(service.itemTotal || 0)}); 
+        disbursements.forEach( (disbursement) => {disbursementsTotal += Number(disbursement.itemTotal || 0)});
 
         productsAndServicesTotal += serviceCharge.price;
         let subtotal = productsAndServicesTotal + disbursementsTotal;
 
-        const {fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
+        console.log('Products and services total = ', productsAndServicesTotal);
+        console.log('Subtotal = ', subtotal);
+
+        const {fromDate, toDate , invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
+        const formattedFromDate = new Date(fromDate).toDateString();
+        const formattedToDate = new Date(toDate).toDateString();
+        console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
 
         const templateData = {
             data,
@@ -82,7 +94,7 @@ export class InvoiceService {
             disbursementsTotal,
             subtotal, 
             serviceCharge,
-            fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
+            formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         }
 
         const templatePath = path.join(process.cwd(), 'templates', 'invoice.template4.hbs');

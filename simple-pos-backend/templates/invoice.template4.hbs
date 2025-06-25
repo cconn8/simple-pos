@@ -14,20 +14,20 @@
     .clientDetails {margin-top: 0px;}
     .clientDetailsRow { display: flex; flex-direction: column; font-size: small; padding-left: 1rem; padding-top: 1rem; padding-bottom: 0.5rem; justify-content: center;}
     .logoSection {width: 250px; height: 250px;}
-    .topTableMessage {font-style: italic; font-size: small;}
-    .tableHeadingText {font-family: 'Segoe UI'; font-weight: bold; } 
+    .topTableMessage {font-style: italic; font-size: medium;}
+    .tableHeadingText {font-weight: bold; } 
     .tableHeadingRow { padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
     .tableRow { max-width: 150px; padding-left: 1.25rem; padding-right: 1rem; padding-top: 0;}
-    .tableSectionTitle { font-size: medium; font-weight:  bold; font-style: italic; padding-left: 50px; padding-bottom: 10px;}
+    .tableSectionTitle { font-size: 11px; font-weight:  bold; font-style: italic; padding-left: 50px; padding-bottom: 10px;}
     .subtotalRow {display: flex; position: absolute; bottom: 38px; right: 60px; padding: 0.5rem; }
     .tableHeadingText p {margin: 0;}
 
     body { font-family: sans-serif; margin: 2rem;}
     table { width: 95%; border-collapse: collapse; margin: 1rem 0; }
-    th, td { padding: 0.5rem; text-align: left; font-size: small;}
+    th, td { padding: 0.5rem; text-align: left; font-size: 11px;}
     th { font-size: medium; background-color: #f5f5f5; }
     footer {position: fixed; bottom: 0;}
-    ul { display: flex; list-style: none; padding: 0; gap: 0.5rem; font-size: x-small;}
+    ul { display: flex; list-style: none; padding: 0; gap: 0.5rem; font-size: 11px;}
     td p {padding: 0.2rem; margin: 0rem;}
     br p {padding: 0.2rem; margin: 0rem; padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
 
@@ -35,8 +35,8 @@
 </head>
 <body>
   <!-- Header -->
-  <div><p style="font-size: small; font-weight: bold;">Invoice No. {{invoiceNumber}}</p></div>
-  <div><p style="font-size: small; font-weight: bold;">Dates of Services : {{fromDate}} - {{toDate}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Invoice No. : </span>{{invoiceNumber}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Dates of Services : </span>{{formattedFromDate}} - {{formattedToDate}}</p></div>
   <div class="header">
     <div class="clientDetails"> 
       <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
@@ -93,16 +93,19 @@
       {{#each services}}
       <tr>
         <td></td>
-        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
-        <td class="tableRow">€{{price}}</td>
+        <td class="tableRow">
+          <strong>{{displayTitle}}</strong>
+          <p>{{description}}</p>
+        </td>
+        <td class="tableRow">€{{itemTotal}}</td>
       </tr>
       {{/each}}
 
       {{#each products}}
       <tr>
         <td></td>
-        <td class="tableRow"><strong>{{name}}</strong><br>{{description}}</br></td>
-        <td class="tableRow">€{{price}}</td>
+        <td class="tableRow"><strong>{{displayTitle}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">€{{itemTotal}}</td>
       </tr>
       {{/each}}
 
@@ -121,8 +124,8 @@
       {{#each disbursements}}
       <tr>
         <td></td>
-        <td class="tableRow"><strong>{{name}} </strong>{{description}}</td>
-        <td class="tableRow">€{{price}}</td>
+        <td class="tableRow"><strong>{{displayTitle}} </strong>{{description}}</td>
+        <td class="tableRow">€{{itemTotal}}</td>
       </tr>
       {{/each}}
 

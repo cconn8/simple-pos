@@ -21,6 +21,9 @@ export class Inventory {
     @Prop({type: String})
     description : String
 
+    @Prop({type: Number})
+    qty: Number
+
     @Prop({type: String})
     isBillable : String
 
