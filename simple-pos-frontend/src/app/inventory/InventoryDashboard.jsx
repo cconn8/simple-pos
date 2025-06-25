@@ -13,7 +13,7 @@ export default function InventoryDashboard() {
     const [inventoryData, setInventoryData] = useState([]);
     const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
     const [rowItems, setRowItems] = useState([
-        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', qty: 1, isBillable : '', price : ''}
     ]);
     
 

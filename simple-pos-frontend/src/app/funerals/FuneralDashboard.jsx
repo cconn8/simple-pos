@@ -11,6 +11,7 @@ import { RefreshCw } from "@deemlol/next-icons";
 import { EditInvoiceModal } from "./EditInvoiceModal";
 import DeleteModal from "../components/DeleteModal";
 import { v4 as uuidv4 } from 'uuid';
+import { M_PLUS_1 } from "next/font/google";
 
 export default function Dashboard() {
 
@@ -19,8 +20,8 @@ export default function Dashboard() {
     const [isCreateFuneralModalVisible, setIsCreateFuneralModalVisible] = useState(false);
     const [isCreateInventoryModalVisible, setIsCreateInventoryModalVisible] = useState(false);
     const [summaryItem, setSummaryItem] = useState(null);
-    const [formData, setFormData] = useState({});
-    const [invoiceLoading, setInvoiceLoading] = useState(null);
+    const [formData, setFormData] = useState({});  //this is the funeral data that is sent to the server when creating a funeral
+    const [invoiceLoading, setInvoiceLoading] = useState(null); 
     const [isEditInvoiceModalVisible, setIsEditInvoiceModalVisible] = useState(false);
     const [editInvoiceData, setEditInvoiceData] = useState({"misterMisses" : ''});
     const [currentFuneralId, setCurrentFuneralId] = useState('');
@@ -28,8 +29,8 @@ export default function Dashboard() {
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
     const [temporaryAddedItem, setTemporaryAddedItem] = useState([]);
-    const [rowItems, setRowItems] = useState([
-        {_id: uuidv4(), name: '' , category : '', type : '', description : '', isBillable : '', price : ''}
+    const [rowItems, setRowItems] = useState([  //this is the initial row state for adding new items to inventory form
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : ''}
     ]);
 
     // console.log('Temp added item initiated to - ', temporaryAddedItem);
@@ -73,7 +74,7 @@ export default function Dashboard() {
         setCurrentFuneralId(funeralId);
         setCurrentDeceasedName(deceasedName);
         console.log('calling edit invoice modal... data passed is :', funeralId, deceasedName)
-        setIsEditInvoiceModalVisible(true);
+        setIsEditInvoiceModalVisible(true); //make final ammendments dates etc. before submitting invoice
     }
     const handleOpenFuneralModal= (e) => {
         console.log('Open Modal Handle clicked!');
