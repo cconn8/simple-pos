@@ -155,7 +155,7 @@ export function CreateFuneralModal({
 
     const handleDeleteSelectedItem = (id) => {
         setFormData( (prevItems) => {
-            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item.id != id);
+            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item._id != id);
             return {
                 ...prevItems,
                 selectedItems : updatedSelectedItems
