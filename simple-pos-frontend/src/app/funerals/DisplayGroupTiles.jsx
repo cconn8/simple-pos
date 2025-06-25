@@ -38,7 +38,7 @@ export function DisplayGroupTiles({
                 updatedItems[itemIndex] = {
                     ...existingItem,
                     qty : (existingItem.qty || 1) + 1,
-                    displayTitle : `${existingItem.name} x ${existingItem.qty} (€${existingItem.price}/unit)`,
+                    displayTitle : `${existingItem.name} (Qty ${existingItem.qty} x €${existingItem.price}/unit)`,
                     itemTotal : `${existingItem.qty * existingItem.price}`
                 };
                 return {
