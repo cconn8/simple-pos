@@ -35,8 +35,8 @@
 </head>
 <body>
   <!-- Header -->
-  <div><p style="font-size: small; font-weight: bold;">Invoice No. {{invoiceNumber}}</p></div>
-  <div><p style="font-size: small; font-weight: bold;">Dates of Services : {{fromDate}} - {{toDate}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Invoice No. : </span>{{invoiceNumber}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Dates of Services : </span>{{formattedFromDate}} - {{formattedToDate}}</p></div>
   <div class="header">
     <div class="clientDetails"> 
       <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
@@ -93,7 +93,10 @@
       {{#each services}}
       <tr>
         <td></td>
-        <td class="tableRow"><strong>{{displayTitle}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">
+          <strong>{{displayTitle}}</strong>
+          <p>{{description}}</p>
+        </td>
         <td class="tableRow">€{{itemTotal}}</td>
       </tr>
       {{/each}}
