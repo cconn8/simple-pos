@@ -5,6 +5,7 @@ export declare class Inventory {
     category: String;
     type: String;
     description: String;
+    qty: Number;
     isBillable: String;
     price: Number;
 }

@@ -40,8 +40,10 @@ let FuneralsController = class FuneralsController {
     async remove(id, body) {
         const { invoiceUrl } = body;
         console.log('DELETE request received for id & url : ', id, invoiceUrl);
-        await this.invoiceService.deleteFileGCS(invoiceUrl);
-        console.log('invoice deleted');
+        if (invoiceUrl) {
+            await this.invoiceService.deleteFileGCS(invoiceUrl);
+            console.log('invoice deleted');
+        }
         return this.funeralsService.deleteById(id);
     }
 };

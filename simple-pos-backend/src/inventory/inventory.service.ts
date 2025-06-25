@@ -27,7 +27,7 @@ export class InventoryService {
         throw new NotFoundException(`No funerals found!`);
       }
 
-      console.log('inventory found : ', inventory);
+      // console.log('inventory found : ', inventory);
   
       return inventory;
   }

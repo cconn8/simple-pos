@@ -52,8 +52,14 @@ export class InvoiceService {
         console.log('generating PDF...')
         
         const { selectedItems } = data;
+        console.log('debugging selected items : ', selectedItems);
 
-        let serviceCharge = selectedItems.find((item) => item.type.toLowerCase().includes('service fee'));
+        let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee'));
+
+        if (!serviceCharge) {
+            throw new Error('Service Charge item not found in selected items.');
+        }
+        console.log('service fee selected is - : ', serviceCharge);
         
         const services = selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
         const products = selectedItems.filter((item) => item.category == 'product')
@@ -64,12 +70,15 @@ export class InvoiceService {
 
         console.log('service charge is :' , serviceCharge.price);
 
-        products.forEach( (product) => {productsAndServicesTotal += product.price}); 
-        services.forEach( (service) => {productsAndServicesTotal += service.price}); 
-        disbursements.forEach( (disbursement) => {disbursementsTotal += disbursement.price})
+        products.forEach( (product) => {productsAndServicesTotal += Number(product.itemTotal || 0)}); 
+        services.forEach( (service) => {productsAndServicesTotal += Number(service.itemTotal || 0)}); 
+        disbursements.forEach( (disbursement) => {disbursementsTotal += Number(disbursement.itemTotal || 0)});
 
         productsAndServicesTotal += serviceCharge.price;
         let subtotal = productsAndServicesTotal + disbursementsTotal;
+
+        console.log('Products and services total = ', productsAndServicesTotal);
+        console.log('Subtotal = ', subtotal);
 
         const {fromDate, toDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
 
