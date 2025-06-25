@@ -36,6 +36,10 @@ __decorate([
     __metadata("design:type", String)
 ], Inventory.prototype, "description", void 0);
 __decorate([
+    (0, mongoose_1.Prop)({ type: Number }),
+    __metadata("design:type", Number)
+], Inventory.prototype, "qty", void 0);
+__decorate([
     (0, mongoose_1.Prop)({ type: String }),
     __metadata("design:type", String)
 ], Inventory.prototype, "isBillable", void 0);

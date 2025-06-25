@@ -38,9 +38,11 @@ export class FuneralsController {
   async remove(@Param('id') id: string, @Body() body : {invoiceUrl : string}) {
     const { invoiceUrl } = body;
     console.log('DELETE request received for id & url : ', id, invoiceUrl)
-    await this.invoiceService.deleteFileGCS(invoiceUrl);
-    console.log('invoice deleted');
-
+    if(invoiceUrl) {
+      await this.invoiceService.deleteFileGCS(invoiceUrl);
+      console.log('invoice deleted');
+    }
+    
     return this.funeralsService.deleteById(id);
   }
 }
