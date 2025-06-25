@@ -26,16 +26,35 @@ export function DisplayGroupTiles({
 
     const handleItemClick = (item) => {
         console.log('handleItem clicked! :', item);
+        console.log('checking for exisitng clicks...');
+        
         setFormData((prev) => {
             const existingItems = prev.selectedItems || []; //creates an empty 'selectedItems : []' array if not exists
-
-            return {
-                ...prev,
-                selectedItems : [...existingItems, item],
-            };
-        });  
-        // console.log('updated form data is : ', formData)
-    };
+            const itemIndex = existingItems.findIndex((existingItem) => existingItem._id === item._id);
+            
+            if(itemIndex !== -1) { //item is found
+                const updatedItems = [...existingItems];
+                const existingItem = updatedItems[itemIndex];
+                updatedItems[itemIndex] = {
+                    ...existingItem,
+                    qty : (existingItem.qty || 1) + 1,
+                    displayTitle : `${existingItem.name} x ${existingItem.qty} (€${existingItem.price}/unit)`,
+                    itemTotal : `${existingItem.qty * existingItem.price}`
+                };
+                return {
+                        ...prev,
+                        selectedItems: updatedItems,
+                    };
+                } else {
+                    // Item not selected - add with qty 1
+                    return {
+                        ...prev,
+                        selectedItems: [...existingItems, { ...item, qty: 1 , displayTitle : item.name, itemTotal : item.price}],
+                    };
+                };
+        });        
+        console.log('updated form data is : ', formData)
+    }
 
     const handleAddItemButtonClick = (category, type) => {
         // open the create inventory modal
@@ -48,6 +67,7 @@ export function DisplayGroupTiles({
                 category : category, 
                 type : type, 
                 description : '', 
+                qty : 1,
                 isBillable : '', 
                 price : ''}
         ]); 

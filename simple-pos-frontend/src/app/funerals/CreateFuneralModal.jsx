@@ -7,15 +7,15 @@ import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
 import { useEffect } from 'react';
 
 const tempInventory = [
-        {id : uuidv4(),name : "The Connacht Lightwood",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with high light gloss finish, fitted with golden ring mountings"},
-        {id : uuidv4(),name : "The Connacht Chestnut",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with chestnut finish, fitted with oscar mountings"},
-        {id : uuidv4(),name : "The Connacht Mahogany",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with a rich mahogany finish, fitted with golden ring mountings"},
-        {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with a natural matte finish, fitted with timber mountings"},
-        {id : uuidv4(),name : "Whitestrand Oak",    category : 'product',   type: 'Coffin', price : 1350,    currency : "€", description : "Profiled sided semi solid oak coffin with hand wax finish and fitted with continuous solid oak mountings"},
-        {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 1500,    currency : "€", description : "Beautifully woven eco friendly wicker styled coffin with rope interlace and mountings"},
-        {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 2300,    currency : "€", description : "Solid oak, Italian styled coffin with matt rustic finish, fitted with wooden barrel mountings"},
-        {id : uuidv4(),name : "Eyre Mahogany",         category : 'product',   type: 'Coffin', price : 2500,    currency : "€", description : "Italian styled, solid mahogany coffin, with sides profiled in gold inlay beeding and fitted with brass barrel mountings"},
-        {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Beautifully paneled semi solid oak coffin with raised celtic cross and fitted with twisted brass mountings"},
+        // {id : uuidv4(),name : "The Connacht Lightwood",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with high light gloss finish, fitted with golden ring mountings"},
+        // {id : uuidv4(),name : "The Connacht Chestnut",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with chestnut finish, fitted with oscar mountings"},
+        // {id : uuidv4(),name : "The Connacht Mahogany",     category : 'product' ,  type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with a rich mahogany finish, fitted with golden ring mountings"},
+        // {id : uuidv4(),name : "The Galwegian",      category : 'product',   type: 'Coffin', price : 1350,    currency : "€", description : "A discrete Semi-Solid coffin with a natural matte finish, fitted with timber mountings"},
+        // {id : uuidv4(),name : "Whitestrand Oak",    category : 'product',   type: 'Coffin', price : 1350,    currency : "€", description : "Profiled sided semi solid oak coffin with hand wax finish and fitted with continuous solid oak mountings"},
+        // {id : uuidv4(),name : "Wicker Basket",      category : 'product',   type: 'Coffin', price : 1500,    currency : "€", description : "Beautifully woven eco friendly wicker styled coffin with rope interlace and mountings"},
+        // {id : uuidv4(),name : "Rustic Oak",         category : 'product',   type: 'Coffin', price : 2300,    currency : "€", description : "Solid oak, Italian styled coffin with matt rustic finish, fitted with wooden barrel mountings"},
+        // {id : uuidv4(),name : "Eyre Mahogany",         category : 'product',   type: 'Coffin', price : 2500,    currency : "€", description : "Italian styled, solid mahogany coffin, with sides profiled in gold inlay beeding and fitted with brass barrel mountings"},
+        // {id : uuidv4(),name : "The Kilmacduagh",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Beautifully paneled semi solid oak coffin with raised celtic cross and fitted with twisted brass mountings"},
         {id : uuidv4(),name : "Our Lady of Lourdes",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Semi solid oak coffin with high gloss finish, our lady of lourdes figures, fitted with twisted brass mountings"},
         {id : uuidv4(),name : "The Last Supper",    category : 'product',   type: 'Coffin', price : 1750,    currency : "€", description : "Semi solid oak coffin with high gloss finish, the last supper figures, fitted with twisted brass mountings"},
         {id : uuidv4(),name : "Connemara Oak",  category : 'product',   type: 'Coffin', price : 1950,    currency : "€", description : "Beautifully profiled solid oak coffin, with clear high gloss finish and fitted with antique mountings"},
@@ -283,14 +283,24 @@ export function CreateFuneralModal({
                     
                     <div id="modalSidebarSelectedItems" className="my-1 mt-3 flex-col">
                         <h2 className="font-bold">Selected Items</h2>
-                        {formData.selectedItems ? (
-                            formData.selectedItems.map( (item, index) => (
-                                <div key={index} className="flex flex-row bg-white p-1 my-1 justify-between text-sm"> 
-                                    <h2>{item.name} : €{item.price}</h2>
-                                    <button onClick={() => {handleDeleteSelectedItem(item.id)}} className="underline">Delete</button>
-                                </div>
-                            ))) :
-                                <div className="my-2"><h3>No items selected!</h3></div>
+                        {
+                            formData.selectedItems && formData.selectedItems.length > 0 ? 
+                                formData.selectedItems.map( (item, index) => {
+                                    const itemDisplayTitle =
+                                        item.qty > 1
+                                            ? `${item.name} x ${item.qty} (€${item.price}/unit) : €${item.qty * item.price}`
+                                            : `${item.name} : (€${item.price})`;
+
+                                        return (
+                                            <div key={index} className="flex flex-row bg-white p-1 my-1 justify-between text-sm">
+                                                <h3>{itemDisplayTitle}</h3>
+                                                <button onClick={() => handleDeleteSelectedItem(item._id)} className="underline">Delete</button>
+                                            </div>
+                                )}) : (
+                                    <div className="my-2">
+                                        <h3>No items selected!</h3>
+                                    </div>
+                                )
                         }
                     </div>
                     <div id="buttonsDiv" className="flex flex-row justify-around">
