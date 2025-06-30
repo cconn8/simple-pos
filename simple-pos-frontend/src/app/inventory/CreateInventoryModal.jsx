@@ -14,7 +14,7 @@ export function CreateInventoryModal({
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-    console.log('createInventoryModal here, isModalVisible is set to : ', isCreateInventoryModalVisible);
+    // console.log('createInventoryModal here, isModalVisible is set to : ', isCreateInventoryModalVisible);
     const handleSubmit = async(e) => {
         e.preventDefault();
         console.log('Submit called - checking for empty rows!');

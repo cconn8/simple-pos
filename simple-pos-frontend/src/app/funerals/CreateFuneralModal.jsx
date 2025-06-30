@@ -109,6 +109,7 @@ export function CreateFuneralModal({
         // refresh the table with a fetch, and close the modal
         await fetchData();
         setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
+        console.log('Refresh with fetch, formData should be empty : ', formData);
     };
 
     const handleDeleteSelectedItem = (id) => {
@@ -138,7 +139,8 @@ export function CreateFuneralModal({
                 <button className="hover:font-bold" onClick={(e) => {setIsCreateFuneralModalVisible(false)}}>X</button>
             </div>
 
-            <div id="modalContent" className="flex basis-2/3 flex-row overflow-auto">
+            <div id="modalContent" className="flex basis-2/3 flex-row flex-grow overflow-auto">
+                <div id="mainModalContent" className='flex basis-2/3'>
                     <form id="createFuneralForm" className="overflow-scroll" onSubmit={handleSubmit}>
                         {/* Deceased Details */}
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
@@ -164,7 +166,7 @@ export function CreateFuneralModal({
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             <h2>Funeral Notes & Details</h2>
                             <div id="funeralNotesDiv" className="flex-row justify-between py-5 mx-2">
-                                <textarea cols="75" onChange={handleChange} id="clientName" type="textarea" name="clientName" value={formData["notes"] || "" } placeholder="Funeral Notes" className="bg-white rounded-sm p-2 mx-2"/>
+                                <textarea cols="75" onChange={handleChange} id="funeralNotes" type="textarea" name="funeralNotes" value={formData["funeralNotes"] || "" } placeholder="Funeral Notes" className="bg-white rounded-sm p-2 mx-2"/>
                             </div>
                         </div>
 
@@ -193,6 +195,7 @@ export function CreateFuneralModal({
                             ))}
                         </div>
                     </form>
+                </div>
 
                 {/* Modal Mini Sidebar */}
                 <aside id="modalSidebar" className="top-0 sticky flex basis-1/3 flex-col p-2 bg-gray-200 rounded-sm m-1 overflow-auto">
