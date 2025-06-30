@@ -20,7 +20,7 @@ export declare class FuneralsController {
     }> & {
         __v: number;
     }>;
-    update(id: string, updateFuneralDto: UpdateFuneralDto): string;
+    update(id: string, updateFuneralDto: UpdateFuneralDto): Promise<any>;
     remove(id: string, body: {
         invoiceUrl: string;
     }): Promise<import("mongoose").Document<unknown, {}, import("./schemas/funeral.schema").Funeral, {}> & import("./schemas/funeral.schema").Funeral & Required<{

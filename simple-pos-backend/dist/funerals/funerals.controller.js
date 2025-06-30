@@ -35,7 +35,7 @@ let FuneralsController = class FuneralsController {
         return this.funeralsService.findOneById(id);
     }
     update(id, updateFuneralDto) {
-        return 'funeral update controller called';
+        return this.funeralsService.findByIdAndUpdate(id, updateFuneralDto);
     }
     async remove(id, body) {
         const { invoiceUrl } = body;

@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateFuneralDto } from './create-funeral.dto';
+// update-funeral.dto.ts
+import { Type } from 'class-transformer';
+import { IsArray, ValidateNested, IsOptional } from 'class-validator';
+import { SelectedItemDto } from './selected-item.dto';
 
-export class UpdateFuneralDto extends PartialType(CreateFuneralDto) {}
+export class UpdateFuneralDto {
+
+}

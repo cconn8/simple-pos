@@ -45,7 +45,9 @@ let FuneralsService = class FuneralsService {
     }
     async findByIdAndUpdate(id, updateFuneralDto) {
         console.log('funerals service updateFuneralById called');
-        return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
+        const updatedDoc = this.funeralModel.findByIdAndUpdate(id, { $set: { 'formData': updateFuneralDto } }, { new: true });
+        console.log('Updated document is : ', updatedDoc);
+        return updatedDoc;
     }
     async deleteById(id) {
         const deleted = this.funeralModel.findByIdAndDelete(id);
