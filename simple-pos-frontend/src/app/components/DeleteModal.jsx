@@ -1,6 +1,6 @@
 
 
-export default function DeleteModal({isDeleteModalVisible, setIsDeleteModalVisible, currentFuneralId, setCurrentFuneralId, currentDeceasedName, setCurrentDeceasedName, currentInvoiceUrl, setCurrentInvoiceUrl, fetchData}) {
+export default function DeleteModal({isDeleteModalVisible, setIsDeleteModalVisible, currentFuneralId, setCurrentFuneralId, currentDeceasedName, setCurrentDeceasedName, currentInvoiceUrl, setCurrentInvoiceUrl, fetchData, resetState}) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
