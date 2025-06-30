@@ -6,12 +6,12 @@ import { useEffect } from "react";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
 import { SummaryDrawer } from "./SummaryDrawer";
 import { CreateFuneralModal } from "./CreateFuneralModal";
+import { UpdateFuneralModal } from "./UpdateFuneralModal";
 import Link from "next/link";
 import { RefreshCw } from "@deemlol/next-icons";
 import { EditInvoiceModal } from "./EditInvoiceModal";
 import DeleteModal from "../components/DeleteModal";
 import { v4 as uuidv4 } from 'uuid';
-import { M_PLUS_1 } from "next/font/google";
 
 export default function Dashboard() {
 
@@ -32,6 +32,8 @@ export default function Dashboard() {
     const [rowItems, setRowItems] = useState([  //this is the initial row state for adding new items to inventory form
         {_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : ''}
     ]);
+    const [editFuneralData, setEditFuneralData] = useState([]) // this us the temp funeral object for updating a funeral
+    const [isUpdateFuneralModalVisible, setIsUpdateFuneralModalVisible] = useState(false);
 
     // console.log('Temp added item initiated to - ', temporaryAddedItem);
     
@@ -64,9 +66,10 @@ export default function Dashboard() {
     if (!existingFuneralData) return <p>Loading...</p>
 
     const handleOpenDrawer = (isDrawerVisible, data) => {
+        // console.log('Drawer data is : ' , data);
         setIsDrawerVisible(!isDrawerVisible);
         setSummaryItem(data);
-        console.log('Handle Open Drawer clicked and Summary Item is set : ', data);
+        // console.log('Handle Open Drawer clicked and Summary Item is set : ', data);
     };
     const handleGenerateInvoice = async (funeralId, deceasedName) => {
         console.log('generate invoice handle clicked - Edit invoice?')
@@ -77,7 +80,7 @@ export default function Dashboard() {
         setIsEditInvoiceModalVisible(true); //make final ammendments dates etc. before submitting invoice
     }
     const handleOpenFuneralModal= (e) => {
-        console.log('Open Modal Handle clicked!');
+        // console.log('Open Modal Handle clicked!');
         e.preventDefault();
         setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
     };
@@ -88,8 +91,19 @@ export default function Dashboard() {
         setCurrentDeceasedName(deceasedName);
         setCurrentInvoiceUrl(invoiceUrl)
         setIsDeleteModalVisible(true);
-    }
-           
+    };
+
+    const openUpdateFuneralModal = async(funeralData) => {
+        console.log('update funeral clicked, funeral data is : ', funeralData.formData);
+        setCurrentFuneralId(funeralData._id);
+        setFormData(funeralData.formData);
+
+        // Small delay OR modal render conditioned on formData
+        setTimeout(() => {
+        setIsUpdateFuneralModalVisible(true);
+        }, 100);
+    };
+       
     return(
 
         <div id="pageContainer" className="flex flex-row p-5">
@@ -153,7 +167,7 @@ export default function Dashboard() {
                                             )}
                                         </td>
                                         <td className="px-4 py-2 text-left underline hover:font-bold">
-                                            <button onClick={() => handleOpenDrawer(isDrawerVisible, data)}>View / Edit</button>
+                                            <button className="underline" onClick={() => openUpdateFuneralModal(data)}>Edit Details</button>
                                         </td>
                                         <td className="px-4 py-2 text-left underline hover:font-bold">
                                             <button onClick={() => handleOpenDeleteFuneralModal(data._id, data.formData.deceasedName, data.formData.invoice)}>Delete</button>
@@ -175,7 +189,8 @@ export default function Dashboard() {
                 isDrawerVisible={isDrawerVisible}
                 setIsDrawerVisible={setIsDrawerVisible}
                 summaryItem={summaryItem}
-                setSummaryItem={setSummaryItem}
+                setIsUpdateFuneralModalVisible={setIsUpdateFuneralModalVisible}
+                setEditFuneralData={setEditFuneralData}
             />
 
             {/* CreateFuneralModal */}
@@ -218,8 +233,22 @@ export default function Dashboard() {
                 setCurrentInvoiceUrl={setCurrentInvoiceUrl}
                 fetchData={fetchData}
             />
-
-  
+ 
+            <UpdateFuneralModal
+                formData={formData}
+                setFormData={setFormData}
+                isUpdateFuneralModalVisible={isUpdateFuneralModalVisible}
+                setIsUpdateFuneralModalVisible={setIsUpdateFuneralModalVisible}
+                fetchData={fetchData}
+                isCreateInventoryModalVisible={isCreateInventoryModalVisible}
+                setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
+                rowItems={rowItems}
+                setRowItems={setRowItems}
+                temporaryAddedItem={temporaryAddedItem}
+                setTemporaryAddedItem={setTemporaryAddedItem}
+                currentFuneralId={currentFuneralId}
+                setCurrentFuneralId={setCurrentFuneralId}
+            />
         </div>
 
     )
