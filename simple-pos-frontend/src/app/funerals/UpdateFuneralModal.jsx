@@ -7,26 +7,26 @@ import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
 import { useEffect } from 'react';
 
 
-export function CreateFuneralModal({
-                                    formData, 
-                                    setFormData, 
-                                    isCreateFuneralModalVisible, 
-                                    setIsCreateFuneralModalVisible, 
-                                    fetchData, 
-                                    isCreateInventoryModalVisible, 
-                                    setIsCreateInventoryModalVisible, 
-                                    rowItems, 
+export function UpdateFuneralModal({
+                                    formData,
+                                    setFormData,
+                                    isUpdateFuneralModalVisible,
+                                    setIsUpdateFuneralModalVisible,
+                                    fetchData,
+                                    isCreateInventoryModalVisible,
+                                    setIsCreateInventoryModalVisible,
+                                    rowItems,
                                     setRowItems,
                                     temporaryAddedItem,
-                                    setTemporaryAddedItem
+                                    setTemporaryAddedItem,
+                                    currentFuneralId,
+                                    setCurrentFuneralId
                                 }) {
 
-
-    // Insert Fetch Inventory method here to replace hardcoded data
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-    // state
+    const funeralId = currentFuneralId;
     const [inventoryData, setInventoryData] = useState([]);
+
 
     const fetchInventory = async() => {
         console.log(`fetching inventory from ${API_URL}/inventory`);
@@ -45,9 +45,10 @@ export function CreateFuneralModal({
         }
 
     }
+
     useEffect( () => {
             fetchInventory();
-     }, []);
+    }, []);
 
     // Desired category order sets the order of categories presented to the user when creating a funeral
     const desiredCategoryOrder = [
@@ -60,9 +61,9 @@ export function CreateFuneralModal({
         if (!acc[item.category.toLowerCase()]) acc[item.category.toLowerCase()] = [];
         try{
             acc[item.category].push(item);
-         } catch {
+        } catch {
             console.log('no items to push to groups yet');
-         }
+        }
         return acc;
     }, {});
 
@@ -76,22 +77,24 @@ export function CreateFuneralModal({
     }
 
     const handleChange = (e) => {
-        e.preventDefault();
-        const {name, value} = e.target;
-        setFormData( (prev) => ({
+        const { name, value } = e.target;
+        setFormData((prev) => ({
             ...prev,
-            [name] : value
+            [name]: value,
         }));
     };
 
+    //update funeral
     const handleSubmit = async(e) => {
         e.preventDefault();
-        console.log('Submitting form: ', formData)
+        console.log('UPDATE FUNERAL CALLED - funeral id is : ', funeralId);
+        console.log('Edited formData state is : ', formData);
+
         const payload = formData;
 
         try {
-            const response = await fetch(`${API_URL}/funerals`, {
-                method: "POST",
+            const response = await fetch(`${API_URL}/funerals/${funeralId}`, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
                     },
@@ -101,19 +104,20 @@ export function CreateFuneralModal({
             if (!response.ok) { throw new Error(`Server error: ${response.status}`);}
 
             const data = await response.json();
-            console.log("Success Message received on the client side - Lets GO!!!:", data);
+            console.log("Response from server is funeral updated:", data);
         } 
         
         catch (error) { console.error("Error submitting funeral data:", error);}
 
         // refresh the table with a fetch, and close the modal
         await fetchData();
-        setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
+        setIsUpdateFuneralModalVisible(!isUpdateFuneralModalVisible);
     };
 
     const handleDeleteSelectedItem = (id) => {
+        console.log('Update funeral modal handleDeleteSectedItem clicked, existing EditFuneralData is : ', formData);
         setFormData( (prevItems) => {
-            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item.id != id);
+            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item._id != id);
             return {
                 ...prevItems,
                 selectedItems : updatedSelectedItems
@@ -132,21 +136,22 @@ export function CreateFuneralModal({
 
     return (
 
-        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isCreateFuneralModalVisible ? 'visible' : 'hidden'}`} >
+        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isUpdateFuneralModalVisible ? 'visible' : 'hidden'}`} >
             <div id="modalTopSection" className="flex flex-row justify-between py-5">
-                <h2>Create Funeral</h2>                  
-                <button className="hover:font-bold" onClick={(e) => {setIsCreateFuneralModalVisible(false)}}>X</button>
+                <h2>Edit Funeral</h2>                  
+                <button className="hover:font-bold" onClick={(e) => {setIsUpdateFuneralModalVisible(false)}}>X</button>
             </div>
 
-            <div id="modalContent" className="flex basis-2/3 flex-row overflow-auto">
-                    <form id="createFuneralForm" className="overflow-scroll" onSubmit={handleSubmit}>
+            <div id="modalContent" className="flex flex-row overflow-auto">
+                <div id="mainModalContent" className='flex basis-2/3'>
+                    <form id="updateFuneralForm" className="overflow-scroll" onSubmit={handleSubmit}>
                         {/* Deceased Details */}
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             <h2>Deceased Details</h2>
                             <div id="deceasedDetailsDiv" className="flex-row justify-between py-5 mx-2">
-                                <input onChange={handleChange} id="deceasedName" type="text" name="deceasedName" value={formData["deceasedName"]|| "" } placeholder="Deceased Name" className="bg-white rounded-sm p-2 mx-2"/>
-                                <input onChange={handleChange} id="dateOfDeath"  type="date" name="dateOfDeath"  value={formData["dateOfDeath"] || "" } placeholder="Date"  className="bg-white rounded-sm p-2 mx-2"/>
-                                <input onChange={handleChange} id="lastAddress"  type="text" name="lastAddress"  value={formData["lastAddress"] || "" } placeholder="Last Address"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input value={formData?.deceasedName || "" } onChange={handleChange} id="deceasedName" type="text" name="deceasedName"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input value={formData?.dateOfDeath || "" }  onChange={handleChange} id="dateOfDeath"  type="date" name="dateOfDeath"   className="bg-white rounded-sm p-2 mx-2"/>
+                                <input value={formData?.lastAddress || "" }  onChange={handleChange} id="lastAddress"  type="text" name="lastAddress"  className="bg-white rounded-sm p-2 mx-2"/>
                             </div>
                         </div>
 
@@ -154,17 +159,17 @@ export function CreateFuneralModal({
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             <h2>Client Details</h2>
                             <div id="clientDetailsDiv" className="flex-row justify-between py-5 mx-2">
-                                <input onChange={handleChange} id="clientName" type="text" name="clientName" value={formData["clientName"] || "" } placeholder="Client Name" className="bg-white rounded-sm p-2 mx-2"/>
-                                <input onChange={handleChange} id="clientAddress" type="text" name="clientAddress" value={formData["clientAddress"] || "" } placeholder="Client Address"  className="bg-white rounded-sm p-2 mx-2"/>
-                                <input onChange={handleChange} id="clientPhone" type="number" name="clientPhone" value={formData["clientPhone"] || "" } placeholder="Phone"  className="bg-white rounded-sm p-2 mx-2"/>
-                                <input onChange={handleChange} id="clientEmail" type="email" name="clientEmail" value={formData["clientEmail"] || "" } placeholder="Email"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input onChange={handleChange} id="clientName" type="text" name="clientName" value={formData?.clientName || "" } placeholder="Client Name" className="bg-white rounded-sm p-2 mx-2"/>
+                                <input onChange={handleChange} id="clientAddress" type="text" name="clientAddress" value={formData?.clientAddress || "" } placeholder="Client Address"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input onChange={handleChange} id="clientPhone" type="number" name="clientPhone" value={formData?.clientPhone || "" } placeholder="Phone"  className="bg-white rounded-sm p-2 mx-2"/>
+                                <input onChange={handleChange} id="clientEmail" type="email" name="clientEmail" value={formData?.clientEmail || "" } placeholder="Email"  className="bg-white rounded-sm p-2 mx-2"/>
                             </div>
                         </div>
 
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
                             <h2>Funeral Notes & Details</h2>
                             <div id="funeralNotesDiv" className="flex-row justify-between py-5 mx-2">
-                                <textarea cols="75" onChange={handleChange} id="clientName" type="textarea" name="clientName" value={formData["notes"] || "" } placeholder="Funeral Notes" className="bg-white rounded-sm p-2 mx-2"/>
+                                <textarea cols="75" onChange={handleChange} id="funeralNotes" type="textarea" name="funeralNotes" value={formData?.funeralNotes || "" } placeholder="Funeral Notes" className="bg-white rounded-sm p-2 mx-2"/>
                             </div>
                         </div>
 
@@ -193,7 +198,7 @@ export function CreateFuneralModal({
                             ))}
                         </div>
                     </form>
-
+                </div>
                 {/* Modal Mini Sidebar */}
                 <aside id="modalSidebar" className="top-0 sticky flex basis-1/3 flex-col p-2 bg-gray-200 rounded-sm m-1 overflow-auto">
                     <div id="modalSidebarHeading" className="my-1">
@@ -202,53 +207,52 @@ export function CreateFuneralModal({
 
                     <div id="modalSidebarContent">
                         {/* Deceased Detail Summary */}
-                        {formData.deceasedName && 
+                        {formData?.deceasedName && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">Deceased :</span> {formData.deceasedName}</h2>
+                                <h2><span className="font-bold">Deceased :</span> {formData?.deceasedName}</h2>
                             </div>
                         }
 
-                        {formData.dateOfDeath && 
+                        {formData?.dateOfDeath && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">D.O.D :</span> {formData.dateOfDeath}</h2>
+                                <h2><span className="font-bold">D.O.D :</span> {formData?.dateOfDeath}</h2>
                             </div>
                         }
 
-                        {formData.lastAddress && 
+                        {formData?.lastAddress && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">Last Address :</span> {formData.lastAddress}</h2>
+                                <h2><span className="font-bold">Last Address :</span> {formData?.lastAddress}</h2>
                             </div>
                         }
 
                         {/* Client Detail Summary */}
-                        {formData.clientName && 
+                        {formData?.clientName && 
                             <div className="bg-white p-1 text-sm mt-3"> 
-                                <h2><span className="font-bold">Client :</span> {formData.clientName}</h2>
+                                <h2><span className="font-bold">Client :</span> {formData?.clientName}</h2>
                             </div>
                         }
 
-                        {formData.clientAddress && 
+                        {formData?.clientAddress && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">Client Addr :</span> {formData.clientAddress}</h2>
+                                <h2><span className="font-bold">Client Addr :</span> {formData?.clientAddress}</h2>
                             </div>
                         }
 
-                        {formData.clientPhone && 
+                        {formData?.clientPhone && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">Phone :</span> {formData.clientPhone}</h2>
+                                <h2><span className="font-bold">Phone :</span> {formData?.clientPhone}</h2>
                             </div>
                         }
 
-                        {formData.clientEmail && 
+                        {formData?.clientEmail && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2><span className="font-bold">Email :</span> {formData.clientEmail}</h2>
+                                <h2><span className="font-bold">Email :</span> {formData?.clientEmail}</h2>
                             </div>
                         }
 
-                        {formData.funeralNotes && 
+                        {formData?.funeralNotes && 
                             <div className="bg-white p-1 text-sm"> 
-                                <h2 className="font-bold">Notes :</h2>
-                                <p>{formData.funeralNotes}</p>
+                                <h2><span className="font-bold">Notes : </span> {formData?.funeralNotes}</h2>
                             </div>
                         }
                     </div>
@@ -256,8 +260,8 @@ export function CreateFuneralModal({
                     <div id="modalSidebarSelectedItems" className="my-1 mt-3 flex-col">
                         <h2 className="font-bold">Selected Items</h2>
                         {
-                            formData.selectedItems && formData.selectedItems.length > 0 ? 
-                                formData.selectedItems.map( (item, index) => {
+                            formData?.selectedItems && formData?.selectedItems.length > 0 ? 
+                                formData?.selectedItems.map( (item, index) => {
                                     const itemDisplayTitle =
                                         item.qty > 1
                                             ? `${item.name} x ${item.qty} (€${item.price}/unit) : €${item.qty * item.price}`
@@ -276,7 +280,7 @@ export function CreateFuneralModal({
                         }
                     </div>
                     <div id="buttonsDiv" className="flex flex-row justify-around">
-                        <button id="saveFuneralButton" type="submit" form="createFuneralForm" className="m-5 underline hover:font-bold justify-center align-bottom">Save</button>
+                        <button id="saveFuneralButton" type="submit" form="updateFuneralForm" className="m-5 underline hover:font-bold justify-center align-bottom">Save</button>
                         <button id="clearAllButton" onClick={handleClearAll} className="m-5 underline hover:font-bold justify-center align-bottom">Clear All</button>
                     </div>
                 </aside>
@@ -293,5 +297,5 @@ export function CreateFuneralModal({
             />
 
         </div>
-    )
+    );
 }
