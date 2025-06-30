@@ -49,6 +49,9 @@ let FuneralsService = class FuneralsService {
         console.log('Updated document is : ', updatedDoc);
         return updatedDoc;
     }
+    async findByIdAndUpdateUsingMongoCommand(id, mongoCommand) {
+        return this.funeralModel.findByIdAndUpdate(id, mongoCommand);
+    }
     async deleteById(id) {
         const deleted = this.funeralModel.findByIdAndDelete(id);
         return deleted;
