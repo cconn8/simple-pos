@@ -35,8 +35,24 @@ export default function Dashboard() {
     const [editFuneralData, setEditFuneralData] = useState([]) // this us the temp funeral object for updating a funeral
     const [isUpdateFuneralModalVisible, setIsUpdateFuneralModalVisible] = useState(false);
 
-    // console.log('Temp added item initiated to - ', temporaryAddedItem);
-    
+    const resetState = async() => {
+            setIsDrawerVisible(false);
+            setIsCreateFuneralModalVisible(false);
+            setIsCreateInventoryModalVisible(false);
+            setSummaryItem(null);
+            setFormData({});  //this is the funeral data that is sent to the server when creating a funeral
+            setInvoiceLoading(null); 
+            setIsEditInvoiceModalVisible(false);
+            setEditInvoiceData({"misterMisses" : ''});
+            setCurrentFuneralId('');
+            setCurrentDeceasedName('');
+            setIsDeleteModalVisible(false);
+            setCurrentInvoiceUrl('');
+            setTemporaryAddedItem([]);
+            setRowItems([{_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : ''}]);
+            setIsUpdateFuneralModalVisible(false);
+    }    
+
     const router = useRouter();
     const API_URL = process.env.NEXT_PUBLIC_API_URL;   
     
@@ -193,6 +209,7 @@ export default function Dashboard() {
                 summaryItem={summaryItem}
                 setIsUpdateFuneralModalVisible={setIsUpdateFuneralModalVisible}
                 setEditFuneralData={setEditFuneralData}
+                resetState={resetState}
             />
 
             {/* CreateFuneralModal */}
@@ -208,6 +225,7 @@ export default function Dashboard() {
                 setRowItems={setRowItems}
                 temporaryAddedItem={temporaryAddedItem}
                 setTemporaryAddedItem={setTemporaryAddedItem}
+                resetState={resetState}
             />
 
 
@@ -222,6 +240,7 @@ export default function Dashboard() {
                 deceasedName={currentDeceasedName}
                 fetchData={fetchData}
                 setIsDrawerVisible={setIsDrawerVisible}
+                resetState={resetState}
             />
 
             <DeleteModal
@@ -234,6 +253,7 @@ export default function Dashboard() {
                 currentInvoiceUrl={currentInvoiceUrl}
                 setCurrentInvoiceUrl={setCurrentInvoiceUrl}
                 fetchData={fetchData}
+                resetState={resetState}
             />
  
             <UpdateFuneralModal
@@ -250,6 +270,7 @@ export default function Dashboard() {
                 setTemporaryAddedItem={setTemporaryAddedItem}
                 currentFuneralId={currentFuneralId}
                 setCurrentFuneralId={setCurrentFuneralId}
+                resetState={resetState}
             />
         </div>
 

@@ -27,8 +27,9 @@ export default function DeleteModal({isDeleteModalVisible, setIsDeleteModalVisib
         }
 
         await fetchData();
-        setCurrentInvoiceUrl('');
-        setIsDeleteModalVisible(false);
+        resetState();
+        // setCurrentInvoiceUrl('');
+        // setIsDeleteModalVisible(false);
     }
 
     return (
