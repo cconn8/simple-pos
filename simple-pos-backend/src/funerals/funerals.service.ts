@@ -39,9 +39,24 @@ export class FuneralsService {
     return funeral;
   }
 
-  async findByIdAndUpdate(id: string, updateFuneralDto: UpdateFuneralDto) : Promise<any>{
-    console.log('funerals service updateFuneralById called')
-    return this.funeralModel.findByIdAndUpdate(id, updateFuneralDto, { new: true });
+  async findByIdAndUpdate(id: string, updateFuneralDto: UpdateFuneralDto): Promise<any> {
+    console.log('funerals service updateFuneralById called');
+    // console.log('Data received is ', updateFuneralDto);
+    
+    const updatedDoc = this.funeralModel.findByIdAndUpdate(
+      id,
+      { $set: {'formData' : updateFuneralDto} },
+      { new: true }
+    );
+
+    console.log('Updated document is : ', updatedDoc);
+    return updatedDoc;
+  }
+
+  async findByIdAndUpdateUsingMongoCommand(id: string, mongoCommand : UpdateFuneralDto) : Promise<any>{
+
+    return this.funeralModel.findByIdAndUpdate(id, mongoCommand);
+    
   }
 
   async deleteById(id: string) {

@@ -41,7 +41,7 @@ let InvoiceService = class InvoiceService {
         funeral['additionalInvoiceData'] = data;
         const pdf = await this.generatePDF(funeral);
         const url = await this.uploadToGCS(pdf, deceasedName);
-        await this.funeralsService.findByIdAndUpdate(funeralId, { $set: { 'formData.invoice': url } });
+        await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, { $set: { 'formData.invoice': url } });
         return { invoiceUrl: url };
     }
     async generatePDF(data) {
@@ -50,7 +50,8 @@ let InvoiceService = class InvoiceService {
         console.log('debugging selected items : ', selectedItems);
         let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee'));
         if (!serviceCharge) {
-            throw new Error('Service Charge item not found in selected items.');
+            console.warn('Service Charge item not found in selected items.');
+            serviceCharge = 0;
         }
         console.log('service fee selected is - : ', serviceCharge);
         const services = selectedItems.filter((item) => item.category == 'service' && item._id != serviceCharge._id);

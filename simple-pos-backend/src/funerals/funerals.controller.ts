@@ -30,8 +30,7 @@ export class FuneralsController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateFuneralDto: UpdateFuneralDto) {
-    // return this.funeralsService.update(+id, updateFuneralDto);
-    return 'funeral update controller called'
+    return this.funeralsService.findByIdAndUpdate(id, updateFuneralDto);
   }
 
   @Delete(':id')
