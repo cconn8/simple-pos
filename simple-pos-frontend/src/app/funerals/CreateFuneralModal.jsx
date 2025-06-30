@@ -18,7 +18,8 @@ export function CreateFuneralModal({
                                     rowItems, 
                                     setRowItems,
                                     temporaryAddedItem,
-                                    setTemporaryAddedItem
+                                    setTemporaryAddedItem,
+                                    resetState
                                 }) {
 
 
@@ -108,8 +109,8 @@ export function CreateFuneralModal({
 
         // refresh the table with a fetch, and close the modal
         await fetchData();
-        setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
-        console.log('Refresh with fetch, formData should be empty : ', formData);
+        resetState();
+        // setIsCreateFuneralModalVisible(!isCreateFuneralModalVisible);
     };
 
     const handleDeleteSelectedItem = (id) => {

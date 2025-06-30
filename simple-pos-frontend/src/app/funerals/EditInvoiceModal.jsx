@@ -1,7 +1,7 @@
 
 
 
-export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceModalVisible, editInvoiceData, setEditInvoiceData, setInvoiceLoading, funeralId, deceasedName, fetchData, setIsDrawerVisible, setIsModalVisible}) {
+export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceModalVisible, editInvoiceData, setEditInvoiceData, setInvoiceLoading, funeralId, deceasedName, fetchData, setIsDrawerVisible, setIsModalVisible, resetState}) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -32,12 +32,13 @@ export function EditInvoiceModal({isEditInvoiceModalVisible, setIsEditInvoiceMod
         }
 
         
-        
-        setIsDrawerVisible(false);
-        setIsEditInvoiceModalVisible(false);
-        setEditInvoiceData({})
         fetchData();
-        setInvoiceLoading(false)
+        resetState();
+        // setIsDrawerVisible(false);
+        // setIsEditInvoiceModalVisible(false);
+        // setEditInvoiceData({})
+        // fetchData();
+        // setInvoiceLoading(false)
         
     }
 

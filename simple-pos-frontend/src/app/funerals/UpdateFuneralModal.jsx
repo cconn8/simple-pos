@@ -20,7 +20,8 @@ export function UpdateFuneralModal({
                                     temporaryAddedItem,
                                     setTemporaryAddedItem,
                                     currentFuneralId,
-                                    setCurrentFuneralId
+                                    setCurrentFuneralId,
+                                    resetState
                                 }) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -111,7 +112,8 @@ export function UpdateFuneralModal({
 
         // refresh the table with a fetch, and close the modal
         await fetchData();
-        setIsUpdateFuneralModalVisible(!isUpdateFuneralModalVisible);
+        resetState();
+        // setIsUpdateFuneralModalVisible(!isUpdateFuneralModalVisible);
     };
 
     const handleDeleteSelectedItem = (id) => {
