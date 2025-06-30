@@ -103,6 +103,8 @@ export default function Dashboard() {
         setIsUpdateFuneralModalVisible(true);
         }, 100);
     };
+
+    console.log('Existing funeral data received on the dashboard is : ', existingFuneralData);
        
     return(
 

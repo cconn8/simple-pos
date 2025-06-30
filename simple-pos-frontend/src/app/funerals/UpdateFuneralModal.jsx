@@ -136,7 +136,7 @@ export function UpdateFuneralModal({
 
     return (
 
-        <div id="createFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isUpdateFuneralModalVisible ? 'visible' : 'hidden'}`} >
+        <div id="updateFuneralModal" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white z-5 shadow-md rounded-sm w-19/20 h-19/20 flex border ${isUpdateFuneralModalVisible ? 'visible' : 'hidden'}`} >
             <div id="modalTopSection" className="flex flex-row justify-between py-5">
                 <h2>Edit Funeral</h2>                  
                 <button className="hover:font-bold" onClick={(e) => {setIsUpdateFuneralModalVisible(false)}}>X</button>
