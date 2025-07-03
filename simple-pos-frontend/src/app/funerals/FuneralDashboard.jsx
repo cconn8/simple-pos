@@ -157,7 +157,7 @@ export default function Dashboard() {
                                 data.formData &&
                                     <tr key={data._id} className="rounded-sm border-b border-white hover:shadow-sm">
                                         <td className="px-4 py-2 text-left ">{data.formData.deceasedName}</td>
-                                        <td className="px-4 py-2 text-left">{new Date(data.formData.dateOfDeath).toDateString()}</td>
+                                        <td className="px-4 py-2 text-left">{new Date(data.formData.dateOfDeath).toLocaleDateString('en-GB')}</td>
                                         <td className="px-4 py-2 text-left underline hover:font-bold">
                                             {invoiceLoading === data._id ? (
                                                 <div id="loadingDiv">loading...</div>
