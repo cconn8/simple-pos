@@ -49,7 +49,7 @@ export default function Dashboard() {
             setIsDeleteModalVisible(false);
             setCurrentInvoiceUrl('');
             setTemporaryAddedItem([]);
-            setRowItems([{_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : ''}]);
+            setRowItems([{_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : 0}]);
             setIsUpdateFuneralModalVisible(false);
     }    
 
