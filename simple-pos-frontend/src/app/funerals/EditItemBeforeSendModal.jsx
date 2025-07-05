@@ -7,7 +7,6 @@ export function EditItemBeforeSubmitModal({
                                     setSelectedItem,
                                     formData,
                                     setFormData,
-                                    resetState
                                 }) {
 
     console.log('Edit item modal rendered!');
@@ -52,7 +51,7 @@ export function EditItemBeforeSubmitModal({
         const {name, value} = e.target;
         setSelectedItem((prev) => ({
             ...prev,
-            [name]:[value]
+            [name]: name === 'price' || name === 'qty' ? parseInt(value) || 0 : value,
         }))
         console.log('input changed selectedItem: ', selectedItem);
     }
@@ -68,7 +67,7 @@ export function EditItemBeforeSubmitModal({
                     <form id="createInventoryForm" className="flex-row" onSubmit={handleSubmit}>
                         {/* Item Details */}
                         <div id="formInfoSection" className="flex-col p-2 bg-gray-200 rounded-sm m-1">
-                             <input onChange={handleChange} id="price"  type="number" name="price"  value={selectedItem.price } placeholder="Price"  className="bg-white rounded-sm p-2 mx-2" required/>
+                             <input onChange={handleChange} id="price"  type="number" name="price"  value={selectedItem.price || ''} placeholder="Price" className="bg-white rounded-sm p-2 mx-2" required/>
                         </div>
                         <button type="button" className="bg-red-400 text-white p-1 rounded hover:bg-red-500 m-1 justify-end" onClick={handleDiscard}>Discard</button>
                         <button type="submit" className="bg-gray-400 text-white p-1 rounded hover:bg-green-500 m-1 justify-end" onClick={() => handleSubmit}>Confirm</button>

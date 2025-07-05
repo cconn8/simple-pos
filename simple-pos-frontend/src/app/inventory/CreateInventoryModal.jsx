@@ -62,11 +62,17 @@ export function CreateInventoryModal({
         setRowItems(updatedItems);
     }
 
-    const handleItemChange = (index, field, value) => {
-        const updatedItems = [...rowItems];
-        updatedItems[index][field] = value;
-        setRowItems(updatedItems)
-    }
+    const handleItemChange = (index, name, value) => {
+    const updatedItems = [...rowItems];
+
+    updatedItems[index] = {
+        ...updatedItems[index],
+        // [name]: condition ? valueIfTrue : valueIfFalse
+        [name]: name === 'price' || name === 'qty' ? Number(value) || 0 : value,
+    };
+
+    setRowItems(updatedItems);
+    };
 
     const handleDiscard = () => {
         setRowItems([

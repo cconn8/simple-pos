@@ -26,7 +26,7 @@ export function RowItem({itemData, onChange, handleRemoveItem}) {
                 <option name="no" value="No">No</option>
             </select>
             
-            <input onChange={(e) => onChange('price', e.target.value)} id="price"  type="number" name="itemPrice"  value={itemData.price } placeholder="Price"  className="bg-white rounded-sm p-2 mx-2" required/>
+            <input onChange={(e) => onChange('price', e.target.value)} id="price"  type="number" name="itemPrice"  value={itemData.price} placeholder="Price"  className="bg-white rounded-sm p-2 mx-2" required/>
 
         <button onClick={() => handleRemoveItem(itemData._id)} className="bg-blue-300 text-white p-1 rounded hover:bg-blue-500 m-1">Remove</button>
         </div>

@@ -70,6 +70,7 @@ export class InvoiceService {
         let disbursementsTotal = 0;
 
         console.log('service charge is :' , serviceCharge.price);
+        console.log('Type of service charge is : ', typeof(serviceCharge.price));
 
         products.forEach( (product) => {productsAndServicesTotal += Number(product.itemTotal || 0)}); 
         services.forEach( (service) => {productsAndServicesTotal += Number(service.itemTotal || 0)}); 
