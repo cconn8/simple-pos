@@ -30,7 +30,7 @@ export default function Dashboard() {
     const [currentInvoiceUrl, setCurrentInvoiceUrl] = useState('');
     const [temporaryAddedItem, setTemporaryAddedItem] = useState([]);
     const [rowItems, setRowItems] = useState([  //this is the initial row state for adding new items to inventory form
-        {_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : ''}
+        {_id: uuidv4(), name: '' , category : '', type : '', description : '', qty : 1, isBillable : '', price : 0}
     ]);
     const [editFuneralData, setEditFuneralData] = useState([]) // this us the temp funeral object for updating a funeral
     const [isUpdateFuneralModalVisible, setIsUpdateFuneralModalVisible] = useState(false);
