@@ -21,7 +21,7 @@ export function RowItem({itemData, onChange, handleRemoveItem}) {
             <input onChange={(e) => onChange('description', e.target.value) } id="itemDescription"  type="text" name="description"  value={itemData.description} placeholder="Description"  className="bg-white rounded-sm p-2 mx-2"/>
             
             <select onChange={(e) => onChange('isBillable', e.target.value) } id="isBillable"  type="dropdown" name="isBillable" placeholder="Billable"  className="bg-white rounded-sm p-2 mx-2" required>
-                <option name="isBillable" value="">Billable</option>
+                <option name="isBillable" value="">Billable?</option>
                 <option name="yes" value="Yes">Yes</option>
                 <option name="no" value="No">No</option>
             </select>

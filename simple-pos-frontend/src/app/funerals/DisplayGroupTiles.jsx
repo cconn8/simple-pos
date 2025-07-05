@@ -13,7 +13,11 @@ export function DisplayGroupTiles({
                                     isCreateInventoryModalVisible, 
                                     setIsCreateInventoryModalVisible,
                                     temporaryAddedItem,
-                                    setTemporaryAddedItem}) {
+                                    setTemporaryAddedItem,
+                                    isEditItemBeforeSubmitModalVisible,
+                                    setIsEditItemBeforeSubmitModalVisible,
+                                    selectedItem,
+                                    setSelectedItem}) {
 
     // console.log('Display Tiles Called...');
 
@@ -24,36 +28,45 @@ export function DisplayGroupTiles({
         return acc;
     }, {});
 
+
     const handleItemClick = (item) => {
         console.log('handleItem clicked! :', item);
         console.log('checking for exisitng clicks...');
+
+        //set selectedItem(item)
+        setSelectedItem(item);
+        console.log('SelectedItem set: ', selectedItem);
+        //open editItemBeforeSubmitModal
+        setIsEditItemBeforeSubmitModalVisible(true);
+        //confirm to setFormData
+
         
-        setFormData((prev) => {
-            const existingItems = prev.selectedItems || []; //creates an empty 'selectedItems : []' array if not exists
-            const itemIndex = existingItems.findIndex((existingItem) => existingItem._id === item._id);
+        // setFormData((prev) => {
+        //     const existingItems = prev.selectedItems || []; //creates an empty 'selectedItems : []' array if not exists
+        //     const itemIndex = existingItems.findIndex((existingItem) => existingItem._id === item._id);
             
-            if(itemIndex !== -1) { //item is found
-                const updatedItems = [...existingItems];
-                const existingItem = updatedItems[itemIndex];
-                updatedItems[itemIndex] = {
-                    ...existingItem,
-                    qty : (existingItem.qty || 1) + 1,
-                    displayTitle : `${existingItem.name} (Qty ${existingItem.qty} x €${existingItem.price}/unit)`,
-                    itemTotal : `${existingItem.qty * existingItem.price}`
-                };
-                return {
-                        ...prev,
-                        selectedItems: updatedItems,
-                    };
-                } else {
-                    // Item not selected - add with qty 1
-                    return {
-                        ...prev,
-                        selectedItems: [...existingItems, { ...item, qty: 1 , displayTitle : item.name, itemTotal : item.price}],
-                    };
-                };
-        });        
-        console.log('updated form data is : ', formData)
+        //     if(itemIndex !== -1) { //item is found
+        //         const updatedItems = [...existingItems];
+        //         const existingItem = updatedItems[itemIndex];
+        //         updatedItems[itemIndex] = {
+        //             ...existingItem,
+        //             qty : (existingItem.qty || 1) + 1,
+        //             displayTitle : `${existingItem.name} (Qty ${existingItem.qty} x €${existingItem.price}/unit)`,
+        //             itemTotal : `${existingItem.qty * existingItem.price}`
+        //         };
+        //         return {
+        //                 ...prev,
+        //                 selectedItems: updatedItems,
+        //             };
+        //         } else {
+        //             // Item not selected - add with qty 1
+        //             return {
+        //                 ...prev,
+        //                 selectedItems: [...existingItems, { ...item, qty: 1 , displayTitle : item.name, itemTotal : item.price}],
+        //             };
+        //         };
+        // });        
+        // console.log('updated form data is : ', formData)
     }
 
     const handleAddItemButtonClick = (category, type) => {
@@ -69,7 +82,8 @@ export function DisplayGroupTiles({
                 description : '', 
                 qty : 1,
                 isBillable : '', 
-                price : ''}
+                price : 0,
+            }
         ]); 
         console.log('handleAddItemsButtonCliciked = items is set to ', rowItems);
 

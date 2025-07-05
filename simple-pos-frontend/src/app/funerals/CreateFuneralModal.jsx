@@ -5,6 +5,7 @@ import fetchData from './FuneralDashboard'
 import { useState } from 'react';
 import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
 import { useEffect } from 'react';
+import { EditItemBeforeSubmitModal } from './EditItemBeforeSendModal';
 
 
 export function CreateFuneralModal({
@@ -28,6 +29,8 @@ export function CreateFuneralModal({
 
     // state
     const [inventoryData, setInventoryData] = useState([]);
+    const [selectedItem, setSelectedItem] = useState({});
+    const [isEditItemBeforeSubmitModalVisible, setIsEditItemBeforeSubmitModalVisible] = useState(false);
 
     const fetchInventory = async() => {
         console.log(`fetching inventory from ${API_URL}/inventory`);
@@ -115,7 +118,7 @@ export function CreateFuneralModal({
 
     const handleDeleteSelectedItem = (id) => {
         setFormData( (prevItems) => {
-            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item.id != id);
+            const updatedSelectedItems = prevItems.selectedItems.filter((item) => item._id != id);
             return {
                 ...prevItems,
                 selectedItems : updatedSelectedItems
@@ -191,6 +194,10 @@ export function CreateFuneralModal({
                                         setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
                                         temporaryAddedItem={temporaryAddedItem}
                                         setTemporaryAddedItem={setTemporaryAddedItem}
+                                        isEditItemBeforeSubmitModalVisible={isEditItemBeforeSubmitModalVisible}
+                                        setIsEditItemBeforeSubmitModalVisible={setIsEditItemBeforeSubmitModalVisible}
+                                        selectedItem={selectedItem}  //selected item is to populate the edit before submit modal with the selected item
+                                        setSelectedItem={setSelectedItem}
                                     />
                                 </section>
                             ))}
@@ -296,6 +303,15 @@ export function CreateFuneralModal({
                 setTemporaryAddedItem={setTemporaryAddedItem}
             />
 
+            <EditItemBeforeSubmitModal 
+                isEditItemBeforeSubmitModalVisible={isEditItemBeforeSubmitModalVisible}
+                setIsEditItemBeforeSubmitModalVisible={setIsEditItemBeforeSubmitModalVisible}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                formData={formData}
+                setFormData={setFormData}
+                resetState={resetState}
+            />
         </div>
     )
 }

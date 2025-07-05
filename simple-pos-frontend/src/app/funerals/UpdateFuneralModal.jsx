@@ -4,6 +4,7 @@ import { DisplayGroupTiles } from "./DisplayGroupTiles";
 import fetchData from './FuneralDashboard'
 import { useState } from 'react';
 import { CreateInventoryModal } from '../inventory/CreateInventoryModal';
+import { EditItemBeforeSubmitModal } from './EditItemBeforeSendModal';
 import { useEffect } from 'react';
 
 
@@ -27,6 +28,8 @@ export function UpdateFuneralModal({
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
     const funeralId = currentFuneralId;
     const [inventoryData, setInventoryData] = useState([]);
+    const [selectedItem, setSelectedItem] = useState({});
+    const [isEditItemBeforeSubmitModalVisible, setIsEditItemBeforeSubmitModalVisible] = useState(false);
 
 
     const fetchInventory = async() => {
@@ -195,6 +198,10 @@ export function UpdateFuneralModal({
                                         setIsCreateInventoryModalVisible={setIsCreateInventoryModalVisible}
                                         temporaryAddedItem={temporaryAddedItem}
                                         setTemporaryAddedItem={setTemporaryAddedItem}
+                                        isEditItemBeforeSubmitModalVisible={isEditItemBeforeSubmitModalVisible}
+                                        setIsEditItemBeforeSubmitModalVisible={setIsEditItemBeforeSubmitModalVisible}
+                                        selectedItem={selectedItem}  //selected item is to populate the edit before submit modal with the selected item
+                                        setSelectedItem={setSelectedItem}
                                     />
                                 </section>
                             ))}
@@ -296,6 +303,17 @@ export function UpdateFuneralModal({
                 fetchData={fetchData}
                 temporaryAddedItem={temporaryAddedItem}
                 setTemporaryAddedItem={setTemporaryAddedItem}
+            />
+
+
+            <EditItemBeforeSubmitModal 
+                isEditItemBeforeSubmitModalVisible={isEditItemBeforeSubmitModalVisible}
+                setIsEditItemBeforeSubmitModalVisible={setIsEditItemBeforeSubmitModalVisible}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                formData={formData}
+                setFormData={setFormData}
+                resetState={resetState}
             />
 
         </div>
