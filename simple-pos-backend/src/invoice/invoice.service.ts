@@ -54,7 +54,7 @@ export class InvoiceService {
         const { selectedItems } = data;
         console.log('debugging selected items : ', selectedItems);
 
-        let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee'));
+        let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee') && item.name.toLowerCase().includes('service'));
 
         if (!serviceCharge) {
             console.warn('Service Charge item not found in selected items.');
