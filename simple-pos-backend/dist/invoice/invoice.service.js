@@ -83,7 +83,7 @@ let InvoiceService = class InvoiceService {
             serviceCharge,
             formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         };
-        const templatePath = path.join(process.cwd(), 'templates', 'invoice.template4.hbs');
+        const templatePath = path.join(process.cwd(), 'templates', 'invoice.template5.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
         const template = handlebars_1.default.compile(source);
         const html = template(templateData);

@@ -1,0 +1,149 @@
+{{!-- Hard Coded template for Our Services --}}
+{{!-- 1. Remove Selection of Funeral Items Title --}}
+{{!-- 2. Hard Code the services --}}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    .header { display: flex; justify-content: space-between; }
+    .clientDetails {margin-top: 0px;}
+    .clientDetailsRow { display: flex; flex-direction: column; font-size: small; padding-left: 22px; padding-top: 16px; padding-bottom: 8px; justify-content: center;}
+    .logoSection {width: 250px; height: 250px;}
+    .topTableMessage {font-style: italic; font-size: medium;}
+    .tableHeadingText {font-weight: bold; } 
+    .tableHeadingRow { padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
+    .tableRow { max-width: 150px; padding-left: 1.25rem; padding-right: 1rem; padding-top: 0;}
+    .tableSectionTitle { font-size: 12px; font-weight:  bold; font-style: italic; padding-left: 55px; padding-bottom: 10px;}
+    .subtotalRow {display: flex; position: absolute; bottom: 13px; right: 60px; padding: 0.5rem; }
+    .tableHeadingText p {margin: 0;}
+
+    body { font-family: sans-serif; margin: 16px;} 
+    table { width: 95%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 0.5rem; text-align: left; font-size: 12px;}
+    th { font-size: medium; background-color: #f5f5f5; }
+    footer {position: fixed; bottom: 0;}
+    ul { display: flex; list-style: none; padding: 0; gap: 0.5rem; font-size: 11px;}
+    td p {padding: 0.2rem; margin: 0rem;}
+    br p {padding: 0.2rem; margin: 0rem; padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
+
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Invoice No. : </span>{{invoiceNumber}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Dates of Services : </span>{{formattedFromDate}} - {{formattedToDate}}</p></div>
+  <div class="header">
+    <div class="clientDetails"> 
+      <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
+      <div class="clientDetailsRow">C/O {{misterMisses}} {{clientName}}</div>
+      <div class="clientDetailsRow">{{addressLineOne}}</div>
+      <div class="clientDetailsRow">{{addressLineTwo}}</div>
+      <div class="clientDetailsRow">{{addressLineThree}}</div>
+    </div>
+
+    <div class="logoSection">
+      {{!-- <div style="padding: 3rem;"><h3>O'Flaherty Logo Here</h3></div> --}}
+    </div>
+  </div>
+
+
+  {{!-- Table section (Main Invoice Section) --}}
+  <div id="spacer" style="margin-top: 2.5rem;"></div>
+  <div class="topTableMessage">
+    {{!-- <h4>Most Suitably appointed Funeral Parlour Facilities Available - All preparations and arrangements made.</h4> --}}
+  </div>
+
+
+  <table >
+    <thead>
+      <tr class="tableHeadingRow">
+        <td colspan="2" class="tableHeadingText">
+          <p style="padding-left: 220px; padding-top: 22px;">  the late {{data.deceasedName}}, deceased</p>
+        </td>
+        <td colspan="1" class="tableHeadingText"></td>
+      </tr>
+    </thead>
+    <tbody>
+      {{!-- Our Services Section --}}
+      <tr>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 68px; padding-top: 15px;  text-decoration: underline">Our Services</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      <tr id="hardcodedOurServices">
+        <td></td>
+        <td class="tableRow">
+          <strong>Service & Administration Fees, including;</strong>
+            <p>Professional Transport & Care of the deceased</p>
+            <p>Professional Hygienic Preparation</p> 
+            <p>Funeral Planning, Administration & Bookings</p>
+            <p>Liaising with all 3rd parties on the clients behalf including handling of payments</p>
+            <p>Funeral Vehicles & Equipment</p>
+            <p>Professional staff to attend, oversee and officiate at all transfers, removals and funeral services</p>
+            <p>Use of funeral parlour facilities</p>  
+            <p>24hr phone attendance and availability</p>
+        </td>
+        <td class="tableRow" style="vertical-align: bottom;">€{{serviceCharge.price}}</td>
+      </tr>
+
+      {{#each services}}
+      <tr>
+        <td></td>
+        <td class="tableRow">
+          <strong>{{displayTitle}}</strong>
+          <p>{{description}}</p>
+        </td>
+        <td class="tableRow">€{{itemTotal}}</td>
+      </tr>
+      {{/each}}
+
+      {{#each products}}
+      <tr>
+        <td></td>
+        <td class="tableRow"><strong>{{displayTitle}}</strong><br>{{description}}</br></td>
+        <td class="tableRow">€{{itemTotal}}</td>
+      </tr>
+      {{/each}}
+
+      {{!-- services & products total row --}}
+      <tr>
+        <td></td>
+        <td style="text-align: right; padding-right: 20px;">Total for our services</td>
+        <td style="text-align: right; text-decoration: underline;">€{{productsAndServicesTotal}}</td>
+      </tr>
+
+      <!-- Disbursements Section -->
+      <tr>
+        <td colspan="2" class="tableSectionTitle" style="padding-left: 68px;  text-decoration: underline">External Payments on the client's behalf</td>
+        <td class="tableSectionTitle"></td>
+      </tr>
+      {{#each disbursements}}
+      <tr>
+        <td></td>
+        <td class="tableRow"><strong>{{displayTitle}} </strong>{{description}}</td>
+        <td class="tableRow">€{{itemTotal}}</td>
+      </tr>
+      {{/each}}
+
+      {{!-- disbursements total row --}}
+      <tr st>
+        <td></td>
+        <td style="text-align: right; padding-right: 20px;">Total payments on your behalf</td>
+        <td style="text-align: right; text-decoration: underline;">€{{disbursementsTotal}}</td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <div class="subtotalRow">
+        <span>€{{subtotal}}</span>
+  </div>
+
+  <!-- Footer -->
+
+</body>
+</html>
