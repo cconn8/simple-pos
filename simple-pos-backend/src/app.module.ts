@@ -8,6 +8,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InvoiceModule } from './invoice/invoice.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { GoogleAuthService } from './google/google-auth.service';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -23,7 +25,7 @@ import { GoogleAuthService } from './google/google-auth.service';
       FormTemplatesModule, 
       FuneralsModule, 
       InvoiceModule, 
-      InventoryModule
+      InventoryModule, AuthModule, UsersModule
     ],
 
   controllers: [AppController],
