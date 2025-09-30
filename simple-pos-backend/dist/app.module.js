@@ -17,6 +17,8 @@ const config_1 = require("@nestjs/config");
 const invoice_module_1 = require("./invoice/invoice.module");
 const inventory_module_1 = require("./inventory/inventory.module");
 const google_auth_service_1 = require("./google/google-auth.service");
+const auth_module_1 = require("./auth/auth.module");
+const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,7 +36,7 @@ exports.AppModule = AppModule = __decorate([
             form_templates_module_1.FormTemplatesModule,
             funerals_module_1.FuneralsModule,
             invoice_module_1.InvoiceModule,
-            inventory_module_1.InventoryModule
+            inventory_module_1.InventoryModule, auth_module_1.AuthModule, users_module_1.UsersModule
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, google_auth_service_1.GoogleAuthService],
