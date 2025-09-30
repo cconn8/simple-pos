@@ -1,5 +1,5 @@
 
-
+import { FuneralData, FuneralFormData, FuneralItem, EditInvoiceData } from '../../../types';
 
 export function EditInvoiceModal({
                                     isEditInvoiceModalVisible, 
