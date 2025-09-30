@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useFunerals } from "@/hooks/useApi";
 import { useFuneralModal } from "@/contexts/FuneralModalContext";
 import {tableDisplayMappings} from "@/config/funeral-categories";
-import CustomDataTable from "@/app/components/DataTable/CustomDataTable";
 import { FuneralFormData, KeyDisplay } from "../../../../types";
 import { ChevronDown } from "@deemlol/next-icons";
 
