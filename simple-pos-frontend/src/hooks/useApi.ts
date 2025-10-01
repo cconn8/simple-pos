@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { LoadingState } from '../types';
+import { useFuneralsContext } from '@/contexts/FuneralsContext';
 
 export const useApi = <T>() => {
   const [state, setState] = useState<LoadingState & { data: T | null }>({
@@ -43,10 +44,21 @@ export const useApi = <T>() => {
 export const useFunerals = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const { data: funerals, isLoading, error, apiCall } = useApi<any[]>();
+  const {search} = useFuneralsContext();
 
   const fetchFunerals = useCallback(async () => {
     return await apiCall(`${API_URL}/funerals`);
   }, [apiCall, API_URL]);
+
+  const filteredFunerals = useMemo(() => { //useMemo uses existing funerals cached fetch
+    if(!funerals) return [];
+
+    return funerals.filter((funeral) => (
+      [funeral.formData?.deceasedName, funeral.formData?.clientName, funeral.formData?.notes].some((field) => 
+        (field?.toLowerCase().includes(search.toLowerCase()))
+      )
+    ))
+  },[funerals, search]);
 
   const createFuneral = useCallback(async (funeralData: any) => {
     return await apiCall(`${API_URL}/funerals`, {
@@ -66,6 +78,7 @@ export const useFunerals = () => {
     isLoading,
     error,
     fetchFunerals,
+    filteredFunerals,
     createFuneral,
     deleteFuneral,
   };

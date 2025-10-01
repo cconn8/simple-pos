@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useFunerals } from "@/hooks/useApi";
 import { useFuneralModal } from "@/contexts/FuneralModalContext";
 import {tableDisplayMappings} from "@/config/funeral-categories";
 import { FuneralFormData, KeyDisplay } from "../../../../types";
 import { ChevronDown } from "@deemlol/next-icons";
+import SearchBar from "@/app/components/SearchBar/SearchBar";
 
 interface CustomDataTableProps {
   funerals: any[];
@@ -11,10 +12,13 @@ interface CustomDataTableProps {
   selectedCells?: string[];
 }
 
+interface FuneralTableProps {
+    query? : string;
+    currentPage? : string;
+}
 
-
-export default function FuneralTable() {
-    const { funerals, isLoading, error, fetchFunerals } = useFunerals();
+export default function FuneralTable(props : FuneralTableProps) {
+    const { funerals, isLoading, error, fetchFunerals , filteredFunerals} = useFunerals();
     const {openCreateFuneral} = useFuneralModal();
 
     useEffect(() => {
@@ -50,7 +54,6 @@ export default function FuneralTable() {
             </div>
         );
     }
-
     // Check what we actually have
     if (!funerals) {
         return (
@@ -100,10 +103,13 @@ export default function FuneralTable() {
         );
     }
 
+
+
+    //selected cells to show in the funerals table
     const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice']
 
     //organise data for table
-    const funeralFormData = funerals
+    const funeralFormData = filteredFunerals
         .map((funeral) => funeral.formData ?? null)
         .filter((fd): fd is FuneralFormData => fd !== null);
     
@@ -115,7 +121,10 @@ export default function FuneralTable() {
     //funerals is an array of funeralObjects
     return (
         <div className="bg-white m-1 rounded-sm p-4 w-full">
-            <h2 className="text-xl font-bold mb-4">Funerals ({funerals.length})</h2>        
+            <div className="flex gap-x-3 mb-2">
+                <h2 className="text-xl font-bold align-middle">Funerals ({filteredFunerals.length})</h2>  
+                <SearchBar placeholder="Search funerals" />
+            </div>    
 
             <div className="overflow-x-auto">
                 <table className="table-auto w-full border border-gray-200 text-left">

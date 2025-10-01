@@ -3,6 +3,8 @@ import FuneralTable from './components/FuneralTable';
 import CreateFuneralModal from './modals/CreateFuneralModal';
 import { FuneralModalProvider } from '../../../contexts/FuneralModalContext';
 import { useFuneralModal } from '../../../contexts/FuneralModalContext';
+import { FuneralsProvider } from '@/contexts/FuneralsContext';
+
 
 
 export default function FuneralsPage() {
@@ -19,10 +21,12 @@ export default function FuneralsPage() {
         )
     }
     
-
+    // Remove FuneralModalProvider once FuneralProvider is built properly
     return(
-        <FuneralModalProvider>
-            <FuneralContent />
+        <FuneralModalProvider> 
+            <FuneralsProvider>
+                <FuneralContent />
+            </FuneralsProvider>
         </FuneralModalProvider>
     )
 }
