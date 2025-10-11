@@ -1,19 +1,55 @@
-import { useFunerals } from "@/hooks/useApi";
-import React, {useContext, createContext, useState} from "react";
+"use client";
 
+import React, {useContext, createContext, useState} from "react";
+import { FuneralData } from "../types";
 
 interface FuneralsContextType {
-  search: string;
-  setSearch: (s: string) => void;
+    //states
+    search: string;
+    showFuneralModal : boolean;
+    funerals: FuneralData[];
+    refreshTrigger: number;
+    showDeleteModal: boolean;
+    deleteTarget: { id: string; name: string } | null;
+
+    //state setters
+    setSearch : (arg: string) => void;
+    setShowFuneralModal : (arg: boolean) => void;
+    setFunerals: (funerals: FuneralData[]) => void;
+    triggerRefresh: () => void;
+    setShowDeleteModal: (show: boolean) => void;
+    setDeleteTarget: (target: { id: string; name: string } | null) => void;
 }
 
 const FuneralsContext = createContext<FuneralsContextType | null>(null)
 
-export function FuneralsProvider({children} : {children : React.ReactNode}) {
+export function FuneralsProvider({children} : {children: React.ReactNode}) {
     const [search, setSearch] = useState("");
+    const [showFuneralModal, setShowFuneralModal] = useState(false);
+    const [funerals, setFunerals] = useState<FuneralData[]>([]);
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+
+    const triggerRefresh = () => {
+        setRefreshTrigger(prev => prev + 1);
+    };
 
     return(
-        <FuneralsContext.Provider value={{search, setSearch}}>
+        <FuneralsContext.Provider value={{
+            search,
+            setSearch,
+            showFuneralModal,
+            setShowFuneralModal,
+            funerals,
+            setFunerals,
+            refreshTrigger,
+            triggerRefresh,
+            showDeleteModal,
+            setShowDeleteModal,
+            deleteTarget,
+            setDeleteTarget
+        }}>
             {children}
         </FuneralsContext.Provider>
     )

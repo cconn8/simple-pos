@@ -7,7 +7,6 @@ const data = [
 ];
 
 import Layout from "./components/Layout/Layout";
-import DataTable from "./components/DataTable/DataTable";
 import './index.css';
 
 export default function Home() {

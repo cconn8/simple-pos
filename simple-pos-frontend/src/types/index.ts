@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface FuneralItem {
   _id: string;
   name: string;
@@ -31,6 +33,7 @@ export interface FuneralFormData {
   funeralNotes?: string;
   selectedItems?: FuneralItem[];
   invoice?: string;
+  notes?: string;
 }
 
 export interface FuneralData {
@@ -73,4 +76,62 @@ export interface ApiResponse<T> {
 export interface LoadingState {
   isLoading: boolean;
   error: string | null;
+}
+
+// Modal Component Interfaces
+export interface FieldElementProps {
+  name: string;
+  label: string;
+  type: string;
+  options?: string[];
+  placeholder?: string;
+  required?: boolean;
+}
+
+export interface SectionContainerProps {
+  children: React.ReactNode;
+  heading?: string;
+  className?: string;
+}
+
+export interface ProductSectionProps {
+  products: InventoryItem[];
+  onProductSelect: (product: InventoryItem) => void;
+  selectedProducts: InventoryItem[];
+}
+
+export interface ProductTileProps extends InventoryItem {
+  onSelect: (product: InventoryItem) => void;
+  onRemove: (product: InventoryItem) => void;
+  isSelected: boolean;
+}
+
+// Selected Funeral Item with quantity
+export interface SelectedFuneralItem extends InventoryItem {
+  selectedQty: number;
+  totalPrice: number;
+}
+
+// Resizable Column State
+export interface ColumnWidths {
+  info: number;
+  billing: number;
+  summary: number;
+}
+
+// Form submission interface for better type safety
+export interface CreateFuneralSubmission extends FuneralFormData {
+  selectedItems: FuneralItem[];
+}
+
+// Delete Confirmation Modal Props
+export interface DeleteConfirmationModalProps {
+  isOpen: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+  title?: string;
+  message?: string;
+  confirmText?: string;
+  cancelText?: string;
+  itemName?: string;
 }

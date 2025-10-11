@@ -49,6 +49,9 @@ let FuneralsService = class FuneralsService {
         console.log('Updated document is : ', updatedDoc);
         return updatedDoc;
     }
+    async findBySearchQuery(query) {
+        return this.funeralModel.find({ name: { $regex: query, $options: "i" } }).exec();
+    }
     async findByIdAndUpdateUsingMongoCommand(id, mongoCommand) {
         return this.funeralModel.findByIdAndUpdate(id, mongoCommand);
     }

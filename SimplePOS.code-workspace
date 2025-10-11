@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "simple-pos-backend"
+		},
+		{
+			"path": "simple-pos-frontend"
+		}
+	],
+	"settings": {}
+}

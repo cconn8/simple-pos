@@ -53,6 +53,10 @@ export class FuneralsService {
     return updatedDoc;
   }
 
+  async findBySearchQuery(query : string) {
+    return this.funeralModel.find({name : {$regex: query, $options : "i"}}).exec();
+  }
+
   async findByIdAndUpdateUsingMongoCommand(id: string, mongoCommand : UpdateFuneralDto) : Promise<any>{
 
     return this.funeralModel.findByIdAndUpdate(id, mongoCommand);
