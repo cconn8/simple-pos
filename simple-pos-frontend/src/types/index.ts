@@ -11,6 +11,17 @@ export interface FuneralItem {
   price: number;
 }
 
+export interface Inventory {
+  _id: string;
+  name: string;
+  category: string;
+  type: string;
+  description?: string;
+  qty: number;
+  isBillable: string;
+  price: number;
+}
+
 export interface EditInvoiceData {
   fromDate?: string;
   toDate?: string;
@@ -31,6 +42,15 @@ export interface FuneralFormData {
   clientPhone?: string;
   clientEmail?: string;
   funeralNotes?: string;
+  contactName1?: string;
+  phone1?: string;
+  contactName2?: string;
+  phone2?: string;
+  careOf?: string;
+  billingName?: string;
+  billingAddress?: string;
+  fromDate?: string;
+  toDate?: string;
   selectedItems?: FuneralItem[];
   invoice?: string;
   notes?: string;
@@ -50,6 +70,12 @@ export interface InventoryItem {
   qty: number;
   isBillable: string;
   price: number;
+}
+
+export interface FuneralSummaryProps {  
+  formData: FuneralFormData,
+  onClearAll: () => void,
+  onSave: () => void
 }
 
 export interface KeyDisplay {
@@ -110,13 +136,6 @@ export interface ProductTileProps extends InventoryItem {
 export interface SelectedFuneralItem extends InventoryItem {
   selectedQty: number;
   totalPrice: number;
-}
-
-// Resizable Column State
-export interface ColumnWidths {
-  info: number;
-  billing: number;
-  summary: number;
 }
 
 // Form submission interface for better type safety

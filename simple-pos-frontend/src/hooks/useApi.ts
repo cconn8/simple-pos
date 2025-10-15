@@ -1,19 +1,17 @@
+"use client";
+
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { FuneralData, FuneralFormData, LoadingState } from '../types';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';
 
 export const useApi = <T>() => {
-  const [state, setState] = useState<LoadingState & { data: T | null }>
-  ({
+  const [state, setState] = useState<LoadingState & { data: T | null }> ({
     isLoading: false,
     error: null,
     data: null,
   });
 
-  const apiCall = useCallback(async (
-    url: string,
-    options?: RequestInit
-  ): Promise<T | null> => {
+  const apiCall = useCallback( async (url: string, options?: RequestInit): Promise<T | null> => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -43,8 +41,48 @@ export const useApi = <T>() => {
   return { ...state, apiCall };
 };
 
+export const useInvoices = () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  const generateInvoice = useCallback(async (funeralId: string, data?: any): Promise<any> => {
+    console.log('generating invoice for funeral:', funeralId);
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Assuming the correct endpoint for invoice generation
+      const response = await fetch(`${API_URL}/invoice/${funeralId}`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data || {})
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to generate invoice for funeral: ${funeralId}`);
+      }
+      
+      const result = await response.json();
+      console.log('Invoice generated successfully:', result);
+      return result;
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Error generating invoice:', err);
+      setError(errorMessage);
+      throw err; // Re-throw so caller can handle it
+    } finally {
+      setIsLoading(false);
+    }
+  }, [API_URL]);
 
+  return {
+    generateInvoice,
+    isLoading,
+    error
+  };
+};
 
 export const useFunerals = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL!;
@@ -73,7 +111,7 @@ export const useFunerals = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [API_URL]);
+  }, [API_URL, setFunerals]);
 
   const createFuneral = useCallback( async(submissionData : FuneralFormData) => {
     console.log('creating funeral..');
@@ -98,6 +136,32 @@ export const useFunerals = () => {
       } finally {
         setIsLoading(false);
       }
+
+  }, [API_URL, fetchFunerals]);
+
+  const updateFuneral = useCallback(async (id: string, submissionData: FuneralFormData) => {
+    console.log('updating funeral with id:', id);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/funerals/${id}`, {
+        method: "PATCH",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(submissionData),
+      });
+      if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
+      const updatedFuneral: FuneralData = await response.json();
+      console.log('funeral updated successfully:', updatedFuneral);
+      await fetchFunerals();
+      return updatedFuneral;
+
+    } catch (err) {
+      console.error("Error updating funeral:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setIsLoading(false);
+    }
 
   }, [API_URL, fetchFunerals]);
 
@@ -148,6 +212,7 @@ export const useFunerals = () => {
     error,
     fetchFunerals, // expose in case you want manual refresh
     createFuneral,
+    updateFuneral,
     deleteFuneral, // delete handler
   };
 };
@@ -157,7 +222,6 @@ export const useInventory = () => {
   const { data : inventory, isLoading, error, apiCall } = useApi<any[]>();
 
   console.log('UseInventory hook called..')
-
 
   const fetchInventory = useCallback(async () => {
     return await apiCall(`${API_URL}/inventory`);
@@ -176,17 +240,29 @@ export const useInventory = () => {
     });
   }, [apiCall, API_URL]);
 
+  const updateInventoryItem = useCallback(async(id: string, itemData: any) => {
+    console.log('useApi is sending update inventory request to server...');
+    try {
+      const response = await fetch(`${API_URL}/inventory/${id}`, {
+        method: 'PATCH',
+        headers: {"Content-Type" : "application/json"},
+        body: JSON.stringify(itemData)
+      });
+      if(!response.ok) throw new Error('Error updating inventory item')
+      console.log('inventory update successful');
+    } catch (err) {
+        console.error("Error updating inventory item:", err);
+        throw err;
+    }
+  }, [API_URL])
+
   return {
     inventory: inventory || [],
     isLoading,
     error,
     fetchInventory,
     createInventoryItem,
+    updateInventoryItem,
     deleteInventoryItem,
   };
 };
-
-export const useInvoices = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { data : invoices, isLoading, error, apiCall} = useApi<any[]>()
-}

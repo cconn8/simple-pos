@@ -7,25 +7,22 @@
 
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
 import { FUNERAL_TEMPLATE_A, DESIRED_CATEGORY_ORDER } from "@/config/funeral-categories";
-import React, { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useInventoryContext } from "@/contexts/InventoryContext";
 import { 
   FieldElementProps, 
   SectionContainerProps, 
   InventoryItem, 
   SelectedFuneralItem, 
-  ColumnWidths, 
   ProductSectionProps, 
   ProductTileProps,
   FuneralFormData,
   FuneralItem,
-  DeleteConfirmationModalProps
+  FuneralSummaryProps
 } from "@/types";
 import { useFunerals } from "@/hooks/useApi";
-import DeleteConfirmationModal from "@/components/DeleteConfirmationModal";
-
-
-
+import { Edit3, Trash2 } from "@deemlol/next-icons";
+import dateFormat from 'dateformat';
 
 function FieldElement(props: FieldElementProps & { value?: string; onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void }) {
     let field;
@@ -301,20 +298,17 @@ function ProductTile(props: ProductTileProps) {
 }
 
 
+
 // Funeral Summary Component
-function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onSave }: { 
-    selectedItems: SelectedFuneralItem[], 
-    onRemoveItem: (item: InventoryItem) => void,
-    formData: FuneralFormData,
-    onClearAll: () => void,
-    onSave: () => void
-}) {
-    const total = selectedItems.reduce((sum, item) => sum + item.totalPrice, 0);
+function FuneralSummary({ formData, onClearAll, onSave, isEditMode }: Omit<FuneralSummaryProps, 'selectedItems' | 'onRemoveItem'> & { isEditMode: boolean }) {
+    const { selectedFuneralItems, startEditingItem, removeFuneralItem } = useFuneralsContext();
+    const total = selectedFuneralItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
     const formatFieldValue = (key: string, value: string | undefined): string => {
         if (!value) return "";
-        if (key === 'dateOfDeath' && value) {
-            return new Date(value).toLocaleDateString();
+        if (key.toLowerCase().includes('date')){
+            return dateFormat(value, "dddd, mmmm dS, yyyy");
+            // return new Date(value).toLocaleDateString();
         }
         return value;
     };
@@ -327,7 +321,16 @@ function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onS
             clientName: "Client Name",
             clientAddress: "Client Address",
             clientPhone: "Client Phone",
-            funeralNotes: "Funeral Notes"
+            funeralNotes: "Funeral Notes",
+            contactName1 : "Contact 1",
+            phone1: "Contact 1 Phone",
+            contactName2 : "Contact 2",
+            phone2: "Contact 2 Phone",
+            careOf : "C/O",
+            billingName : "Billing Name",
+            billingAddress : "Billing Address",
+            fromDate : 'From',
+            toDate : 'To'
         };
         return fieldMap[key] || key;
     };
@@ -343,9 +346,9 @@ function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onS
                             if (key === 'selectedItems') return null;
                             else if (value === '') return null;
                             return (
-                                <div key={key} className="text-small">
+                                <div key={key} className="grid grid-cols-3 mt-1 text-small">
                                     <span className="font-bold text-gray-600">{getFieldDisplayName(key)}:</span>
-                                    <span className="ml-1 text-gray-800">{formatFieldValue(key, value)}</span>
+                                    <span className="ml-1 text-gray-800 col-span-2">{formatFieldValue(key, value)}</span>
                                 </div>
                             );
                         })}
@@ -355,24 +358,26 @@ function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onS
                 {/* Selected Items Section */}
                 <div className="mb-4">
                     <h4 className="font-semibold text-gray-700 mb-2">Selected Items</h4>
-                    {selectedItems.length === 0 ? (
+                    {selectedFuneralItems.length === 0 ? (
                         <p className="text-gray-500 text-sm">No items selected</p>
                     ) : (
-                        selectedItems.map((item) => (
+                        selectedFuneralItems.map((item) => (
                             <div key={item._id} className="border-b border-gray-200 py-2 flex justify-between items-center">
                                 <div className="flex-1">
                                     <div className="text-sm font-medium">{item.name}</div>
-                                    <div className="text-xs text-gray-600">€{item.price} x {item.selectedQty}</div>
+                                    <div className="text-xs text-gray-600">{item.description === "" ? "No description" : item.description}</div>
+                                    <div className="text-xs text-gray-600">{item.selectedQty} x €{item.price}</div>
                                 </div>
+                                
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm font-semibold">€{item.totalPrice.toFixed(2)}</span>
-                                    <button 
-                                        onClick={() => onRemoveItem(item)}
-                                        className="text-red-500 hover:text-red-700 text-sm"
-                                        title="Remove item"
-                                    >
-                                        ×
+                                    <button onClick={() => startEditingItem(item)} title="Edit item">
+                                        <Edit3 className="text-purple-500 hover:text-purple-700 hover:scale-110" size={14}  />
                                     </button>
+                                    <button onClick={() => removeFuneralItem(item._id)} title="Remove item">
+                                        <Trash2 className="text-red-400 hover:text-red-600 hover:scale-110" size={14} />
+                                    </button>
+                                    
                                 </div>
                             </div>
                         ))
@@ -397,7 +402,7 @@ function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onS
                         onClick={onSave}
                         className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 text-sm"
                     >
-                        Save Funeral
+                        {isEditMode ? 'Update Funeral' : 'Save Funeral'}
                     </button>
                 </div>
             </div>
@@ -406,17 +411,19 @@ function FuneralSummary({ selectedItems, onRemoveItem, formData, onClearAll, onS
 }
 
 export default function CreateFuneralModal() {
-    const {showFuneralModal, setShowFuneralModal, triggerRefresh} = useFuneralsContext();
+    const { 
+        showFuneralModal, 
+        setShowFuneralModal, 
+        selectedFuneralItems, 
+        addFuneralItem, 
+        clearFuneralItems,
+        isEditMode,
+        setIsEditMode,
+        viewingFuneral,
+        setSelectedFuneralItems
+    } = useFuneralsContext();
     const {inventory } = useInventoryContext();
-    const { createFuneral } = useFunerals();
-    
-    // State for selected items, column widths, and form data
-    const [selectedItems, setSelectedItems] = useState<SelectedFuneralItem[]>([]);
-    const [columnWidths, setColumnWidths] = useState<ColumnWidths>({
-        info: 25, // percentage
-        billing: 50,
-        summary: 25
-    });
+    const { createFuneral, updateFuneral } = useFunerals();
     const [formData, setFormData] = useState<FuneralFormData>({
         deceasedName: "",
         dateOfDeath: "",
@@ -428,41 +435,47 @@ export default function CreateFuneralModal() {
         selectedItems: []
     });
 
+    // Populate form data when in edit mode
     useEffect(() => {
-        if (process.env.NODE_ENV === 'development') {
-            console.log("🚀 useEffect triggered on inventory - inventory updated:", inventory);
+        if (isEditMode && viewingFuneral && showFuneralModal) {
+            const funeralFormData = viewingFuneral.formData || {};
+            setFormData({
+                deceasedName: funeralFormData.deceasedName || "",
+                dateOfDeath: funeralFormData.dateOfDeath || "",
+                lastAddress: funeralFormData.lastAddress || "",
+                clientName: funeralFormData.clientName || "",
+                clientAddress: funeralFormData.clientAddress || "",
+                clientPhone: funeralFormData.clientPhone || "",
+                funeralNotes: funeralFormData.funeralNotes || "",
+                contactName1: funeralFormData.contactName1 || "",
+                phone1: funeralFormData.phone1 || "",
+                contactName2: funeralFormData.contactName2 || "",
+                phone2: funeralFormData.phone2 || "",
+                careOf: funeralFormData.careOf || "",
+                billingName: funeralFormData.billingName || "",
+                billingAddress: funeralFormData.billingAddress || "",
+                fromDate: funeralFormData.fromDate || "",
+                toDate: funeralFormData.toDate || "",
+                selectedItems: []
+            });
+            
+            // selectedFuneralItems should already be populated by the edit handler
         }
-    }, [inventory]);
+    }, [isEditMode, viewingFuneral, showFuneralModal]);
 
     const infoSections = FUNERAL_TEMPLATE_A.sections.filter((section) => section.name !== "billingDetails");
     const billingSection = FUNERAL_TEMPLATE_A.sections.filter((section) => section.name == "billingDetails");
     
     // Handle product selection
     const handleProductSelect = useCallback((product: InventoryItem) => {
-        setSelectedItems(prev => {
-            const existingItem = prev.find(item => item._id === product._id);
-            if (existingItem) {
-                // Increment quantity
-                return prev.map(item => 
-                    item._id === product._id 
-                        ? { ...item, selectedQty: item.selectedQty + 1, totalPrice: (item.selectedQty + 1) * item.price }
-                        : item
-                );
-            } else {
-                // Add new item
-                return [...prev, {
-                    ...product,
-                    selectedQty: 1,
-                    totalPrice: product.price
-                }];
-            }
-        });
-    }, []);
+        const newItem: SelectedFuneralItem = {
+            ...product,
+            selectedQty: 1,
+            totalPrice: product.price
+        };
+        addFuneralItem(newItem);
+    }, [addFuneralItem]);
 
-    // Handle item removal
-    const handleRemoveItem = useCallback((product: InventoryItem) => {
-        setSelectedItems(prev => prev.filter(item => item._id !== product._id));
-    }, []);
 
     // Handle form field changes
     const handleFieldChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -475,7 +488,7 @@ export default function CreateFuneralModal() {
 
     // Handle clear all
     const handleClearAll = useCallback(() => {
-        setSelectedItems([]);
+        clearFuneralItems();
         setFormData({
             deceasedName: "",
             dateOfDeath: "",
@@ -486,13 +499,14 @@ export default function CreateFuneralModal() {
             funeralNotes: "",
             selectedItems: []
         });
-    }, []);
+        setIsEditMode(false);
+    }, [clearFuneralItems, setIsEditMode]);
 
     // Handle save funeral
     const handleSave = useCallback(async () => {
         try {
             // Convert selected items to FuneralItem format
-            const funeralItems: FuneralItem[] = selectedItems.map(item => ({
+            const funeralItems: FuneralItem[] = selectedFuneralItems.map(item => ({
                 _id: item._id,
                 name: item.name,
                 category: item.category,
@@ -509,47 +523,33 @@ export default function CreateFuneralModal() {
                 selectedItems: funeralItems
             };
 
-            console.log('Submitting funeral data:', submissionData);
+            console.log(isEditMode ? 'Updating funeral data:' : 'Creating funeral data:', submissionData);
             
-            const result = await createFuneral(submissionData);
+            let result;
+            if (isEditMode && viewingFuneral) {
+                result = await updateFuneral(viewingFuneral._id, submissionData);
+            } else {
+                result = await createFuneral(submissionData);
+            }
             
             if (result) {
-                console.log('Funeral saved successfully:', result);
+                console.log(isEditMode ? 'Funeral updated successfully:' : 'Funeral created successfully:', result);
                 handleClearAll();
                 setShowFuneralModal(false);
-                triggerRefresh();
             } else {
-                console.error('Failed to save funeral');
+                console.error(isEditMode ? 'Failed to update funeral' : 'Failed to create funeral');
             }
         } catch (error) {
-            console.error('Error saving funeral:', error);
+            console.error(isEditMode ? 'Error updating funeral:' : 'Error creating funeral:', error);
         }
-    }, [formData, selectedItems, createFuneral, handleClearAll, setShowFuneralModal, triggerRefresh]);
+    }, [formData, selectedFuneralItems, createFuneral, updateFuneral, isEditMode, viewingFuneral, handleClearAll, setShowFuneralModal]);
 
-    // Update formData.selectedItems when selectedItems changes
-    useEffect(() => {
-        const funeralItems: FuneralItem[] = selectedItems.map(item => ({
-            _id: item._id,
-            name: item.name,
-            category: item.category,
-            type: item.type,
-            description: item.description || "",
-            qty: item.selectedQty,
-            isBillable: item.isBillable,
-            price: item.price
-        }));
-        
-        setFormData(prev => ({
-            ...prev,
-            selectedItems: funeralItems
-        }));
-    }, [selectedItems]);
 
 
     return(
         <div id="modal-container" className={`p-2 flex-col fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 z-50 shadow-lg rounded-lg w-49/50 h-19/20 flex border ${showFuneralModal ? 'visible' : 'hidden'}`}>
             <div id="modal-header" className="flex justify-between">
-                <h1 className="font-bold">Create Funeral</h1>
+                <h1 className="font-bold">{isEditMode ? 'Edit Funeral' : 'Create Funeral'}</h1>
                 <button className="boder" onClick={() => {setShowFuneralModal(!showFuneralModal)}}>X</button>
             </div>
 
@@ -604,18 +604,17 @@ export default function CreateFuneralModal() {
                             <ProductSection 
                                 products={inventory} 
                                 onProductSelect={handleProductSelect}
-                                selectedProducts={selectedItems}
+                                selectedProducts={selectedFuneralItems}
                             />
                         </SectionContainer>
                     </div>
                 </div>
                 <div id="sidebar" className="sticky basis-1/3 bg-white border-2 border-gray-300 rounded overflow-y-auto p-2">
                     <FuneralSummary 
-                        selectedItems={selectedItems} 
-                        onRemoveItem={handleRemoveItem}
                         formData={formData}
                         onClearAll={handleClearAll}
                         onSave={handleSave}
+                        isEditMode={isEditMode}
                     />
                 </div>
             </div>

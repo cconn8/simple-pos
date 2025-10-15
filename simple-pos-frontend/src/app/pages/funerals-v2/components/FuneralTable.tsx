@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
-import { useFunerals } from "@/hooks/useApi";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFunerals, useInvoices } from "@/hooks/useApi";
 import {tableDisplayMappings} from "@/config/funeral-categories";
 import { KeyDisplay } from "../../../../types";
-import { ChevronDown } from "@deemlol/next-icons";
+import { ChevronDown, ChevronRight } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
 import { Trash2 } from "@deemlol/next-icons";
@@ -27,12 +27,17 @@ function formatDate(date : string) {
 
 export default function FuneralTable(props : FuneralTableProps) {
     const { funerals, filteredFunerals, isLoading, error, fetchFunerals } = useFunerals();
-    const { 
-        showFuneralModal, 
-        setShowFuneralModal,
-        setShowDeleteModal,
-        setDeleteTarget
+    const { generateInvoice, isLoading: isGeneratingInvoice, error: invoiceError } = useInvoices();
+    const {  
+        showFuneralModal,  
+        setShowFuneralModal, 
+        setShowDeleteModal, 
+        setDeleteTarget,
+        setShowFuneralDetail,
+        setViewingFuneral
     } = useFuneralsContext();
+
+    
     //selected cells to show in the funerals table
     const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice']
 
@@ -65,6 +70,11 @@ export default function FuneralTable(props : FuneralTableProps) {
         setShowDeleteModal(true);
     };
 
+    // View handler
+    const handleViewClick = (funeral: any) => {
+        setViewingFuneral(funeral);
+        setShowFuneralDetail(true);
+    };
 
     if (error) {
         return (
@@ -135,6 +145,17 @@ export default function FuneralTable(props : FuneralTableProps) {
         );
     }
 
+    const handleGenerateInvoice = async (funeralId: string) => {
+        try {
+            await generateInvoice(funeralId);
+            // Optionally refresh funerals to get updated invoice URL
+            await fetchFunerals();
+        } catch (error) {
+            console.error('Failed to generate invoice:', error);
+            // You could show a toast notification here
+        }
+    };
+
     // Render the actual table
     //funerals is an array of funeralObjects
     return (
@@ -148,6 +169,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                 <table className="table-auto w-full border border-gray-200 text-left">
                     <thead className="bg-gray-50">
                     <tr>
+                
                         {headingsToShowDisplayText.map((heading, index) => (
                         <th key={index} className="px-4 py-2 font-semibold border-b border-gray-200">
                             <div className="flex items-center justify-between">
@@ -166,6 +188,9 @@ export default function FuneralTable(props : FuneralTableProps) {
                             <div className="flex items-center justify-between">
                                 <span>Actions</span>
                             </div>
+                        </th>
+                        <th className="px-4 py-2 font-semibold border-b border-gray-200 w-12">
+                            <span>View</span>
                         </th>
                     </tr>
                     </thead>
@@ -191,7 +216,8 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                         >
                                                             View Invoice
                                                         </a> 
-                                                ) : <button className="bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700">Generate Invoice</button>
+                                                ) : <button onClick={() => handleGenerateInvoice(mergedFuneralObj._id)} disabled={isGeneratingInvoice} className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}>
+                                                    {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}</button>
                                             ) : (
                                                 <span>{String(val)}</span>
                                             )}
@@ -205,6 +231,15 @@ export default function FuneralTable(props : FuneralTableProps) {
                                             className="cursor-pointer hover:opacity-70"
                                         />
                                     </td>
+                                    <td className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
+                                        <button 
+                                            onClick={() => handleViewClick(funeralObject)}
+                                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                                            title="View funeral details"
+                                        >
+                                            <ChevronRight size={20} />
+                                        </button>
+                                    </td>
                                 </tr>
                             );
                         })}
@@ -212,5 +247,6 @@ export default function FuneralTable(props : FuneralTableProps) {
                 </table>
             </div>
         </div>
+        
     )
 }

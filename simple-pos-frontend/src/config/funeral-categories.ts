@@ -44,7 +44,7 @@ export const FUNERAL_TEMPLATE_A = {
         ],
       fields : [
             {_id : uuidv4(), name : 'clientName', label : 'Client Name', type : 'text', placeholder : 'Client Name'},
-            {_id : uuidv4(), name : 'clientAddress',  label : 'Client Address', type : 'date', placeholder : 'Client Address'},
+            {_id : uuidv4(), name : 'clientAddress',  label : 'Client Address', type : 'text', placeholder : 'Client Address'},
             {_id : uuidv4(), name : 'clientPhone', label : 'Client Phone', type : 'text', placeholder : 'Phone'},
       ]
     },
@@ -55,6 +55,9 @@ export const FUNERAL_TEMPLATE_A = {
             {_id : uuidv4(), name: 'careOf', label : 'C/o', type: 'dropdown', options: ['Mr.', 'Mrs.', 'Ms.', 'The ']},
             {_id : uuidv4(), name : 'billingName', label : 'Billing Name', type : 'text', placeholder : 'Client / family name'},
             {_id : uuidv4(), name : 'billingAddress',  label : 'Billing Address', type : 'text', placeholder : 'Address'},
+            {_id : uuidv4(), name : 'fromDate',  label : 'Dates : From', type : 'date', placeholder : 'From Date'},
+            {_id : uuidv4(), name : 'toDate',  label : 'Dates : To', type : 'date', placeholder : 'To Date'},
+
       ]
     }
   ]

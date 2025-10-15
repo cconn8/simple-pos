@@ -1,47 +1,46 @@
 "use client";
 
 import { useInventory } from "@/hooks/useApi";
-import { useContext, createContext, useEffect} from "react";
+import { useContext, useState, createContext, useEffect} from "react";
+import { Inventory } from "@/types";
 
-export interface Inventory {
-  _id: string;
-  name: string;
-  category: string;
-  type: string;
-  description?: string;
-  qty: number;
-  isBillable: string;
-  price: number;
-}
 
 interface InventoryContextType {
+    // state
     inventory : Inventory[];
     isLoading : boolean;
     error: any;
+    isEditModalOpen: boolean;
+
+    // setters    
+    setIsEditModalOpen: (open: boolean) => void;
+
+    // inventory management functions
     fetchInventory: () => Promise<any>;
+    updateInventoryItem: (id: string, itemData: Partial<Inventory>) => Promise<void>;
+
+
 }
 
 export const InventoryContext = createContext<InventoryContextType | null>(null);
 
 export function InventoryProvider({children} : {children : React.ReactNode}) {
-    const {inventory, isLoading, error, fetchInventory} = useInventory();
+    const {inventory, isLoading, error, fetchInventory, updateInventoryItem} = useInventory();
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     
-    useEffect(() => {
-        fetchInventory();
-    }, [fetchInventory]);
+    
+    useEffect(() => { fetchInventory(); }, [fetchInventory]);
 
-    useEffect(() => {
-        if (process.env.NODE_ENV === 'development') {
-            console.log('🚀 useEffect triggered on useInventory() hook - hook called on Inventory Provider Mount! Inventory : ', inventory);
-        }
-    }, [inventory]);
-    
+
     return(
         <InventoryContext.Provider value={{
                 inventory,
                 isLoading,
                 error,
-                fetchInventory
+                fetchInventory,
+                updateInventoryItem,
+                isEditModalOpen,
+                setIsEditModalOpen,
             }}>
             {children}
         </InventoryContext.Provider>
