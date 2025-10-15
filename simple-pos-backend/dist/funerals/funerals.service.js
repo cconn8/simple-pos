@@ -11,9 +11,18 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FuneralsService = void 0;
 const common_1 = require("@nestjs/common");
+const funeral_schema_1 = require("./schemas/funeral.schema");
+const mongoose_1 = require("@nestjs/mongoose");
+const mongoose_2 = require("mongoose");
 const funeral_schema_1 = require("./schemas/funeral.schema");
 const mongoose_1 = require("@nestjs/mongoose");
 const mongoose_2 = require("mongoose");
@@ -49,6 +58,9 @@ let FuneralsService = class FuneralsService {
         console.log('Updated document is : ', updatedDoc);
         return updatedDoc;
     }
+    async findBySearchQuery(query) {
+        return this.funeralModel.find({ name: { $regex: query, $options: "i" } }).exec();
+    }
     async findByIdAndUpdateUsingMongoCommand(id, mongoCommand) {
         return this.funeralModel.findByIdAndUpdate(id, mongoCommand);
     }
@@ -59,6 +71,9 @@ let FuneralsService = class FuneralsService {
 };
 exports.FuneralsService = FuneralsService;
 exports.FuneralsService = FuneralsService = __decorate([
+    (0, common_1.Injectable)(),
+    __param(0, (0, mongoose_1.InjectModel)(funeral_schema_1.Funeral.name)),
+    __metadata("design:paramtypes", [mongoose_2.Model])
     (0, common_1.Injectable)(),
     __param(0, (0, mongoose_1.InjectModel)(funeral_schema_1.Funeral.name)),
     __metadata("design:paramtypes", [mongoose_2.Model])

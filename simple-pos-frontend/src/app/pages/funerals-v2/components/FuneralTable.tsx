@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
-import { useFunerals } from "@/hooks/useApi";
-import { useFuneralModal } from "@/contexts/FuneralModalContext";
+"use client";
+
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useFunerals, useInvoices } from "@/hooks/useApi";
 import {tableDisplayMappings} from "@/config/funeral-categories";
-import { FuneralFormData, KeyDisplay } from "../../../../types";
-import { ChevronDown } from "@deemlol/next-icons";
+import { KeyDisplay } from "../../../../types";
+import { ChevronDown, ChevronRight } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
+import { useFuneralsContext } from "@/contexts/FuneralsContext";
+import { Trash2 } from "@deemlol/next-icons";
 
 interface CustomDataTableProps {
   funerals: any[];
@@ -17,22 +20,61 @@ interface FuneralTableProps {
     currentPage? : string;
 }
 
+function formatDate(date : string) {
+    const d = date.split('-');
+    return new Date(date).toLocaleDateString();
+}
+
 export default function FuneralTable(props : FuneralTableProps) {
-    const { funerals, isLoading, error, fetchFunerals , filteredFunerals} = useFunerals();
-    const {openCreateFuneral} = useFuneralModal();
+    const { funerals, filteredFunerals, isLoading, error, fetchFunerals } = useFunerals();
+    const { generateInvoice, isLoading: isGeneratingInvoice, error: invoiceError } = useInvoices();
+    const {  
+        showFuneralModal,  
+        setShowFuneralModal, 
+        setShowDeleteModal, 
+        setDeleteTarget,
+        setShowFuneralDetail,
+        setViewingFuneral
+    } = useFuneralsContext();
+
+    
+    //selected cells to show in the funerals table
+    const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice']
+
+    //organise data for table
+    const normalizedFuneralData = useMemo(() => {
+        return filteredFunerals
+            .filter(funeral => funeral.formData) // Remove funerals without formData
+            .map((funeral) => ({
+                ...funeral,
+                formData : {
+                    ...funeral.formData!,
+                    invoice : funeral.formData!.invoice ?? ""
+                },
+            }));
+    }, [filteredFunerals]);
+
+    // const funeralFormData = filteredFunerals.map((funeral) => funeral.formData ?? null).filter((fd): fd is FuneralFormData => fd !== null);
+    const headingsToShow = tableDisplayMappings.filter((mapping) => selectedCells.includes(mapping.key));
+    const headingsToShowKeys = headingsToShow.map((c) => c.key);
+    const headingsToShowDisplayText = headingsToShow.map((c) => c.displayText);
 
     useEffect(() => {
-        console.log('🚀 useEffect triggered - calling fetchFunerals');
+        console.log('🚀 useEffect triggered on fetchFunerals- calling fetchFunerals');
         fetchFunerals();
     }, [fetchFunerals]);
 
-    // Debugging
-    console.log('🔍 Debug Info:');
-    console.log('  - isLoading:', isLoading);
-    console.log('  - error:', error);
-    console.log('  - funerals:', funerals);
-    console.log('  - funerals type:', typeof funerals);
-    console.log('  - funerals length:', Array.isArray(funerals) ? funerals.length : 'Not an array');
+    // Delete handler
+    const handleDeleteClick = (funeralId: string, funeralName: string) => {
+        setDeleteTarget({ id: funeralId, name: funeralName });
+        setShowDeleteModal(true);
+    };
+
+    // View handler
+    const handleViewClick = (funeral: any) => {
+        setViewingFuneral(funeral);
+        setShowFuneralDetail(true);
+    };
 
     if (error) {
         return (
@@ -93,7 +135,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                     <h2>No funerals found</h2>
                     <p>Click the button below to create your first funeral record.</p>
                     <button 
-                        onClick={openCreateFuneral}
+                        onClick={() => {setShowFuneralModal(!showFuneralModal)}}
                         className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
                     >
                         Create First Funeral
@@ -103,19 +145,16 @@ export default function FuneralTable(props : FuneralTableProps) {
         );
     }
 
-
-
-    //selected cells to show in the funerals table
-    const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice']
-
-    //organise data for table
-    const funeralFormData = filteredFunerals
-        .map((funeral) => funeral.formData ?? null)
-        .filter((fd): fd is FuneralFormData => fd !== null);
-    
-    const headingsToShow = tableDisplayMappings.filter((mapping) => selectedCells.includes(mapping.key));
-    const headingsToShowKeys = headingsToShow.map((c) => c.key);
-    const headingsToShowDisplayText = headingsToShow.map((c) => c.displayText);
+    const handleGenerateInvoice = async (funeralId: string) => {
+        try {
+            await generateInvoice(funeralId);
+            // Optionally refresh funerals to get updated invoice URL
+            await fetchFunerals();
+        } catch (error) {
+            console.error('Failed to generate invoice:', error);
+            // You could show a toast notification here
+        }
+    };
 
     // Render the actual table
     //funerals is an array of funeralObjects
@@ -130,6 +169,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                 <table className="table-auto w-full border border-gray-200 text-left">
                     <thead className="bg-gray-50">
                     <tr>
+                
                         {headingsToShowDisplayText.map((heading, index) => (
                         <th key={index} className="px-4 py-2 font-semibold border-b border-gray-200">
                             <div className="flex items-center justify-between">
@@ -137,44 +177,76 @@ export default function FuneralTable(props : FuneralTableProps) {
                                 <button onClick={() => alert(`${heading} button clicked!`)} className="ml-2"
                                 >
                                     <ChevronDown
-                                    size={16}
-                                    className="text-gray-600 hover:text-red-500"
+                                        size={16}
+                                        className="text-gray-600 hover:text-red-500"
                                     />
                                 </button>
                             </div>
                         </th>
                         ))}
+                        <th id="action-heading" className="px-4 py-2 font-semibold border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <span>Actions</span>
+                            </div>
+                        </th>
+                        <th className="px-4 py-2 font-semibold border-b border-gray-200 w-12">
+                            <span>View</span>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    {funeralFormData.map((funeralObject, i) => {
-                        const cellsToShow = Object.entries(funeralObject).filter(([key]) =>
-                        headingsToShowKeys.includes(key)
-                        );
-                        return (
-                        <tr key={i} className="hover:bg-gray-50">
-                            {cellsToShow.map(([key, val], j) => (
-                            <td key={j} className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
-                                {key === "invoice" && typeof val === "string" ? (
-                                <a
-                                    href={val}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 underline"
-                                >
-                                    View Invoice
-                                </a>
-                                ) : (
-                                <span>{String(val)}</span>
-                                )}
-                            </td>
-                            ))}
-                        </tr>
-                        );
-                    })}
+                        {normalizedFuneralData.map((funeralObject, index) => {
+                            const mergedFuneralObj = {
+                                ...funeralObject,
+                                ...(funeralObject.formData ?? {})
+                            };
+                            delete (mergedFuneralObj as any).formData;
+
+                            const cellsToShow = Object.entries(mergedFuneralObj).filter(([key]) => headingsToShowKeys.includes(key));
+                            return (
+                                <tr key={index} className="hover:bg-gray-50">
+                                    {cellsToShow.map(([key, val], i) => (
+                                        <td key={i} className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
+                                            {key === "invoice" && typeof val === "string" ? (
+                                                val.length > 1 ? (
+                                                        <a href={val} 
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer" 
+                                                            className="text-blue-600 underline"
+                                                        >
+                                                            View Invoice
+                                                        </a> 
+                                                ) : <button onClick={() => handleGenerateInvoice(mergedFuneralObj._id)} disabled={isGeneratingInvoice} className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}>
+                                                    {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}</button>
+                                            ) : (
+                                                <span>{String(val)}</span>
+                                            )}
+                                        </td>
+                                    ))}
+                                    <td className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
+                                        <Trash2 
+                                            onClick={() => handleDeleteClick(funeralObject._id, funeralObject.formData?.deceasedName || 'Unknown')} 
+                                            size={24} 
+                                            color="#ff5c5cff" 
+                                            className="cursor-pointer hover:opacity-70"
+                                        />
+                                    </td>
+                                    <td className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
+                                        <button 
+                                            onClick={() => handleViewClick(funeralObject)}
+                                            className="text-blue-600 hover:text-blue-800 transition-colors"
+                                            title="View funeral details"
+                                        >
+                                            <ChevronRight size={20} />
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
         </div>
+        
     )
 }

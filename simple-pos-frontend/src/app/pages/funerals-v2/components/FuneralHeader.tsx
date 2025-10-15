@@ -1,15 +1,19 @@
 "use client";
 
-interface FuneralHeaderProps {
-    openCreateFuneral:  (e: React.MouseEvent) => void;
-}
+import { useFuneralsContext } from "@/contexts/FuneralsContext";
 
-export default function FuneralHeader({openCreateFuneral} : FuneralHeaderProps) {
+
+export default function FuneralHeader() {
+    const {showFuneralModal, setShowFuneralModal} = useFuneralsContext();
+    console.log('Show funeral modal state is : ', showFuneralModal);
+
     return(
         <div className="flex flex-row p-2 w-full h-20 bg-gray-50 rounded-sm items-center justify-between border border-gray-200">
             <h1 className="font-bold">Funerals</h1>
             <button 
-                onClick={openCreateFuneral}
+                onClick={() => {
+                    console.log('Show Funeral Modal clicked');
+                    setShowFuneralModal(true)}}
                 className="p-2 border-1 border-gray-300 rounded-sm bg-blue-600 text-white hover:bg-blue-700">+ Create Funeral</button>
         </div>
         

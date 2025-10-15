@@ -3,6 +3,67 @@ import { Category } from '@/types';
 
 export const FUNERAL_TABLE_HEADINGS = ['Deceased Name', 'Date of Death', 'Invoice', 'Actions']
 
+// export const FUNERAL_TEMPLATE_FIELDS = [
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+//   {'name' : 'dateOfDeath',  'displayText' : 'Date of Death', 'type' : 'date', 'placeholder' : 'Date of Death'},
+//   {'name' : 'lastAddress', 'displayText' : 'Last Address', 'type' : 'text', 'placeholder' : 'Last Address'},
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+//   {'name' : 'deceasedName', 'displayText' : 'Name of Deceased', 'type' : 'text', 'placeholder' : 'Deceased Full Name'},
+  
+// ]
+
+export const FUNERAL_TEMPLATE_A = {
+  sections : [
+    { _id : uuidv4(),
+      name : 'funeralDetails',
+      label : 'Funeral Details',
+      fields : [
+          {_id : uuidv4(), name : 'deceasedName', label : 'Name of Deceased', type : 'text', placeholder : 'Name of Deceased'},
+          {_id : uuidv4(), name : 'dateOfDeath',  label : 'Date of Death', type : 'date', placeholder : 'Date of Death'},
+          {_id : uuidv4(), name : 'lastAddress', label : 'Last Address', type : 'text', placeholder : 'Last Address'},
+          {_id : uuidv4(), name : 'funeralNotes', label : 'Funeral Notes', type : 'textarea', placeholder : 'Funeral notes'}
+      ]
+    },
+    { _id : uuidv4(),
+      name : 'contactDetails',
+      label : 'Contact Details',
+      contactGroups : [
+          {_id: uuidv4(), name: 'contact1', label : 'Contact 1', fields : [
+            {_id: uuidv4(), name : 'contactName1' , label : 'Name', type : 'text', placeholder : 'Name'},
+            {_id: uuidv4(), name : 'phone1', label : 'Phone', type: 'text', placeholder: 'Phone'}
+            ] 
+          },
+          {_id: uuidv4(), name: 'contact2', label : 'Contact 2', fields : [
+            {_id: uuidv4(), name : 'contactName2' , label : 'Name', type : 'text', placeholder : 'Name'},
+            {_id: uuidv4(), name : 'phone2', label : 'Phone', type: 'text', placeholder: 'Phone'}
+            ] 
+          },
+        ],
+      fields : [
+            {_id : uuidv4(), name : 'clientName', label : 'Client Name', type : 'text', placeholder : 'Client Name'},
+            {_id : uuidv4(), name : 'clientAddress',  label : 'Client Address', type : 'text', placeholder : 'Client Address'},
+            {_id : uuidv4(), name : 'clientPhone', label : 'Client Phone', type : 'text', placeholder : 'Phone'},
+      ]
+    },
+    { _id : uuidv4(),
+      name : 'billingDetails',
+      label : 'Billing Details',
+      fields : [
+            {_id : uuidv4(), name: 'careOf', label : 'C/o', type: 'dropdown', options: ['Mr.', 'Mrs.', 'Ms.', 'The ']},
+            {_id : uuidv4(), name : 'billingName', label : 'Billing Name', type : 'text', placeholder : 'Client / family name'},
+            {_id : uuidv4(), name : 'billingAddress',  label : 'Billing Address', type : 'text', placeholder : 'Address'},
+            {_id : uuidv4(), name : 'fromDate',  label : 'Dates : From', type : 'date', placeholder : 'From Date'},
+            {_id : uuidv4(), name : 'toDate',  label : 'Dates : To', type : 'date', placeholder : 'To Date'},
+
+      ]
+    }
+  ]
+}
+
+//Map the funeral object keys, to display text for the table headings
 export const tableDisplayMappings = [
     {'key' : 'deceasedName', 'displayText': 'Deceased Name'},
     {'key' : 'dateOfDeath', 'displayText': 'Date of Death'},

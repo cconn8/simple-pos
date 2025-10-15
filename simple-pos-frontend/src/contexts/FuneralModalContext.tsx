@@ -1,4 +1,4 @@
-
+"use client";
 
 import React , {useContext, createContext, useState, ReactNode} from "react";
 import { FuneralData } from "@/types";

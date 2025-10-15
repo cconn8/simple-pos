@@ -1,18 +1,17 @@
-import { useState, useCallback, useMemo } from 'react';
-import { LoadingState } from '../types';
+"use client";
+
+import { useState, useCallback, useMemo, useEffect } from 'react';
+import { FuneralData, FuneralFormData, LoadingState } from '../types';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';
 
 export const useApi = <T>() => {
-  const [state, setState] = useState<LoadingState & { data: T | null }>({
+  const [state, setState] = useState<LoadingState & { data: T | null }> ({
     isLoading: false,
     error: null,
     data: null,
   });
 
-  const apiCall = useCallback(async (
-    url: string,
-    options?: RequestInit
-  ): Promise<T | null> => {
+  const apiCall = useCallback( async (url: string, options?: RequestInit): Promise<T | null> => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
@@ -30,6 +29,7 @@ export const useApi = <T>() => {
 
       const data = await response.json();
       setState({ isLoading: false, error: null, data });
+      console.log('api data is : ', data);
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
@@ -41,52 +41,187 @@ export const useApi = <T>() => {
   return { ...state, apiCall };
 };
 
-export const useFunerals = () => {
+export const useInvoices = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { data: funerals, isLoading, error, apiCall } = useApi<any[]>();
-  const {search} = useFuneralsContext();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchFunerals = useCallback(async () => {
-    return await apiCall(`${API_URL}/funerals`);
-  }, [apiCall, API_URL]);
-
-  const filteredFunerals = useMemo(() => { //useMemo uses existing funerals cached fetch
-    if(!funerals) return [];
-
-    return funerals.filter((funeral) => (
-      [funeral.formData?.deceasedName, funeral.formData?.clientName, funeral.formData?.notes].some((field) => 
-        (field?.toLowerCase().includes(search.toLowerCase()))
-      )
-    ))
-  },[funerals, search]);
-
-  const createFuneral = useCallback(async (funeralData: any) => {
-    return await apiCall(`${API_URL}/funerals`, {
-      method: 'POST',
-      body: JSON.stringify(funeralData),
-    });
-  }, [apiCall, API_URL]);
-
-  const deleteFuneral = useCallback(async (id: string) => {
-    return await apiCall(`${API_URL}/funerals/${id}`, {
-      method: 'DELETE',
-    });
-  }, [apiCall, API_URL]);
+  const generateInvoice = useCallback(async (funeralId: string, data?: any): Promise<any> => {
+    console.log('generating invoice for funeral:', funeralId);
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Assuming the correct endpoint for invoice generation
+      const response = await fetch(`${API_URL}/invoice/${funeralId}`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data || {})
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to generate invoice for funeral: ${funeralId}`);
+      }
+      
+      const result = await response.json();
+      console.log('Invoice generated successfully:', result);
+      return result;
+      
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      console.error('Error generating invoice:', err);
+      setError(errorMessage);
+      throw err; // Re-throw so caller can handle it
+    } finally {
+      setIsLoading(false);
+    }
+  }, [API_URL]);
 
   return {
-    funerals: funerals || [],
+    generateInvoice,
+    isLoading,
+    error
+  };
+};
+
+export const useFunerals = () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const {search, funerals, setFunerals, refreshTrigger} = useFuneralsContext();
+
+  // Fetch funerals from API
+  const fetchFunerals = useCallback(async () => {
+    console.log('fetching funerals..');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/funerals`);
+      if (!response.ok) { throw new Error(`HTTP ${response.status}`)};
+      const data: FuneralData[] = await response.json();
+      setFunerals(data || []); // ensure always an array
+
+    } catch (err) {
+      console.error("Error fetching funerals:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+      setFunerals([]); // fallback to empty array
+
+    } finally {
+      setIsLoading(false);
+    }
+  }, [API_URL, setFunerals]);
+
+  const createFuneral = useCallback( async(submissionData : FuneralFormData) => {
+    console.log('creating funeral..');
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/funerals`, {
+        method: "POST",
+        headers: {"content-type" : "application/json"},
+        body: JSON.stringify(submissionData),
+      });
+      if(!response.ok) {throw new Error(`HTTP error! status : ${response.status}`)}
+      const newFuneral : FuneralData = await response.json();
+      console.log('funeral created successfully : ', newFuneral);
+      await fetchFunerals();
+      return newFuneral;
+
+    } catch (err) {
+        console.error("Error creating funeral:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setIsLoading(false);
+      }
+
+  }, [API_URL, fetchFunerals]);
+
+  const updateFuneral = useCallback(async (id: string, submissionData: FuneralFormData) => {
+    console.log('updating funeral with id:', id);
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_URL}/funerals/${id}`, {
+        method: "PATCH",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(submissionData),
+      });
+      if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
+      const updatedFuneral: FuneralData = await response.json();
+      console.log('funeral updated successfully:', updatedFuneral);
+      await fetchFunerals();
+      return updatedFuneral;
+
+    } catch (err) {
+      console.error("Error updating funeral:", err);
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setIsLoading(false);
+    }
+
+  }, [API_URL, fetchFunerals]);
+
+  // Delete a funeral by ID and refresh the list
+  const deleteFuneral = useCallback( async (id: string) => {
+      console.log('deleting funeral with id : ', id);
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`${API_URL}/funerals/${id}`, { method: "DELETE" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        // After successful delete, refetch updated list
+        await fetchFunerals();
+      } catch (err) {
+        console.error("Error deleting funeral:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [API_URL, fetchFunerals]
+  );
+
+  // Fetch funerals on mount and when refresh is triggered
+  useEffect(() => {
+    fetchFunerals();
+  }, [fetchFunerals, refreshTrigger]);
+
+  // Filtered funerals by search term
+  const filteredFunerals = useMemo(() => {
+    if (!funerals || funerals.length === 0) return [];
+
+    const normalizedSearch = search.toLowerCase();
+
+    return funerals.filter((funeral) =>
+      [
+        funeral.formData?.deceasedName,
+        funeral.formData?.clientName,
+        funeral.formData?.notes,
+      ].some((field) => field?.toLowerCase().includes(normalizedSearch))
+    );
+  }, [funerals, search]);
+
+  return {
+    funerals, // filtered and ready for display
+    filteredFunerals,
     isLoading,
     error,
-    fetchFunerals,
-    filteredFunerals,
+    fetchFunerals, // expose in case you want manual refresh
     createFuneral,
-    deleteFuneral,
+    updateFuneral,
+    deleteFuneral, // delete handler
   };
 };
 
 export const useInventory = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { data: inventory, isLoading, error, apiCall } = useApi<any[]>();
+  const { data : inventory, isLoading, error, apiCall } = useApi<any[]>();
+
+  console.log('UseInventory hook called..')
 
   const fetchInventory = useCallback(async () => {
     return await apiCall(`${API_URL}/inventory`);
@@ -105,17 +240,29 @@ export const useInventory = () => {
     });
   }, [apiCall, API_URL]);
 
+  const updateInventoryItem = useCallback(async(id: string, itemData: any) => {
+    console.log('useApi is sending update inventory request to server...');
+    try {
+      const response = await fetch(`${API_URL}/inventory/${id}`, {
+        method: 'PATCH',
+        headers: {"Content-Type" : "application/json"},
+        body: JSON.stringify(itemData)
+      });
+      if(!response.ok) throw new Error('Error updating inventory item')
+      console.log('inventory update successful');
+    } catch (err) {
+        console.error("Error updating inventory item:", err);
+        throw err;
+    }
+  }, [API_URL])
+
   return {
     inventory: inventory || [],
     isLoading,
     error,
     fetchInventory,
     createInventoryItem,
+    updateInventoryItem,
     deleteInventoryItem,
   };
 };
-
-export const useInvoices = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { data : invoices, isLoading, error, apiCall} = useApi<any[]>()
-}

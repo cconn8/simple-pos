@@ -31,7 +31,7 @@ let InventoryController = class InventoryController {
         return this.inventoryService.findOne(+id);
     }
     update(id, updateInventoryDto) {
-        return this.inventoryService.update(+id, updateInventoryDto);
+        return this.inventoryService.update(id, updateInventoryDto);
     }
     remove(id) {
         return this.inventoryService.remove(id);

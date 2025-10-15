@@ -10,7 +10,7 @@ export declare class InvoiceService {
     private bucketName;
     constructor(configService: ConfigService, funeralsService: FuneralsService, googleAuthService: GoogleAuthService);
     onModuleInit(): Promise<void>;
-    generateInvoice(funeralId: string, data: any): Promise<any>;
+    generateInvoice(funeralId: string, data?: any): Promise<any>;
     generatePDF(data: any): Promise<Buffer>;
     uploadToGCS(buffer: Buffer, deceasedName: string): Promise<string>;
     deleteFileGCS(invoiceUrl: string): Promise<DeleteFileResponse>;
