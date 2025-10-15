@@ -17,7 +17,7 @@
     .topTableMessage {font-style: italic; font-size: medium;}
     .tableHeadingText {font-weight: bold; } 
     .tableHeadingRow { padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
-    .tableRow { max-width: 150px; padding-left: 1.25rem; padding-right: 1rem; padding-top: 0;}
+    .tableRow { max-width: 150px; padding-left: 80px; padding-right: 1rem; padding-top: 0;}
     .tableSectionTitle { font-size: 12px; font-weight:  bold; font-style: italic; padding-left: 55px; padding-bottom: 10px;}
     .subtotalRow {display: flex; position: absolute; bottom: 13px; right: 60px; padding: 0.5rem; }
     .tableHeadingText p {margin: 0;}
@@ -40,10 +40,12 @@
   <div class="header">
     <div class="clientDetails"> 
       <div class="clientDetailsRow">Representatives of the late {{data.deceasedName}}</div>
-      <div class="clientDetailsRow">C/O {{misterMisses}} {{clientName}}</div>
-      <div class="clientDetailsRow">{{addressLineOne}}</div>
-      <div class="clientDetailsRow">{{addressLineTwo}}</div>
-      <div class="clientDetailsRow">{{addressLineThree}}</div>
+      <div class="clientDetailsRow">C/O {{data.careOf}} {{data.billingName}}</div>
+      {{#each splitAddressLines}}
+      <div class="clientDetailsRow">{{this}}</div>
+      {{!-- <div class="clientDetailsRow">{{addressLineTwo}}</div>
+      <div class="clientDetailsRow">{{addressLineThree}}</div> --}}
+      {{/each}}
     </div>
 
     <div class="logoSection">
@@ -78,14 +80,9 @@
         <td></td>
         <td class="tableRow">
           <strong>Service & Administration Fees, including;</strong>
-            <p>Professional Transport & Care of the deceased</p>
-            <p>Professional Hygienic Preparation</p> 
-            <p>Funeral Planning, Administration & Bookings</p>
-            <p>Liaising with all 3rd parties on the clients behalf including handling of payments</p>
-            <p>Funeral Vehicles & Equipment</p>
-            <p>Professional staff to attend, oversee and officiate at all transfers, removals and funeral services</p>
-            <p>Use of funeral parlour facilities</p>  
-            <p>24hr phone attendance and availability</p>
+          {{#each splitServiceChargeDescription}}
+            <p>{{this}}
+          {{/each}}
         </td>
         <td class="tableRow" style="vertical-align: bottom;">€{{serviceCharge.price}}</td>
       </tr>

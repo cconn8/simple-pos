@@ -30,17 +30,18 @@ export class InvoiceService {
         this.storage = new Storage({authClient: client});
     }
 
-    async generateInvoice(funeralId: string, data: any) : Promise<any> {
+    async generateInvoice(funeralId: string, data?: any) : Promise<any> {
         console.log('invoice service here - generating invoice')
         const funeralDoc = await this.funeralsService.findOneById(funeralId);
         const funeralObj = funeralDoc.toObject(); //funerals are nested in formData in mongodb. Convert toObject as mongoDB returns a document type (different to object) 
-        let funeral = funeralObj.formData
+        const funeral = funeralObj.formData;
+        const normalizedDataForInvoice = {...funeral, ...data} //appends any new data from data to a flat object
 
-        const { deceasedName } = funeral;
+        const { deceasedName } = normalizedDataForInvoice;
 
-        funeral['additionalInvoiceData'] = data; //append the edited invoice data from the client modal to the funeral object
+        // funeral['additionalInvoiceData'] = data; //append the edited invoice data from the client modal to the funeral object
 
-        const pdf = await this.generatePDF(funeral);                //generate pdf
+        const pdf = await this.generatePDF(normalizedDataForInvoice);                //generate pdf
         const url = await this.uploadToGCS(pdf, deceasedName);      //upload to google cloud platform
 
         await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, { $set: {'formData.invoice' : url}}); //update the funeral record with the url of the invoice
@@ -50,11 +51,9 @@ export class InvoiceService {
 
     async generatePDF(data: any): Promise<Buffer> {
         console.log('generating PDF...')
+        console.log('data is : ', data);
         
-        const { selectedItems } = data;
-        console.log('debugging selected items : ', selectedItems);
-
-        let serviceCharge = selectedItems.find((item) => item.type?.toLowerCase().includes('service fee') && item.name.toLowerCase().includes('service'));
+        let serviceCharge = data.selectedItems.find((item) => item.type?.toLowerCase().includes('service fee') && item.name.toLowerCase().includes('service'));
 
         if (!serviceCharge) {
             console.warn('Service Charge item not found in selected items.');
@@ -62,19 +61,40 @@ export class InvoiceService {
         }
         console.log('service fee selected is - : ', serviceCharge);
         
-        const services = selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
-        const products = selectedItems.filter((item) => item.category == 'product')
-        const disbursements = selectedItems.filter((item) => item.category == 'disbursement')
-
+        let services = data.selectedItems.filter((item) => item.category == 'service' && item._id  != serviceCharge._id)
+        let products = data.selectedItems.filter((item) => item.category == 'product')
+        let disbursements = data.selectedItems.filter((item) => item.category == 'disbursement')
+        
         let productsAndServicesTotal = 0;
         let disbursementsTotal = 0;
 
         console.log('service charge is :' , serviceCharge.price);
         console.log('Type of service charge is : ', typeof(serviceCharge.price));
 
-        products.forEach( (product) => {productsAndServicesTotal += Number(product.itemTotal || 0)}); 
-        services.forEach( (service) => {productsAndServicesTotal += Number(service.itemTotal || 0)}); 
-        disbursements.forEach( (disbursement) => {disbursementsTotal += Number(disbursement.itemTotal || 0)});
+        const formatItem = (item: Record<string, any>) => {
+            let itemTotal = item.price * item.qty;
+            if(item.qty > 1) {
+                item['displayTitle'] = `${item.name}  :   (${item.qty} x €${item.price}/unit)`;
+            } else {
+                item['displayTitle'] = item.name;
+            }
+            item['itemTotal'] = itemTotal;
+        }
+
+        products.forEach( (product) => {
+            formatItem(product);
+            productsAndServicesTotal += Number(product.price || 0)
+        }); 
+        services.forEach( (service) => {
+            formatItem(service);
+            productsAndServicesTotal += Number(service.price || 0)
+        }); 
+        disbursements.forEach( (disbursement) => {
+            formatItem(disbursement);
+            disbursementsTotal += Number(disbursement.price || 0)
+        });
+
+        console.log('test products after formatting : ', products);
 
         productsAndServicesTotal += serviceCharge.price;
         let subtotal = productsAndServicesTotal + disbursementsTotal;
@@ -82,10 +102,15 @@ export class InvoiceService {
         console.log('Products and services total = ', productsAndServicesTotal);
         console.log('Subtotal = ', subtotal);
 
-        const {fromDate, toDate , invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
-        const formattedFromDate = new Date(fromDate).toDateString();
-        const formattedToDate = new Date(toDate).toDateString();
+        // const {fromDate, toDate , invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
+        const formattedFromDate = new Date(data.fromDate).toDateString();
+        const formattedToDate = new Date(data.toDate).toDateString();
         console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
+
+        const splitAddressLines = (data.billingAddress ?? "").split(',').map(line => line.trim());
+        // console.log('Split address lines is : ',splitAddressLines);
+        const splitServiceChargeDescription = serviceCharge.description.split(/[\n]+/).map(line => line.trim());
+        // console.log('Service Description Split is : ', splitServiceChargeDescription);
 
         const templateData = {
             data,
@@ -96,7 +121,11 @@ export class InvoiceService {
             disbursementsTotal,
             subtotal, 
             serviceCharge,
-            formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
+            formattedFromDate, 
+            formattedToDate,
+            splitAddressLines,
+            splitServiceChargeDescription
+            // formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
         }
 
         const templatePath = path.join(process.cwd(), 'templates', 'invoice.template5.hbs');

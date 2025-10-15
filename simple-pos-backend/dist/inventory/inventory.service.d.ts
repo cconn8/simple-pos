@@ -16,7 +16,11 @@ export declare class InventoryService {
         __v: number;
     })[]>;
     findOne(id: number): string;
-    update(id: number, updateInventoryDto: UpdateInventoryDto): string;
+    update(id: string, updateInventoryDto: UpdateInventoryDto): Promise<import("mongoose").Document<unknown, {}, Inventory, {}> & Inventory & Required<{
+        _id: String;
+    }> & {
+        __v: number;
+    }>;
     remove(id: String): Promise<{
         message: string;
         id: String;

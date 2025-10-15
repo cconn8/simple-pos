@@ -36,8 +36,32 @@ export class InventoryService {
     return `This action returns a #${id} inventory`;
   }
 
-  update(id: number, updateInventoryDto: UpdateInventoryDto) {
-    return `This action updates a #${id} inventory`;
+  async update(id: string, updateInventoryDto: UpdateInventoryDto) {
+    console.log('Updating inventory item:', id, 'with data:', updateInventoryDto);
+    
+    try {
+      const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
+        id,
+        { $set: updateInventoryDto },
+        { 
+          new: true, // Return the updated document
+          runValidators: true // Run mongoose validation
+        }
+      ).exec();
+
+      if (!updatedInventory) {
+        throw new NotFoundException(`Inventory item with id ${id} not found`);
+      }
+
+      console.log('Successfully updated inventory item:', updatedInventory);
+      return updatedInventory;
+    } catch (error) {
+      console.error('Error updating inventory item:', error);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(`Failed to update inventory item: ${error.message}`);
+    }
   }
 
   async remove(id: String) {

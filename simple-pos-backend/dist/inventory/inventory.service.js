@@ -40,8 +40,26 @@ let InventoryService = class InventoryService {
     findOne(id) {
         return `This action returns a #${id} inventory`;
     }
-    update(id, updateInventoryDto) {
-        return `This action updates a #${id} inventory`;
+    async update(id, updateInventoryDto) {
+        console.log('Updating inventory item:', id, 'with data:', updateInventoryDto);
+        try {
+            const updatedInventory = await this.inventoryModel.findByIdAndUpdate(id, { $set: updateInventoryDto }, {
+                new: true,
+                runValidators: true
+            }).exec();
+            if (!updatedInventory) {
+                throw new common_2.NotFoundException(`Inventory item with id ${id} not found`);
+            }
+            console.log('Successfully updated inventory item:', updatedInventory);
+            return updatedInventory;
+        }
+        catch (error) {
+            console.error('Error updating inventory item:', error);
+            if (error instanceof common_2.NotFoundException) {
+                throw error;
+            }
+            throw new Error(`Failed to update inventory item: ${error.message}`);
+        }
     }
     async remove(id) {
         const deleted = await this.inventoryModel.findByIdAndDelete(id);
