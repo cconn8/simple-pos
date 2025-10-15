@@ -18,6 +18,8 @@ interface FuneralsContextType {
     showFuneralDetail: boolean;
     viewingFuneral: FuneralData | null;
     isEditMode: boolean;
+    sortField: string | null;
+    sortDirection: 'asc' | 'desc' | null;
 
 
     //state setters
@@ -31,6 +33,9 @@ interface FuneralsContextType {
     setShowFuneralDetail: (show: boolean) => void;
     setViewingFuneral: (funeral: FuneralData | null) => void;
     setIsEditMode: (isEdit: boolean) => void;
+    setSortField: (field: string | null) => void;
+    setSortDirection: (direction: 'asc' | 'desc' | null) => void;
+    handleSort: (field: string) => void;
     
     // Funeral item management
     addFuneralItem: (item: SelectedFuneralItem) => void;
@@ -58,6 +63,8 @@ export function FuneralsProvider({children} : {children: React.ReactNode}) {
     const [showFuneralDetail, setShowFuneralDetail] = useState(false);
     const [viewingFuneral, setViewingFuneral] = useState<FuneralData | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [sortField, setSortField] = useState<string | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null);
 
 
     const triggerRefresh = () => {
@@ -106,6 +113,25 @@ export function FuneralsProvider({children} : {children: React.ReactNode}) {
         setKeepChanges(false);
     };
 
+    const handleSort = (field: string) => {
+        if (sortField === field) {
+            // If clicking the same field, toggle direction
+            if (sortDirection === 'asc') {
+                setSortDirection('desc');
+            } else if (sortDirection === 'desc') {
+                // Reset to no sort
+                setSortField(null);
+                setSortDirection(null);
+            } else {
+                setSortDirection('asc');
+            }
+        } else {
+            // If clicking a different field, set it to ascending
+            setSortField(field);
+            setSortDirection('asc');
+        }
+    };
+
 
     return(
         <FuneralsContext.Provider value={{
@@ -138,7 +164,12 @@ export function FuneralsProvider({children} : {children: React.ReactNode}) {
             viewingFuneral,
             setViewingFuneral,
             isEditMode,
-            setIsEditMode
+            setIsEditMode,
+            sortField,
+            setSortField,
+            sortDirection,
+            setSortDirection,
+            handleSort
         }}>
             {children}
         </FuneralsContext.Provider>

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFunerals, useInvoices } from "@/hooks/useApi";
 import {tableDisplayMappings} from "@/config/funeral-categories";
 import { KeyDisplay } from "../../../../types";
-import { ChevronDown, ChevronRight } from "@deemlol/next-icons";
+import { ChevronDown, ChevronRight, ChevronUp } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
 import { Trash2 } from "@deemlol/next-icons";
@@ -34,7 +34,10 @@ export default function FuneralTable(props : FuneralTableProps) {
         setShowDeleteModal, 
         setDeleteTarget,
         setShowFuneralDetail,
-        setViewingFuneral
+        setViewingFuneral,
+        sortField,
+        sortDirection,
+        handleSort
     } = useFuneralsContext();
 
     
@@ -43,7 +46,7 @@ export default function FuneralTable(props : FuneralTableProps) {
 
     //organise data for table
     const normalizedFuneralData = useMemo(() => {
-        return filteredFunerals
+        let processedData = filteredFunerals
             .filter(funeral => funeral.formData) // Remove funerals without formData
             .map((funeral) => ({
                 ...funeral,
@@ -52,7 +55,39 @@ export default function FuneralTable(props : FuneralTableProps) {
                     invoice : funeral.formData!.invoice ?? ""
                 },
             }));
-    }, [filteredFunerals]);
+
+        // Apply sorting if sortField and sortDirection are set
+        if (sortField && sortDirection) {
+            processedData = processedData.sort((a, b) => {
+                let aValue: any = a.formData?.[sortField as keyof typeof a.formData] || '';
+                let bValue: any = b.formData?.[sortField as keyof typeof b.formData] || '';
+
+                // Special handling for date fields
+                if (sortField === 'dateOfDeath') {
+                    const aTime = new Date(aValue as string).getTime();
+                    const bTime = new Date(bValue as string).getTime();
+                    
+                    if (sortDirection === 'asc') {
+                        return aTime - bTime;
+                    } else {
+                        return bTime - aTime;
+                    }
+                }
+
+                // Convert to strings for comparison
+                const aString = String(aValue).toLowerCase();
+                const bString = String(bValue).toLowerCase();
+
+                if (sortDirection === 'asc') {
+                    return aString < bString ? -1 : aString > bString ? 1 : 0;
+                } else {
+                    return aString > bString ? -1 : aString < bString ? 1 : 0;
+                }
+            });
+        }
+
+        return processedData;
+    }, [filteredFunerals, sortField, sortDirection]);
 
     // const funeralFormData = filteredFunerals.map((funeral) => funeral.formData ?? null).filter((fd): fd is FuneralFormData => fd !== null);
     const headingsToShow = tableDisplayMappings.filter((mapping) => selectedCells.includes(mapping.key));
@@ -75,6 +110,22 @@ export default function FuneralTable(props : FuneralTableProps) {
         setViewingFuneral(funeral);
         setShowFuneralDetail(true);
     };
+
+    // Helper function to render sort icon
+    const renderSortIcon = (field: string) => {
+        if (sortField !== field) {
+            return <ChevronDown size={16} className="text-gray-400" />;
+        }
+        
+        if (sortDirection === 'asc') {
+            return <ChevronUp size={16} className="text-blue-600" />;
+        } else if (sortDirection === 'desc') {
+            return <ChevronDown size={16} className="text-blue-600" />;
+        }
+        
+        return <ChevronDown size={16} className="text-gray-400" />;
+    };
+
 
     if (error) {
         return (
@@ -170,16 +221,16 @@ export default function FuneralTable(props : FuneralTableProps) {
                     <thead className="bg-gray-50">
                     <tr>
                 
-                        {headingsToShowDisplayText.map((heading, index) => (
+                        {headingsToShow.map((heading, index) => (
                         <th key={index} className="px-4 py-2 font-semibold border-b border-gray-200">
                             <div className="flex items-center justify-between">
-                                <span>{heading}</span>
-                                <button onClick={() => alert(`${heading} button clicked!`)} className="ml-2"
+                                <span>{heading.displayText}</span>
+                                <button 
+                                    onClick={() => handleSort(heading.key)} 
+                                    className="ml-2 hover:bg-gray-100 p-1 rounded transition-colors"
+                                    title={`Sort by ${heading.displayText}`}
                                 >
-                                    <ChevronDown
-                                        size={16}
-                                        className="text-gray-600 hover:text-red-500"
-                                    />
+                                    {renderSortIcon(heading.key)}
                                 </button>
                             </div>
                         </th>
