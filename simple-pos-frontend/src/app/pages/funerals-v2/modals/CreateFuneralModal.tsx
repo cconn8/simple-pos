@@ -456,6 +456,7 @@ export default function CreateFuneralModal() {
                 billingAddress: funeralFormData.billingAddress || "",
                 fromDate: funeralFormData.fromDate || "",
                 toDate: funeralFormData.toDate || "",
+                invoiceNumber: funeralFormData.invoiceNumber || "",
                 selectedItems: []
             });
             
