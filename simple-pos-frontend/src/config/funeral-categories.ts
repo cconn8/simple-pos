@@ -57,6 +57,8 @@ export const FUNERAL_TEMPLATE_A = {
             {_id : uuidv4(), name : 'billingAddress',  label : 'Billing Address', type : 'text', placeholder : 'Address'},
             {_id : uuidv4(), name : 'fromDate',  label : 'Dates : From', type : 'date', placeholder : 'From Date'},
             {_id : uuidv4(), name : 'toDate',  label : 'Dates : To', type : 'date', placeholder : 'To Date'},
+            {_id : uuidv4(), name : 'invoiceNumber',  label : 'Invoice No.', type : 'text', placeholder : 'Invoice Number'},
+
 
       ]
     }

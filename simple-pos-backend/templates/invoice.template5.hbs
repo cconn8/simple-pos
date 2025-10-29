@@ -12,13 +12,13 @@
   <style>
     .header { display: flex; justify-content: space-between; }
     .clientDetails {margin-top: 0px;}
-    .clientDetailsRow { display: flex; flex-direction: column; font-size: small; padding-left: 22px; padding-top: 16px; padding-bottom: 8px; justify-content: center;}
+    .clientDetailsRow { display: flex; flex-direction: column; font-size: small; padding-left: 30px; padding-top: 16px; padding-bottom: 8px; justify-content: center;}
     .logoSection {width: 250px; height: 250px;}
     .topTableMessage {font-style: italic; font-size: medium;}
     .tableHeadingText {font-weight: bold; } 
     .tableHeadingRow { padding-left: 1rem; padding-right: 1rem; padding-top: 0; }
     .tableRow { max-width: 150px; padding-left: 80px; padding-right: 1rem; padding-top: 0;}
-    .tableSectionTitle { font-size: 12px; font-weight:  bold; font-style: italic; padding-left: 55px; padding-bottom: 10px;}
+    .tableSectionTitle { font-size: 12px; font-weight:  bold; font-style: italic; padding-left: 75px; padding-bottom: 10px; padding-top: 15px;  text-decoration: underline}
     .subtotalRow {display: flex; position: absolute; bottom: 13px; right: 60px; padding: 0.5rem; }
     .tableHeadingText p {margin: 0;}
 
@@ -35,7 +35,7 @@
 </head>
 <body>
   <!-- Header -->
-  <div><p style="font-size: small;"><span style="font-weight: bold;">Invoice No. : </span>{{invoiceNumber}}</p></div>
+  <div><p style="font-size: small;"><span style="font-weight: bold;">Invoice No. : </span>{{data.invoiceNumber}}</p></div>
   <div><p style="font-size: small;"><span style="font-weight: bold;">Dates of Services : </span>{{formattedFromDate}} - {{formattedToDate}}</p></div>
   <div class="header">
     <div class="clientDetails"> 
@@ -65,7 +65,7 @@
     <thead>
       <tr class="tableHeadingRow">
         <td colspan="2" class="tableHeadingText">
-          <p style="padding-left: 220px; padding-top: 22px;">  the late {{data.deceasedName}}, deceased</p>
+          <p style="padding-left: 225px; padding-top: 22px;">  the late {{data.deceasedName}}, deceased</p>
         </td>
         <td colspan="1" class="tableHeadingText"></td>
       </tr>
@@ -73,8 +73,9 @@
     <tbody>
       {{!-- Our Services Section --}}
       <tr>
-        <td colspan="2" class="tableSectionTitle" style="padding-left: 68px; padding-top: 15px;  text-decoration: underline">Our Services</td>
-        <td class="tableSectionTitle"></td>
+        <td colspan="2" class="tableSectionTitle">
+          Our Services</td> {{!-- style="padding-left: 68px; padding-top: 15px;  text-decoration: underline"--}}
+        <td class="tableSectionTitle">{{!-- LEAVE EMPTY FOR COLUMN 3--}}</td>
       </tr>
       <tr id="hardcodedOurServices">
         <td></td>
@@ -115,8 +116,8 @@
 
       <!-- Disbursements Section -->
       <tr>
-        <td colspan="2" class="tableSectionTitle" style="padding-left: 68px;  text-decoration: underline">External Payments on the client's behalf</td>
-        <td class="tableSectionTitle"></td>
+        <td colspan="2" class="tableSectionTitle">External Payments on the client's behalf</td>
+        <td class="tableSectionTitle">{{!-- LEAVE EMPTY FOR COLUMN 3--}}</td>
       </tr>
       {{#each disbursements}}
       <tr>

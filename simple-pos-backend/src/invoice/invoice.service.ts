@@ -83,15 +83,15 @@ export class InvoiceService {
 
         products.forEach( (product) => {
             formatItem(product);
-            productsAndServicesTotal += Number(product.price || 0)
+            productsAndServicesTotal += Number(product.itemTotal || 0)
         }); 
         services.forEach( (service) => {
             formatItem(service);
-            productsAndServicesTotal += Number(service.price || 0)
+            productsAndServicesTotal += Number(service.itemTotal || 0)
         }); 
         disbursements.forEach( (disbursement) => {
             formatItem(disbursement);
-            disbursementsTotal += Number(disbursement.price || 0)
+            disbursementsTotal += Number(disbursement.itemTotal || 0)
         });
 
         console.log('test products after formatting : ', products);

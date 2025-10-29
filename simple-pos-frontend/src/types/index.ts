@@ -54,6 +54,7 @@ export interface FuneralFormData {
   selectedItems?: FuneralItem[];
   invoice?: string;
   notes?: string;
+  invoiceNumber?: string;
 }
 
 export interface FuneralData {
