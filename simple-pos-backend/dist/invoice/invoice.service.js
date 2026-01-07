@@ -41,29 +41,33 @@ let InvoiceService = class InvoiceService {
         const { deceasedName } = normalizedDataForInvoice;
         const pdf = await this.generatePDF(normalizedDataForInvoice);
         const url = await this.uploadToGCS(pdf, deceasedName);
-        await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, { $set: { 'formData.invoice': url } });
+        await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, {
+            $set: { 'formData.invoice': url },
+        });
         return { invoiceUrl: url };
     }
     async generatePDF(data) {
         console.log('generating PDF...');
         console.log('data is : ', data);
-        let serviceCharge = data.selectedItems.find((item) => item.type?.toLowerCase().includes('service fee') && item.name.toLowerCase().includes('service'));
+        let serviceCharge = data.selectedItems.find((item) => item.type?.toLowerCase().includes('service fee') &&
+            item.name.toLowerCase().includes('service'));
         if (!serviceCharge) {
             console.warn('Service Charge item not found in selected items.');
             serviceCharge = 0;
         }
         console.log('service fee selected is - : ', serviceCharge);
-        let services = data.selectedItems.filter((item) => item.category == 'service' && item._id != serviceCharge._id);
-        let products = data.selectedItems.filter((item) => item.category == 'product');
-        let disbursements = data.selectedItems.filter((item) => item.category == 'disbursement');
+        const services = data.selectedItems.filter((item) => item.category == 'service' && item._id != serviceCharge._id);
+        const products = data.selectedItems.filter((item) => item.category == 'product');
+        const disbursements = data.selectedItems.filter((item) => item.category == 'disbursement');
         let productsAndServicesTotal = 0;
         let disbursementsTotal = 0;
         console.log('service charge is :', serviceCharge.price);
-        console.log('Type of service charge is : ', typeof (serviceCharge.price));
+        console.log('Type of service charge is : ', typeof serviceCharge.price);
         const formatItem = (item) => {
-            let itemTotal = item.price * item.qty;
+            const itemTotal = item.price * item.qty;
             if (item.qty > 1) {
-                item['displayTitle'] = `${item.name}  :   (${item.qty} x €${item.price}/unit)`;
+                item['displayTitle'] =
+                    `${item.name}  :   (${item.qty} x €${item.price}/unit)`;
             }
             else {
                 item['displayTitle'] = item.name;
@@ -84,14 +88,18 @@ let InvoiceService = class InvoiceService {
         });
         console.log('test products after formatting : ', products);
         productsAndServicesTotal += serviceCharge.price;
-        let subtotal = productsAndServicesTotal + disbursementsTotal;
+        const subtotal = productsAndServicesTotal + disbursementsTotal;
         console.log('Products and services total = ', productsAndServicesTotal);
         console.log('Subtotal = ', subtotal);
         const formattedFromDate = new Date(data.fromDate).toDateString();
         const formattedToDate = new Date(data.toDate).toDateString();
         console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
-        const splitAddressLines = (data.billingAddress ?? "").split(',').map(line => line.trim());
-        const splitServiceChargeDescription = serviceCharge.description.split(/[\n]+/).map(line => line.trim());
+        const splitAddressLines = (data.billingAddress ?? '')
+            .split(',')
+            .map((line) => line.trim());
+        const splitServiceChargeDescription = serviceCharge.description
+            .split(/[\n]+/)
+            .map((line) => line.trim());
         const templateData = {
             data,
             services,
@@ -104,7 +112,7 @@ let InvoiceService = class InvoiceService {
             formattedFromDate,
             formattedToDate,
             splitAddressLines,
-            splitServiceChargeDescription
+            splitServiceChargeDescription,
         };
         const templatePath = path.join(process.cwd(), 'templates', 'invoice.template5.hbs');
         const source = fs.readFileSync(templatePath, 'utf8');
@@ -114,7 +122,7 @@ let InvoiceService = class InvoiceService {
             console.log('Checking Chromium at:', process.env.PUPPETEER_EXECUTABLE_PATH);
             const browser = await puppeteer_1.default.launch({
                 headless: true,
-                args: ['--no-sandbox', '--disable-setuid-sandbox']
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
             });
             const page = await browser.newPage();
             await page.setContent(html, { waitUntil: 'networkidle0' });
@@ -147,7 +155,6 @@ let InvoiceService = class InvoiceService {
         if (parts.length < 2) {
             throw new Error('Invalid invoice URL format');
         }
-        ;
         console.log('Splitting URL - Bucket & File : ', bucketName, filename);
         const myBucket = this.storage.bucket(bucketName);
         try {

@@ -18,6 +18,7 @@ const funerals_service_1 = require("./funerals.service");
 const create_funeral_dto_1 = require("./dto/create-funeral.dto");
 const update_funeral_dto_1 = require("./dto/update-funeral.dto");
 const invoice_service_1 = require("../invoice/invoice.service");
+const auth_guard_1 = require("../auth/auth.guard");
 let FuneralsController = class FuneralsController {
     constructor(funeralsService, invoiceService) {
         this.funeralsService = funeralsService;
@@ -85,6 +86,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], FuneralsController.prototype, "remove", null);
 exports.FuneralsController = FuneralsController = __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('funerals'),
     __metadata("design:paramtypes", [funerals_service_1.FuneralsService,
         invoice_service_1.InvoiceService])

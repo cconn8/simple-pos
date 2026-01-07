@@ -17,7 +17,11 @@ let InventoryModule = class InventoryModule {
 exports.InventoryModule = InventoryModule;
 exports.InventoryModule = InventoryModule = __decorate([
     (0, common_1.Module)({
-        imports: [mongoose_1.MongooseModule.forFeature([{ name: inventory_schema_1.Inventory.name, schema: inventory_schema_1.InventorySchema }])],
+        imports: [
+            mongoose_1.MongooseModule.forFeature([
+                { name: inventory_schema_1.Inventory.name, schema: inventory_schema_1.InventorySchema },
+            ]),
+        ],
         controllers: [inventory_controller_1.InventoryController],
         providers: [inventory_service_1.InventoryService],
     })

@@ -10,7 +10,7 @@ export class GoogleAuthService {
     const auth = new GoogleAuth({
       scopes: [
         'https://www.googleapis.com/auth/devstorage.full_control',
-        'https://www.googleapis.com/auth/cloud-platform'
+        'https://www.googleapis.com/auth/cloud-platform',
       ],
     });
 

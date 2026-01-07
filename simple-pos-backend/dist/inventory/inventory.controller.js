@@ -17,6 +17,7 @@ const common_1 = require("@nestjs/common");
 const inventory_service_1 = require("./inventory.service");
 const create_inventory_dto_1 = require("./dto/create-inventory.dto");
 const update_inventory_dto_1 = require("./dto/update-inventory.dto");
+const auth_guard_1 = require("../auth/auth.guard");
 let InventoryController = class InventoryController {
     constructor(inventoryService) {
         this.inventoryService = inventoryService;
@@ -74,6 +75,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], InventoryController.prototype, "remove", null);
 exports.InventoryController = InventoryController = __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('inventory'),
     __metadata("design:paramtypes", [inventory_service_1.InventoryService])
 ], InventoryController);

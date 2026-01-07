@@ -31,15 +31,15 @@ exports.AuthModule = AuthModule = __decorate([
                         secret: config.get('JWT_SECRET'),
                         signOptions: {
                             expiresIn: config.get('JWT_EXPIRES'),
-                        }
+                        },
                     };
-                }
+                },
             }),
             passport_1.PassportModule.register({ defaultStrategy: 'jwt' }),
-            mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: users_schema_1.UserSchema }])
+            mongoose_1.MongooseModule.forFeature([{ name: 'User', schema: users_schema_1.UserSchema }]),
         ],
         controllers: [auth_controller_1.AuthController],
-        providers: [auth_service_1.AuthService]
+        providers: [auth_service_1.AuthService],
     })
 ], AuthModule);
 //# sourceMappingURL=auth.module.js.map

@@ -22,7 +22,7 @@ export declare class FuneralsService {
     }> & {
         __v: number;
     })[]>;
-    findByIdAndUpdateUsingMongoCommand(id: string, mongoCommand: UpdateFuneralDto): Promise<any>;
+    findByIdAndUpdateUsingMongoCommand(id: string, mongoCommand: any): Promise<any>;
     deleteById(id: string): Promise<import("mongoose").Document<unknown, {}, Funeral, {}> & Funeral & Required<{
         _id: unknown;
     }> & {

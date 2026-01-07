@@ -16,6 +16,7 @@ exports.InvoiceController = void 0;
 const common_1 = require("@nestjs/common");
 const invoice_service_1 = require("./invoice.service");
 const common_2 = require("@nestjs/common");
+const auth_guard_1 = require("../auth/auth.guard");
 let InvoiceController = class InvoiceController {
     constructor(invoiceService) {
         this.invoiceService = invoiceService;
@@ -45,6 +46,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], InvoiceController.prototype, "generateInvoice", null);
 exports.InvoiceController = InvoiceController = __decorate([
+    (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('invoice'),
     __metadata("design:paramtypes", [invoice_service_1.InvoiceService])
 ], InvoiceController);

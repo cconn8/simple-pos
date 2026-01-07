@@ -11,10 +11,8 @@ import { FuneralsService } from 'src/funerals/funerals.service';
   controllers: [InvoiceController],
   imports: [
     GoogleModule, //  GoogleAuthService becomes available here
-    forwardRef(() => FuneralsModule)
+    forwardRef(() => FuneralsModule),
   ],
-  exports: [InvoiceService]
-
+  exports: [InvoiceService],
 })
 export class InvoiceModule {}
-

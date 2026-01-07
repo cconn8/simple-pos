@@ -8,13 +8,13 @@ import { InvoiceService } from 'src/invoice/invoice.service';
 import { GoogleModule } from 'src/google/google.module';
 
 @Module({
-  imports : [
-        MongooseModule.forFeature([{name : Funeral.name, schema: FuneralSchema}]),
-        GoogleModule,
-        forwardRef(() => InvoiceModule)
-      ],
+  imports: [
+    MongooseModule.forFeature([{ name: Funeral.name, schema: FuneralSchema }]),
+    GoogleModule,
+    forwardRef(() => InvoiceModule),
+  ],
   controllers: [FuneralsController],
   providers: [FuneralsService, InvoiceService],
-  exports: [FuneralsService]
+  exports: [FuneralsService],
 })
 export class FuneralsModule {}

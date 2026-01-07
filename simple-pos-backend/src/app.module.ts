@@ -11,25 +11,29 @@ import { GoogleAuthService } from './google/google-auth.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
-
 @Module({
   imports: [
-      ConfigModule.forRoot({isGlobal: true, envFilePath: `.env.${process.env.NODE_ENV}`,}),
-      MongooseModule.forRootAsync({
-        imports: [ConfigModule],
-        useFactory: async (configService: ConfigService) => ({
-          uri: configService.get<string>('MONGO_URI'),
-        }),
-        inject: [ConfigService],
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: `.env.${process.env.NODE_ENV}`,
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('MONGO_URI'),
       }),
-      FormTemplatesModule, 
-      FuneralsModule, 
-      InvoiceModule, 
-      InventoryModule, AuthModule, UsersModule
-    ],
+      inject: [ConfigService],
+    }),
+    FormTemplatesModule,
+    FuneralsModule,
+    InvoiceModule,
+    InventoryModule,
+    AuthModule,
+    UsersModule,
+  ],
 
   controllers: [AppController],
   providers: [AppService, GoogleAuthService],
-  exports: [GoogleAuthService]
+  exports: [GoogleAuthService],
 })
 export class AppModule {}
