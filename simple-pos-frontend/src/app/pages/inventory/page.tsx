@@ -1,7 +1,10 @@
 import InventoryDashboard from './InventoryDashboard';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function InventoryPage() {
   return (
-    <InventoryDashboard />
+    <ProtectedRoute>
+      <InventoryDashboard />
+    </ProtectedRoute>
   );
 }
