@@ -23,7 +23,7 @@ let FuneralsService = class FuneralsService {
     }
     async create(data) {
         const funeral = await this.funeralModel.create({ formData: data });
-        console.log("Saved funeral : ", funeral);
+        console.log('Saved funeral : ', funeral);
         return funeral;
     }
     async findAll() {
@@ -45,12 +45,14 @@ let FuneralsService = class FuneralsService {
     }
     async findByIdAndUpdate(id, updateFuneralDto) {
         console.log('funerals service updateFuneralById called');
-        const updatedDoc = this.funeralModel.findByIdAndUpdate(id, { $set: { 'formData': updateFuneralDto } }, { new: true });
-        console.log('Updated document is : ', updatedDoc);
+        const updatedDoc = this.funeralModel.findByIdAndUpdate(id, { $set: { formData: updateFuneralDto } }, { new: true });
+        console.log('Document updated in MongoDB!');
         return updatedDoc;
     }
     async findBySearchQuery(query) {
-        return this.funeralModel.find({ name: { $regex: query, $options: "i" } }).exec();
+        return this.funeralModel
+            .find({ name: { $regex: query, $options: 'i' } })
+            .exec();
     }
     async findByIdAndUpdateUsingMongoCommand(id, mongoCommand) {
         return this.funeralModel.findByIdAndUpdate(id, mongoCommand);

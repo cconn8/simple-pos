@@ -3,8 +3,10 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { FuneralData, FuneralFormData, LoadingState } from '../types';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export const useApi = <T>() => {
+  const { token } = useAuth();
   const [state, setState] = useState<LoadingState & { data: T | null }> ({
     isLoading: false,
     error: null,
@@ -18,10 +20,17 @@ export const useApi = <T>() => {
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` }),
           ...options?.headers,
         },
         ...options,
       });
+
+      if (response.status === 401) {
+        // Token expired or invalid - redirect to login
+        window.location.href = '/login';
+        return null;
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -36,13 +45,14 @@ export const useApi = <T>() => {
       setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
       return null;
     }
-  }, []);
+  }, [token]);
 
   return { ...state, apiCall };
 };
 
 export const useInvoices = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const { token } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +65,10 @@ export const useInvoices = () => {
       // Assuming the correct endpoint for invoice generation
       const response = await fetch(`${API_URL}/invoice/${funeralId}`, {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
         body: JSON.stringify(data || {})
       });
       
@@ -75,7 +88,7 @@ export const useInvoices = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [API_URL]);
+  }, [API_URL, token]);
 
   return {
     generateInvoice,
@@ -86,6 +99,7 @@ export const useInvoices = () => {
 
 export const useFunerals = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL!;
+  const { token } = useAuth();
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -98,7 +112,11 @@ export const useFunerals = () => {
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/funerals`);
+      const response = await fetch(`${API_URL}/funerals`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      });
       if (!response.ok) { throw new Error(`HTTP ${response.status}`)};
       const data: FuneralData[] = await response.json();
       setFunerals(data || []); // ensure always an array
@@ -111,7 +129,7 @@ export const useFunerals = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [API_URL, setFunerals]);
+  }, [API_URL, setFunerals, token]);
 
   const createFuneral = useCallback( async(submissionData : FuneralFormData) => {
     console.log('creating funeral..');
@@ -121,7 +139,10 @@ export const useFunerals = () => {
     try {
       const response = await fetch(`${API_URL}/funerals`, {
         method: "POST",
-        headers: {"content-type" : "application/json"},
+        headers: {
+          "content-type" : "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
         body: JSON.stringify(submissionData),
       });
       if(!response.ok) {throw new Error(`HTTP error! status : ${response.status}`)}
@@ -137,7 +158,7 @@ export const useFunerals = () => {
         setIsLoading(false);
       }
 
-  }, [API_URL, fetchFunerals]);
+  }, [API_URL, fetchFunerals, token]);
 
   const updateFuneral = useCallback(async (id: string, submissionData: FuneralFormData) => {
     console.log('updating funeral with id:', id);
@@ -147,7 +168,10 @@ export const useFunerals = () => {
     try {
       const response = await fetch(`${API_URL}/funerals/${id}`, {
         method: "PATCH",
-        headers: {"content-type": "application/json"},
+        headers: {
+          "content-type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
         body: JSON.stringify(submissionData),
       });
       if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
@@ -163,7 +187,7 @@ export const useFunerals = () => {
       setIsLoading(false);
     }
 
-  }, [API_URL, fetchFunerals]);
+  }, [API_URL, fetchFunerals, token]);
 
   // Delete a funeral by ID and refresh the list
   const deleteFuneral = useCallback( async (id: string) => {
@@ -171,7 +195,12 @@ export const useFunerals = () => {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_URL}/funerals/${id}`, { method: "DELETE" });
+        const response = await fetch(`${API_URL}/funerals/${id}`, { 
+          method: "DELETE",
+          headers: {
+            ...(token && { Authorization: `Bearer ${token}` })
+          }
+        });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         // After successful delete, refetch updated list
         await fetchFunerals();
@@ -182,7 +211,7 @@ export const useFunerals = () => {
         setIsLoading(false);
       }
     },
-    [API_URL, fetchFunerals]
+    [API_URL, fetchFunerals, token]
   );
 
   // Fetch funerals on mount and when refresh is triggered
@@ -219,6 +248,7 @@ export const useFunerals = () => {
 
 export const useInventory = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const { token } = useAuth();
   const { data : inventory, isLoading, error, apiCall } = useApi<any[]>();
 
   console.log('UseInventory hook called..')
@@ -245,7 +275,10 @@ export const useInventory = () => {
     try {
       const response = await fetch(`${API_URL}/inventory/${id}`, {
         method: 'PATCH',
-        headers: {"Content-Type" : "application/json"},
+        headers: {
+          "Content-Type" : "application/json",
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
         body: JSON.stringify(itemData)
       });
       if(!response.ok) throw new Error('Error updating inventory item')
@@ -254,7 +287,7 @@ export const useInventory = () => {
         console.error("Error updating inventory item:", err);
         throw err;
     }
-  }, [API_URL])
+  }, [API_URL, token])
 
   return {
     inventory: inventory || [],

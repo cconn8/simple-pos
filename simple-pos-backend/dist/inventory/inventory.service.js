@@ -43,10 +43,12 @@ let InventoryService = class InventoryService {
     async update(id, updateInventoryDto) {
         console.log('Updating inventory item:', id, 'with data:', updateInventoryDto);
         try {
-            const updatedInventory = await this.inventoryModel.findByIdAndUpdate(id, { $set: updateInventoryDto }, {
+            const updatedInventory = await this.inventoryModel
+                .findByIdAndUpdate(id, { $set: updateInventoryDto }, {
                 new: true,
-                runValidators: true
-            }).exec();
+                runValidators: true,
+            })
+                .exec();
             if (!updatedInventory) {
                 throw new common_2.NotFoundException(`Inventory item with id ${id} not found`);
             }

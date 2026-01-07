@@ -23,11 +23,11 @@ exports.FuneralsModule = FuneralsModule = __decorate([
         imports: [
             mongoose_1.MongooseModule.forFeature([{ name: funeral_schema_1.Funeral.name, schema: funeral_schema_1.FuneralSchema }]),
             google_module_1.GoogleModule,
-            (0, common_1.forwardRef)(() => invoice_module_1.InvoiceModule)
+            (0, common_1.forwardRef)(() => invoice_module_1.InvoiceModule),
         ],
         controllers: [funerals_controller_1.FuneralsController],
         providers: [funerals_service_1.FuneralsService, invoice_service_1.InvoiceService],
-        exports: [funerals_service_1.FuneralsService]
+        exports: [funerals_service_1.FuneralsService],
     })
 ], FuneralsModule);
 //# sourceMappingURL=funerals.module.js.map

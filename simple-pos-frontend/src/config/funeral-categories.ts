@@ -48,7 +48,7 @@ export const FUNERAL_TEMPLATE_A = {
             {_id : uuidv4(), name : 'clientPhone', label : 'Client Phone', type : 'text', placeholder : 'Phone'},
       ]
     },
-    { _id : uuidv4(),
+    { _id : uuidv4(),  
       name : 'billingDetails',
       label : 'Billing Details',
       fields : [
@@ -77,6 +77,7 @@ export const tableDisplayMappings = [
     {'key' : 'funeralNotes', 'displayText': 'Funeral Notes'},
     {'key' : 'selectedItems', 'displayText': 'Selected Items'}, 
     {'key' : 'invoice', 'displayText': 'Invoice'},
+    {'key' : 'paymentStatus', 'displayText': 'Pay Status'},
 ]
 
 export const DESIRED_CATEGORY_ORDER: Category[] = [

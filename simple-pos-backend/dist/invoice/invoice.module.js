@@ -22,9 +22,9 @@ exports.InvoiceModule = InvoiceModule = __decorate([
         controllers: [invoice_controller_1.InvoiceController],
         imports: [
             google_module_1.GoogleModule,
-            (0, common_1.forwardRef)(() => funerals_module_1.FuneralsModule)
+            (0, common_1.forwardRef)(() => funerals_module_1.FuneralsModule),
         ],
-        exports: [invoice_service_1.InvoiceService]
+        exports: [invoice_service_1.InvoiceService],
     })
 ], InvoiceModule);
 //# sourceMappingURL=invoice.module.js.map

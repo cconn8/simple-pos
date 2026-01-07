@@ -6,23 +6,23 @@ export declare class InventoryService {
     private inventoryModel;
     constructor(inventoryModel: Model<Inventory>);
     create(data: CreateInventoryDto): Promise<import("mongoose").Document<unknown, {}, Inventory, {}> & Inventory & Required<{
-        _id: String;
+        _id: string;
     }> & {
         __v: number;
     }>;
     findAll(): Promise<(import("mongoose").Document<unknown, {}, Inventory, {}> & Inventory & Required<{
-        _id: String;
+        _id: string;
     }> & {
         __v: number;
     })[]>;
     findOne(id: number): string;
     update(id: string, updateInventoryDto: UpdateInventoryDto): Promise<import("mongoose").Document<unknown, {}, Inventory, {}> & Inventory & Required<{
-        _id: String;
+        _id: string;
     }> & {
         __v: number;
     }>;
-    remove(id: String): Promise<{
+    remove(id: string): Promise<{
         message: string;
-        id: String;
+        id: string;
     }>;
 }

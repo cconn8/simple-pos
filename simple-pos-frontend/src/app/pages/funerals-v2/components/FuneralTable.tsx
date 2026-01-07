@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFunerals, useInvoices } from "@/hooks/useApi";
 import {tableDisplayMappings} from "@/config/funeral-categories";
-import { KeyDisplay } from "../../../../types";
+import { KeyDisplay, PaymentStatus } from "../../../../types";
 import { ChevronDown, ChevronRight, ChevronUp } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
@@ -26,7 +26,7 @@ function formatDate(date : string) {
 }
 
 export default function FuneralTable(props : FuneralTableProps) {
-    const { funerals, filteredFunerals, isLoading, error, fetchFunerals } = useFunerals();
+    const { funerals, filteredFunerals, isLoading, error, fetchFunerals, updateFuneral } = useFunerals();
     const { generateInvoice, isLoading: isGeneratingInvoice, error: invoiceError } = useInvoices();
     const {  
         showFuneralModal,  
@@ -42,7 +42,7 @@ export default function FuneralTable(props : FuneralTableProps) {
 
     
     //selected cells to show in the funerals table
-    const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice']
+    const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice', 'paymentStatus']
 
     //organise data for table
     const normalizedFuneralData = useMemo(() => {
@@ -54,6 +54,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                     ...funeral.formData!,
                     invoice : funeral.formData!.invoice ?? ""
                 },
+                paymentStatus: funeral.paymentStatus ?? 'Unpaid' as PaymentStatus
             }));
 
         // Apply sorting if sortField and sortDirection are set
@@ -207,6 +208,27 @@ export default function FuneralTable(props : FuneralTableProps) {
         }
     };
 
+    const handlePaymentStatusChange = async (funeralId: string, newStatus: PaymentStatus, currentFormData: any) => {
+        try {
+            await updateFuneral(funeralId, { ...currentFormData, paymentStatus: newStatus });
+        } catch (error) {
+            console.error('Failed to update payment status:', error);
+        }
+    };
+
+    const getPaymentStatusColor = (status: PaymentStatus) => {
+        switch (status) {
+            case "Paid":
+            return "text-green-600";
+            case "Partially Paid":
+            return "text-orange-500";
+            case "Unpaid":
+            return "text-red-600";
+            default:
+            return "text-gray-800";
+        }
+    };
+
     // Render the actual table
     //funerals is an array of funeralObjects
     return (
@@ -253,7 +275,8 @@ export default function FuneralTable(props : FuneralTableProps) {
                             };
                             delete (mergedFuneralObj as any).formData;
 
-                            const cellsToShow = Object.entries(mergedFuneralObj).filter(([key]) => headingsToShowKeys.includes(key));
+                            // Fix: Iterate through columns in exact header order instead of object property order
+                            const cellsToShow = headingsToShowKeys.map(key => [key, (mergedFuneralObj as any)[key]]);
                             return (
                                 <tr key={index} className="hover:bg-gray-50">
                                     {cellsToShow.map(([key, val], i) => (
@@ -269,6 +292,23 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                         </a> 
                                                 ) : <button onClick={() => handleGenerateInvoice(mergedFuneralObj._id)} disabled={isGeneratingInvoice} className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}>
                                                     {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}</button>
+                                            ) : key === "paymentStatus" ? (
+                                                <select
+                                                    value={val as PaymentStatus}
+                                                    onChange={(e) =>
+                                                        handlePaymentStatusChange(
+                                                        funeralObject._id,
+                                                        e.target.value as PaymentStatus,
+                                                        funeralObject.formData
+                                                        )
+                                                    }
+                                                    className={`border border-gray-300 rounded px-2 py-1 text-sm bg-white 
+                                                        ${getPaymentStatusColor(val as PaymentStatus)}`}
+                                                    >
+                                                    <option value="Unpaid">Unpaid</option>
+                                                    <option value="Partially Paid">Partially Paid</option>
+                                                    <option value="Paid">Paid</option>
+                                                    </select>
                                             ) : (
                                                 <span>{String(val)}</span>
                                             )}

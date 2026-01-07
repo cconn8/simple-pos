@@ -15,7 +15,7 @@ let GoogleAuthService = class GoogleAuthService {
         const auth = new google_auth_library_1.GoogleAuth({
             scopes: [
                 'https://www.googleapis.com/auth/devstorage.full_control',
-                'https://www.googleapis.com/auth/cloud-platform'
+                'https://www.googleapis.com/auth/cloud-platform',
             ],
         });
         return await auth.getClient();

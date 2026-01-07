@@ -8,28 +8,29 @@ import { NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class InventoryService {
-  constructor(@InjectModel(Inventory.name) private inventoryModel: Model<Inventory>) {}
-
+  constructor(
+    @InjectModel(Inventory.name) private inventoryModel: Model<Inventory>,
+  ) {}
 
   async create(data: CreateInventoryDto) {
     const inventory = await this.inventoryModel.create(data);
-    console.log('saved inventory : ', inventory)
+    console.log('saved inventory : ', inventory);
     return inventory;
   }
 
   async findAll() {
-      const inventory = await this.inventoryModel
-        .find()
-        .sort({ createdAt: -1 }) // newest first
-        .exec();
-  
-      if (!inventory || inventory.length === 0) {
-        throw new NotFoundException(`No funerals found!`);
-      }
+    const inventory = await this.inventoryModel
+      .find()
+      .sort({ createdAt: -1 }) // newest first
+      .exec();
 
-      // console.log('inventory found : ', inventory);
-  
-      return inventory;
+    if (!inventory || inventory.length === 0) {
+      throw new NotFoundException(`No funerals found!`);
+    }
+
+    // console.log('inventory found : ', inventory);
+
+    return inventory;
   }
 
   findOne(id: number) {
@@ -37,17 +38,24 @@ export class InventoryService {
   }
 
   async update(id: string, updateInventoryDto: UpdateInventoryDto) {
-    console.log('Updating inventory item:', id, 'with data:', updateInventoryDto);
-    
+    console.log(
+      'Updating inventory item:',
+      id,
+      'with data:',
+      updateInventoryDto,
+    );
+
     try {
-      const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
-        id,
-        { $set: updateInventoryDto },
-        { 
-          new: true, // Return the updated document
-          runValidators: true // Run mongoose validation
-        }
-      ).exec();
+      const updatedInventory = await this.inventoryModel
+        .findByIdAndUpdate(
+          id,
+          { $set: updateInventoryDto },
+          {
+            new: true, // Return the updated document
+            runValidators: true, // Run mongoose validation
+          },
+        )
+        .exec();
 
       if (!updatedInventory) {
         throw new NotFoundException(`Inventory item with id ${id} not found`);
@@ -64,11 +72,13 @@ export class InventoryService {
     }
   }
 
-  async remove(id: String) {
+  async remove(id: string) {
     const deleted = await this.inventoryModel.findByIdAndDelete(id);
 
-    if (!deleted) { throw new NotFoundException(`Inventory item with id ${id} not found`); }
+    if (!deleted) {
+      throw new NotFoundException(`Inventory item with id ${id} not found`);
+    }
 
-    return { message: 'Item deleted successfully', id }; 
+    return { message: 'Item deleted successfully', id };
   }
 }

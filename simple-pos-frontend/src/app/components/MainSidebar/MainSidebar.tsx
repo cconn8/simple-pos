@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import Image from "next/image";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavigationItem {
   label: string;
@@ -18,10 +19,16 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 
 export default function MainSidebar() {
   const router = useRouter();
+  const { logout } = useAuth();
 
   const handleNavigation = useCallback((path: string) => {
     router.push(path);
   }, [router]);
+
+  const handleLogout = useCallback(() => {
+    logout();
+    router.push('/login');
+  }, [logout, router]);
 
   return (
     <aside className="sticky top-0 basis-1/8 bg-gray-500 m-1 rounded-sm" role="navigation">
@@ -48,6 +55,17 @@ export default function MainSidebar() {
             </button>
           </div>
         ))}
+        
+        {/* Logout Button */}
+        <div className="m-2 p-1 text-red-300 border-b border-red-400 hover:text-red-100 hover:border-red-200 hover:font-bold transition-all duration-300 rounded-sm">
+          <button
+            onClick={handleLogout}
+            className="w-full text-left"
+            role="menuitem"
+          >
+            Logout
+          </button>
+        </div>
       </nav>
     </aside>
   );

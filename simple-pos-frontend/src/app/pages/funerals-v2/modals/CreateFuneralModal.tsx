@@ -18,7 +18,8 @@ import {
   ProductTileProps,
   FuneralFormData,
   FuneralItem,
-  FuneralSummaryProps
+  FuneralSummaryProps,
+  PaymentStatus
 } from "@/types";
 import { useFunerals } from "@/hooks/useApi";
 import { Edit3, Trash2 } from "@deemlol/next-icons";
@@ -432,7 +433,8 @@ export default function CreateFuneralModal() {
         clientAddress: "",
         clientPhone: "",
         funeralNotes: "",
-        selectedItems: []
+        selectedItems: [],
+        paymentStatus: "Unpaid" as PaymentStatus
     });
 
     // Populate form data when in edit mode
@@ -457,7 +459,8 @@ export default function CreateFuneralModal() {
                 fromDate: funeralFormData.fromDate || "",
                 toDate: funeralFormData.toDate || "",
                 invoiceNumber: funeralFormData.invoiceNumber || "",
-                selectedItems: []
+                selectedItems: [],
+                paymentStatus: funeralFormData.paymentStatus || viewingFuneral.paymentStatus || "Unpaid" as PaymentStatus
             });
             
             // selectedFuneralItems should already be populated by the edit handler
@@ -601,6 +604,17 @@ export default function CreateFuneralModal() {
                                     ))}
                                 </div>      
                             ))}
+
+                            <div className="flex flex-wrap mb-4">
+                                <FieldElement
+                                    name="paymentStatus"
+                                    label="Payment Status"
+                                    type="dropdown"
+                                    options={["Unpaid", "Partially Paid", "Paid"]}
+                                    value={formData.paymentStatus || "Unpaid"}
+                                    onChange={handleFieldChange}
+                                />
+                            </div>
 
                             <ProductSection 
                                 products={inventory} 

@@ -25,7 +25,10 @@ exports.AppModule = AppModule;
 exports.AppModule = AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            config_1.ConfigModule.forRoot({ isGlobal: true, envFilePath: `.env.${process.env.NODE_ENV}`, }),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                envFilePath: `.env.${process.env.NODE_ENV}`,
+            }),
             mongoose_1.MongooseModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 useFactory: async (configService) => ({
@@ -36,11 +39,13 @@ exports.AppModule = AppModule = __decorate([
             form_templates_module_1.FormTemplatesModule,
             funerals_module_1.FuneralsModule,
             invoice_module_1.InvoiceModule,
-            inventory_module_1.InventoryModule, auth_module_1.AuthModule, users_module_1.UsersModule
+            inventory_module_1.InventoryModule,
+            auth_module_1.AuthModule,
+            users_module_1.UsersModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService, google_auth_service_1.GoogleAuthService],
-        exports: [google_auth_service_1.GoogleAuthService]
+        exports: [google_auth_service_1.GoogleAuthService],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

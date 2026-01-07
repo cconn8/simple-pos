@@ -10,6 +10,7 @@ import DeleteConfirmationModal from '@/components/DeleteConfirmationModal';
 import { FuneralDetailDrawer } from './components/FuneralDetailDrawer';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';
 import { useFunerals } from '@/hooks/useApi';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 
 
@@ -77,6 +78,8 @@ export default function FuneralsPage() {
     }
     
     return(
-        <AppContent />
+        <ProtectedRoute>
+            <AppContent />
+        </ProtectedRoute>
     )
 }

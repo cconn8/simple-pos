@@ -1,5 +1,7 @@
 import React from 'react';
 
+export type PaymentStatus = 'Paid' | 'Partially Paid' | 'Unpaid';
+
 export interface FuneralItem {
   _id: string;
   name: string;
@@ -55,11 +57,13 @@ export interface FuneralFormData {
   invoice?: string;
   notes?: string;
   invoiceNumber?: string;
+  paymentStatus?: PaymentStatus;
 }
 
 export interface FuneralData {
   _id: string;
   formData: FuneralFormData;
+  paymentStatus?: PaymentStatus;
 }
 
 export interface InventoryItem {
