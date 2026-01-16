@@ -69,6 +69,7 @@ export const FUNERAL_TEMPLATE_A = {
 export const tableDisplayMappings = [
     {'key' : 'deceasedName', 'displayText': 'Deceased Name'},
     {'key' : 'dateOfDeath', 'displayText': 'Date of Death'},
+    {'key' : 'fromDate', 'displayText': 'Commenced Work'},
     {'key' : 'lastAddress', 'displayText': 'Last Address'},
     {'key' : 'clientName', 'displayText': 'Client Name'},
     {'key' : 'clientAddress', 'displayText': 'Client Address'},
@@ -77,7 +78,8 @@ export const tableDisplayMappings = [
     {'key' : 'funeralNotes', 'displayText': 'Funeral Notes'},
     {'key' : 'selectedItems', 'displayText': 'Selected Items'}, 
     {'key' : 'invoice', 'displayText': 'Invoice'},
-    {'key' : 'paymentStatus', 'displayText': 'Pay Status'},
+    {'key' : 'xeroStatus', 'displayText': 'XERO'},
+    // {'key' : 'paymentStatus', 'displayText': 'Pay Status'}, // Removed for redesign
 ]
 
 export const DESIRED_CATEGORY_ORDER: Category[] = [

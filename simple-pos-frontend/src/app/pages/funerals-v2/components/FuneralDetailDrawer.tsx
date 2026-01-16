@@ -1,10 +1,12 @@
 "use client";
 
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
+import { useFuneralsV2 } from "@/hooks/useFuneralsV2";
 import { Edit3, X } from "@deemlol/next-icons";
 import dateFormat from 'dateformat';
 
 export function FuneralDetailDrawer() {
+  // Get UI state from context (still needed for modal management)
   const { 
     showFuneralDetail, 
     setShowFuneralDetail, 
@@ -12,10 +14,19 @@ export function FuneralDetailDrawer() {
     setViewingFuneral,
     setShowFuneralModal,
     setIsEditMode,
-    setSelectedFuneralItems
+    setSelectedFuneralItems,
+    setEditingFuneralData,
+    setShowXeroPostingModal,
+    setXeroPostingFuneral
   } = useFuneralsContext();
 
-  if (!showFuneralDetail || !viewingFuneral) return null;
+  // Get V2 funeral data (for type safety and proper data access)
+  const { funerals } = useFuneralsV2();
+  
+  // Find the V2 version of the viewing funeral
+  const viewingFuneralV2 = funerals.find(funeral => funeral._id === viewingFuneral?._id);
+
+  if (!showFuneralDetail || !viewingFuneral || !viewingFuneralV2) return null;
 
   const handleClose = () => {
     setShowFuneralDetail(false);
@@ -27,7 +38,7 @@ export function FuneralDetailDrawer() {
     setIsEditMode(true);
     
     // Convert funeral items back to SelectedFuneralItem format for editing
-    const editableItems = viewingFuneral.formData?.selectedItems?.map(item => ({
+    const editableItems = viewingFuneralV2.funeralData.selectedItems?.map(item => ({
       ...item,
       selectedQty: item.qty,
       totalPrice: item.qty * item.price,
@@ -36,9 +47,19 @@ export function FuneralDetailDrawer() {
     
     setSelectedFuneralItems(editableItems);
     
+    // Set the V2 funeral data for the CreateFuneralModal to use
+    setEditingFuneralData(viewingFuneralV2.funeralData);
+    
     // Close detail drawer and open edit modal
     setShowFuneralDetail(false);
     setShowFuneralModal(true);
+  };
+
+  const handlePostToXero = () => {
+    if (viewingFuneralV2) {
+      setXeroPostingFuneral(viewingFuneralV2);
+      setShowXeroPostingModal(true);
+    }
   };
 
   const formatFieldValue = (key: string, value: string | undefined): string => {
@@ -71,8 +92,28 @@ export function FuneralDetailDrawer() {
     return fieldMap[key] || key;
   };
 
-  const formData = viewingFuneral.formData || {};
-  const selectedItems = viewingFuneral.formData?.selectedItems || [];
+  // Access V2 data structure for display
+  const formData = {
+    deceasedName: viewingFuneralV2.funeralData.deceasedName,
+    dateOfDeath: viewingFuneralV2.funeralData.dateOfDeath,
+    lastAddress: viewingFuneralV2.funeralData.lastAddress,
+    clientName: viewingFuneralV2.funeralData.client.name,
+    clientAddress: viewingFuneralV2.funeralData.client.address,
+    clientPhone: viewingFuneralV2.funeralData.client.phone,
+    clientEmail: viewingFuneralV2.funeralData.client.email,
+    billingName: viewingFuneralV2.funeralData.billing.name,
+    billingAddress: viewingFuneralV2.funeralData.billing.address,
+    careOf: viewingFuneralV2.funeralData.billing.careOf,
+    contactName1: viewingFuneralV2.funeralData.contacts.contactName1,
+    phone1: viewingFuneralV2.funeralData.contacts.phone1,
+    contactName2: viewingFuneralV2.funeralData.contacts.contactName2,
+    phone2: viewingFuneralV2.funeralData.contacts.phone2,
+    fromDate: viewingFuneralV2.funeralData.fromDate,
+    toDate: viewingFuneralV2.funeralData.toDate,
+    funeralNotes: viewingFuneralV2.funeralData.funeralNotes,
+    notes: viewingFuneralV2.funeralData.notes
+  };
+  const selectedItems = viewingFuneralV2.funeralData.selectedItems || [];
   const total = selectedItems.reduce((sum, item) => sum + (item.qty * item.price), 0);
 
   return (
@@ -82,6 +123,28 @@ export function FuneralDetailDrawer() {
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">Funeral Details</h2>
           <div className="flex items-center gap-2">
+            {/* Show Post to XERO button if: 
+                1. Payment status is Paid or Partially Paid 
+                2. Not already posted to XERO */}
+            {(viewingFuneralV2.paymentStatus === 'Paid' || viewingFuneralV2.paymentStatus === 'Partially Paid') && 
+             !viewingFuneralV2.xeroData?.invoiceId && (
+              <button
+                onClick={handlePostToXero}
+                className="flex items-center gap-2 px-3 py-2 text-sm bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+                title="Post invoice to XERO"
+                disabled={viewingFuneralV2.xeroData?.status === 'posting'}
+              >
+                📤 Post to XERO
+              </button>
+            )}
+            
+            {/* Show XERO status if already posted */}
+            {viewingFuneralV2.xeroData?.invoiceId && (
+              <div className="flex items-center gap-1 px-3 py-2 text-sm bg-green-100 text-green-800 rounded">
+                ✅ Posted to XERO
+              </div>
+            )}
+            
             <button
               onClick={handleEdit}
               className="flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"

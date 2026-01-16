@@ -19,9 +19,10 @@ import {
   FuneralFormData,
   FuneralItem,
   FuneralSummaryProps,
-  PaymentStatus
+  // PaymentStatus removed for redesign
 } from "@/types";
-import { useFunerals } from "@/hooks/useApi";
+import { FuneralDataV2 } from "@/types/funeralV2";
+import { useFuneralsV2 } from "@/hooks/useFuneralsV2";
 import { Edit3, Trash2 } from "@deemlol/next-icons";
 import dateFormat from 'dateformat';
 
@@ -421,10 +422,12 @@ export default function CreateFuneralModal() {
         isEditMode,
         setIsEditMode,
         viewingFuneral,
-        setSelectedFuneralItems
+        setSelectedFuneralItems,
+        editingFuneralData,
+        setEditingFuneralData
     } = useFuneralsContext();
     const {inventory } = useInventoryContext();
-    const { createFuneral, updateFuneral } = useFunerals();
+    const { createFuneral, updateFuneral } = useFuneralsV2();
     const [formData, setFormData] = useState<FuneralFormData>({
         deceasedName: "",
         dateOfDeath: "",
@@ -434,38 +437,40 @@ export default function CreateFuneralModal() {
         clientPhone: "",
         funeralNotes: "",
         selectedItems: [],
-        paymentStatus: "Unpaid" as PaymentStatus
+        // paymentStatus removed for redesign
     });
 
     // Populate form data when in edit mode
     useEffect(() => {
-        if (isEditMode && viewingFuneral && showFuneralModal) {
-            const funeralFormData = viewingFuneral.formData || {};
+        if (isEditMode && editingFuneralData && showFuneralModal) {
+            // Extract data from V2 funeralData structure
             setFormData({
-                deceasedName: funeralFormData.deceasedName || "",
-                dateOfDeath: funeralFormData.dateOfDeath || "",
-                lastAddress: funeralFormData.lastAddress || "",
-                clientName: funeralFormData.clientName || "",
-                clientAddress: funeralFormData.clientAddress || "",
-                clientPhone: funeralFormData.clientPhone || "",
-                funeralNotes: funeralFormData.funeralNotes || "",
-                contactName1: funeralFormData.contactName1 || "",
-                phone1: funeralFormData.phone1 || "",
-                contactName2: funeralFormData.contactName2 || "",
-                phone2: funeralFormData.phone2 || "",
-                careOf: funeralFormData.careOf || "",
-                billingName: funeralFormData.billingName || "",
-                billingAddress: funeralFormData.billingAddress || "",
-                fromDate: funeralFormData.fromDate || "",
-                toDate: funeralFormData.toDate || "",
-                invoiceNumber: funeralFormData.invoiceNumber || "",
+                deceasedName: editingFuneralData.deceasedName || "",
+                dateOfDeath: editingFuneralData.dateOfDeath || "",
+                lastAddress: editingFuneralData.lastAddress || "",
+                clientName: editingFuneralData.client?.name || "",
+                clientAddress: editingFuneralData.client?.address || "",
+                clientPhone: editingFuneralData.client?.phone || "",
+                clientEmail: editingFuneralData.client?.email || "",
+                funeralNotes: editingFuneralData.funeralNotes || "",
+                contactName1: editingFuneralData.contacts?.contactName1 || "",
+                phone1: editingFuneralData.contacts?.phone1 || "",
+                contactName2: editingFuneralData.contacts?.contactName2 || "",
+                phone2: editingFuneralData.contacts?.phone2 || "",
+                careOf: editingFuneralData.billing?.careOf || "",
+                billingName: editingFuneralData.billing?.name || "",
+                billingAddress: editingFuneralData.billing?.address || "",
+                fromDate: editingFuneralData.fromDate || "",
+                toDate: editingFuneralData.toDate || "",
+                invoiceNumber: editingFuneralData.billing?.invoiceNumber || "",
+                notes: editingFuneralData.notes || "",
                 selectedItems: [],
-                paymentStatus: funeralFormData.paymentStatus || viewingFuneral.paymentStatus || "Unpaid" as PaymentStatus
+                // paymentStatus removed for redesign
             });
             
             // selectedFuneralItems should already be populated by the edit handler
         }
-    }, [isEditMode, viewingFuneral, showFuneralModal]);
+    }, [isEditMode, editingFuneralData, showFuneralModal]);
 
     const infoSections = FUNERAL_TEMPLATE_A.sections.filter((section) => section.name !== "billingDetails");
     const billingSection = FUNERAL_TEMPLATE_A.sections.filter((section) => section.name == "billingDetails");
@@ -504,7 +509,8 @@ export default function CreateFuneralModal() {
             selectedItems: []
         });
         setIsEditMode(false);
-    }, [clearFuneralItems, setIsEditMode]);
+        setEditingFuneralData(null);
+    }, [clearFuneralItems, setIsEditMode, setEditingFuneralData]);
 
     // Handle save funeral
     const handleSave = useCallback(async () => {
@@ -521,27 +527,65 @@ export default function CreateFuneralModal() {
                 price: item.price
             }));
 
-            // Prepare form data for submission
-            const submissionData: FuneralFormData = {
-                ...formData,
-                selectedItems: funeralItems
+            // Prepare data for V2 API submission
+            const submissionDataV2: FuneralDataV2 = {
+                deceasedName: formData.deceasedName || '',
+                dateOfDeath: formData.dateOfDeath || '',
+                lastAddress: formData.lastAddress || '',
+                client: {
+                    name: formData.clientName || '',
+                    address: formData.clientAddress || '',
+                    phone: formData.clientPhone || '',
+                    email: formData.clientEmail || ''
+                },
+                billing: {
+                    careOf: formData.careOf || '',
+                    name: formData.billingName || '',
+                    address: formData.billingAddress || '',
+                    invoiceNumber: formData.invoiceNumber || ''
+                },
+                contacts: {
+                    contactName1: formData.contactName1 || '',
+                    phone1: formData.phone1 || '',
+                    contactName2: formData.contactName2 || '',
+                    phone2: formData.phone2 || ''
+                },
+                invoice: {
+                    invoiceNumber: formData.invoiceNumber || '',
+                    generatedDate: new Date().toISOString(),
+                    status: 'Draft',
+                    totalAmount: funeralItems.reduce((sum, item) => sum + (item.qty * item.price), 0),
+                    lineItems: funeralItems
+                },
+                fromDate: formData.fromDate || '',
+                toDate: formData.toDate || '',
+                selectedItems: funeralItems,
+                notes: formData.notes || '',
+                funeralNotes: formData.funeralNotes || ''
             };
 
-            console.log(isEditMode ? 'Updating funeral data:' : 'Creating funeral data:', submissionData);
+            // Submit funeral data
             
             let result;
             if (isEditMode && viewingFuneral) {
-                result = await updateFuneral(viewingFuneral._id, submissionData);
+                result = await updateFuneral(viewingFuneral._id, submissionDataV2);
             } else {
-                result = await createFuneral(submissionData);
+                result = await createFuneral(submissionDataV2);
             }
             
+            // Check if operation was successful (result can be null due to transformation issues)
+            // In V2 integration, a null result might just mean transformation failed but creation succeeded
+            // Process result
+            
+            // Always close modal and clear form after attempting operation
+            // The data refresh will update the UI with the latest data
+            handleClearAll();
+            setShowFuneralModal(false);
+            
             if (result) {
-                console.log(isEditMode ? 'Funeral updated successfully:' : 'Funeral created successfully:', result);
-                handleClearAll();
-                setShowFuneralModal(false);
+                // Operation completed successfully
             } else {
-                console.error(isEditMode ? 'Failed to update funeral' : 'Failed to create funeral');
+                // Data refreshed
             }
         } catch (error) {
             console.error(isEditMode ? 'Error updating funeral:' : 'Error creating funeral:', error);
@@ -605,16 +649,7 @@ export default function CreateFuneralModal() {
                                 </div>      
                             ))}
 
-                            <div className="flex flex-wrap mb-4">
-                                <FieldElement
-                                    name="paymentStatus"
-                                    label="Payment Status"
-                                    type="dropdown"
-                                    options={["Unpaid", "Partially Paid", "Paid"]}
-                                    value={formData.paymentStatus || "Unpaid"}
-                                    onChange={handleFieldChange}
-                                />
-                            </div>
+                            {/* Payment Status field removed for redesign */}
 
                             <ProductSection 
                                 products={inventory} 

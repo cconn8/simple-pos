@@ -1,13 +1,18 @@
 "use client";
 
+import { useFuneralsV2 } from "@/hooks/useFuneralsV2";
+import { useInvoices } from "@/hooks/useApi";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useFunerals, useInvoices } from "@/hooks/useApi";
+// import { useFunerals, useInvoices } from "@/hooks/useApi";
 import {tableDisplayMappings} from "@/config/funeral-categories";
-import { KeyDisplay, PaymentStatus } from "../../../../types";
+import { KeyDisplay } from "../../../../types";
 import { ChevronDown, ChevronRight, ChevronUp } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
 import { Trash2 } from "@deemlol/next-icons";
+import { formatDateDisplay } from "@/utils/dateUtils";
+import { FuneralDataV2 } from "@/types/funeralV2";
+import Link from "next/link";
 
 interface CustomDataTableProps {
   funerals: any[];
@@ -20,13 +25,11 @@ interface FuneralTableProps {
     currentPage? : string;
 }
 
-function formatDate(date : string) {
-    const d = date.split('-');
-    return new Date(date).toLocaleDateString();
-}
 
 export default function FuneralTable(props : FuneralTableProps) {
-    const { funerals, filteredFunerals, isLoading, error, fetchFunerals, updateFuneral } = useFunerals();
+    const { funerals, filteredFunerals, isLoading, error, fetchFunerals } = useFuneralsV2();
+    console.log('📋 Loaded funerals count:', funerals?.length || 0);
+    // const { funerals, filteredFunerals, isLoading, error, fetchFunerals, updateFuneral } = useFunerals();
     const { generateInvoice, isLoading: isGeneratingInvoice, error: invoiceError } = useInvoices();
     const {  
         showFuneralModal,  
@@ -37,34 +40,44 @@ export default function FuneralTable(props : FuneralTableProps) {
         setViewingFuneral,
         sortField,
         sortDirection,
-        handleSort
+        handleSort,
+        setShowXeroPostingModal,
+        setXeroPostingFuneral
     } = useFuneralsContext();
 
-    
+    // Process filtered funerals
     //selected cells to show in the funerals table
-    const selectedCells = ['deceasedName', 'dateOfDeath', 'invoice', 'paymentStatus']
+    const selectedCells = ['deceasedName', 'dateOfDeath', 'fromDate', 'invoice', 'xeroStatus'] //fromDate is referenced as Commenced Work
 
     //organise data for table
     const normalizedFuneralData = useMemo(() => {
         let processedData = filteredFunerals
-            .filter(funeral => funeral.formData) // Remove funerals without formData
+            .filter(funeral => funeral.funeralData) // Remove funerals without funeralData
             .map((funeral) => ({
                 ...funeral,
-                formData : {
-                    ...funeral.formData!,
-                    invoice : funeral.formData!.invoice ?? ""
-                },
-                paymentStatus: funeral.paymentStatus ?? 'Unpaid' as PaymentStatus
+                // Flatten V2 data structure for table display so the keys are nested for easy search
+                deceasedName: funeral.funeralData.deceasedName,
+                dateOfDeath: funeral.funeralData.dateOfDeath,
+                fromDate: funeral.funeralData.fromDate,
+                clientName: funeral.funeralData.client.name,
+                clientAddress: funeral.funeralData.client.address,
+                clientPhone: funeral.funeralData.client.phone,
+                lastAddress: funeral.funeralData.lastAddress,
+                invoice: funeral.funeralData.invoice.pdfUrl  ||  "",  // Invoice URL at top level
+                xeroStatus: funeral.xeroData?.status || null,  // XERO posting status
+                paymentStatus: funeral.paymentStatus || 'Unpaid',  // Include payment status for controls
+                // paymentStatus removed for redesign
             }));
 
         // Apply sorting if sortField and sortDirection are set
         if (sortField && sortDirection) {
             processedData = processedData.sort((a, b) => {
-                let aValue: any = a.formData?.[sortField as keyof typeof a.formData] || '';
-                let bValue: any = b.formData?.[sortField as keyof typeof b.formData] || '';
+                // Access flattened data directly (after our normalization above)
+                let aValue: any = (a as any)[sortField] || '';
+                let bValue: any = (b as any)[sortField] || '';
 
-                // Special handling for date fields
-                if (sortField === 'dateOfDeath') {
+                // Special handling for date fields (dateOfDeath, fromDate)
+                if (sortField === 'dateOfDeath' || sortField === 'fromDate') {
                     const aTime = new Date(aValue as string).getTime();
                     const bTime = new Date(bValue as string).getTime();
                     
@@ -86,7 +99,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                 }
             });
         }
-
+        // Funerals processed for display
         return processedData;
     }, [filteredFunerals, sortField, sortDirection]);
 
@@ -96,7 +109,7 @@ export default function FuneralTable(props : FuneralTableProps) {
     const headingsToShowDisplayText = headingsToShow.map((c) => c.displayText);
 
     useEffect(() => {
-        console.log('🚀 useEffect triggered on fetchFunerals- calling fetchFunerals');
+        // Fetch funerals on mount
         fetchFunerals();
     }, [fetchFunerals]);
 
@@ -110,6 +123,42 @@ export default function FuneralTable(props : FuneralTableProps) {
     const handleViewClick = (funeral: any) => {
         setViewingFuneral(funeral);
         setShowFuneralDetail(true);
+    };
+
+    // Payment status update handler
+    const handlePaymentStatusChange = async (funeralId: string, newStatus: string) => {
+        try {
+            // Use the existing API to update payment status
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${funeralId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Add auth token if available
+                    ...(localStorage.getItem('auth_token') && { 
+                        Authorization: `Bearer ${localStorage.getItem('auth_token')}` 
+                    })
+                },
+                body: JSON.stringify({ paymentStatus: newStatus })
+            });
+
+            if (!response.ok) throw new Error('Failed to update payment status');
+            
+            // Refresh funeral data to see changes
+            await fetchFunerals();
+        } catch (error) {
+            console.error('Error updating payment status:', error);
+            alert('Failed to update payment status. Please try again.');
+        }
+    };
+
+    // XERO posting handler
+    const handlePostToXero = (funeral: any) => {
+        // Find the V2 version of the funeral for the modal
+        const funeralV2 = funerals.find(f => f._id === funeral._id);
+        if (funeralV2) {
+            setXeroPostingFuneral(funeralV2);
+            setShowXeroPostingModal(true);
+        }
     };
 
     // Helper function to render sort icon
@@ -208,26 +257,9 @@ export default function FuneralTable(props : FuneralTableProps) {
         }
     };
 
-    const handlePaymentStatusChange = async (funeralId: string, newStatus: PaymentStatus, currentFormData: any) => {
-        try {
-            await updateFuneral(funeralId, { ...currentFormData, paymentStatus: newStatus });
-        } catch (error) {
-            console.error('Failed to update payment status:', error);
-        }
-    };
+    // Payment status functionality removed for redesign
 
-    const getPaymentStatusColor = (status: PaymentStatus) => {
-        switch (status) {
-            case "Paid":
-            return "text-green-600";
-            case "Partially Paid":
-            return "text-orange-500";
-            case "Unpaid":
-            return "text-red-600";
-            default:
-            return "text-gray-800";
-        }
-    };
+    // Payment status color function removed for redesign
 
     // Render the actual table
     //funerals is an array of funeralObjects
@@ -262,23 +294,21 @@ export default function FuneralTable(props : FuneralTableProps) {
                                 <span>Actions</span>
                             </div>
                         </th>
-                        <th className="px-4 py-2 font-semibold border-b border-gray-200 w-12">
-                            <span>View</span>
-                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                        {normalizedFuneralData.map((funeralObject, index) => {
-                            const mergedFuneralObj = {
-                                ...funeralObject,
-                                ...(funeralObject.formData ?? {})
-                            };
-                            delete (mergedFuneralObj as any).formData;
+                        {normalizedFuneralData.map((normFuneralObject, index) => {
+                            // No need to merge formData - we already flattened the data in normalization
+                            // const mergedFuneralObj = funeralObject;
 
                             // Fix: Iterate through columns in exact header order instead of object property order
-                            const cellsToShow = headingsToShowKeys.map(key => [key, (mergedFuneralObj as any)[key]]);
+                            const cellsToShow = headingsToShowKeys.map(key => [key, (normFuneralObject as any)[key]]);
                             return (
-                                <tr key={index} className="hover:bg-gray-50">
+                                <tr 
+                                    key={index} 
+                                    className="hover:bg-gray-50 cursor-pointer"
+                                    onClick={() => handleViewClick(normFuneralObject)}
+                                >
                                     {cellsToShow.map(([key, val], i) => (
                                         <td key={i} className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
                                             {key === "invoice" && typeof val === "string" ? (
@@ -287,49 +317,127 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                             target="_blank" 
                                                             rel="noopener noreferrer" 
                                                             className="text-blue-600 underline"
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             View Invoice
                                                         </a> 
-                                                ) : <button onClick={() => handleGenerateInvoice(mergedFuneralObj._id)} disabled={isGeneratingInvoice} className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}>
-                                                    {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}</button>
-                                            ) : key === "paymentStatus" ? (
-                                                <select
-                                                    value={val as PaymentStatus}
-                                                    onChange={(e) =>
-                                                        handlePaymentStatusChange(
-                                                        funeralObject._id,
-                                                        e.target.value as PaymentStatus,
-                                                        funeralObject.formData
-                                                        )
-                                                    }
-                                                    className={`border border-gray-300 rounded px-2 py-1 text-sm bg-white 
-                                                        ${getPaymentStatusColor(val as PaymentStatus)}`}
+                                                ) : <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleGenerateInvoice(normFuneralObject._id);
+                                                    }} 
+                                                    disabled={isGeneratingInvoice} 
+                                                    className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                >
+                                                    {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}
+                                                </button>
+                                            ) : key === "xeroStatus" ? (
+                                                // Render XERO status with appropriate styling
+                                                val === 'posted' ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="flex items-center gap-1 text-green-600 text-sm font-medium">
+                                                            <a href="https://go.xero.com/AccountsReceivable/Search.aspx?invoiceStatus=INVOICESTATUS/AUTHORISED"
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer" 
+                                                            className="underline"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                ✅ Posted to XERO
+                                                            
+                                                            </a>
+                                                        </span>
+                                                        <button
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation();
+                                                                if (confirm('Reset XERO data? This will allow you to post to XERO again.')) {
+                                                                    try {
+                                                                        const response = await fetch(`${process.env.API_URL}/funerals/${normFuneralObject._id}/xero/reset`, {
+                                                                            method: 'DELETE'
+                                                                        });
+                                                                        const result = await response.json();
+                                                                        if (result.success) {
+                                                                            alert('✅ XERO data reset successfully!');
+                                                                            window.location.reload(); // Simple refresh
+                                                                        } else {
+                                                                            alert('❌ Failed to reset XERO data');
+                                                                        }
+                                                                    } catch (error) {
+                                                                        alert('❌ Error resetting XERO data');
+                                                                    }
+                                                                }
+                                                            }}
+                                                            className="px-2 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200"
+                                                            title="Reset XERO posting status"
+                                                        >
+                                                            Reset
+                                                        </button>
+                                                    </div>
+                                                ) : val === 'posting' ? (
+                                                    <span className="flex items-center gap-1 text-blue-600 text-sm">
+                                                        🔄 Posting...
+                                                    </span>
+                                                ) : val === 'failed' ? (
+                                                    <span className="flex items-center gap-1 text-red-600 text-sm" title={normFuneralObject.xeroData?.errorMessage || 'Posting failed'}>
+                                                        ❌ Failed
+                                                    </span>
+                                                ) : (normFuneralObject.paymentStatus === 'Paid' || normFuneralObject.paymentStatus === 'Partially Paid') ? (
+                                                    // Show "Post to XERO" button for paid funerals not yet posted
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handlePostToXero(normFuneralObject);
+                                                        }}
+                                                        className="px-2 py-1 text-xs bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                                                        title="Post invoice to XERO"
                                                     >
-                                                    <option value="Unpaid">Unpaid</option>
-                                                    <option value="Partially Paid">Partially Paid</option>
-                                                    <option value="Paid">Paid</option>
-                                                    </select>
+                                                        📤 Post
+                                                    </button>
+                                                ) : (
+                                                    <span className="text-gray-400 text-sm">-</span>
+                                                )
+                                            ) : key === "fromDate" ? (
+                                                <span>{formatDateDisplay(val as string)}</span>
+                                            ) : key === "dateOfDeath" ? (
+                                                <span>{formatDateDisplay(val as string)}</span>
                                             ) : (
                                                 <span>{String(val)}</span>
                                             )}
                                         </td>
                                     ))}
                                     <td className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
-                                        <Trash2 
-                                            onClick={() => handleDeleteClick(funeralObject._id, funeralObject.formData?.deceasedName || 'Unknown')} 
-                                            size={24} 
-                                            color="#ff5c5cff" 
-                                            className="cursor-pointer hover:opacity-70"
-                                        />
-                                    </td>
-                                    <td className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
-                                        <button 
-                                            onClick={() => handleViewClick(funeralObject)}
-                                            className="text-blue-600 hover:text-blue-800 transition-colors"
-                                            title="View funeral details"
-                                        >
-                                            <ChevronRight size={20} />
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            {/* Payment Status Dropdown */}
+                                            <select
+                                                value={normFuneralObject.paymentStatus}
+                                                onChange={(e) => {
+                                                    e.stopPropagation();
+                                                    handlePaymentStatusChange(normFuneralObject._id, e.target.value);
+                                                }}
+                                                className={`text-xs px-2 py-1 rounded border ${
+                                                    normFuneralObject.paymentStatus === 'Paid' 
+                                                        ? 'bg-green-100 text-green-800 border-green-300'
+                                                    : normFuneralObject.paymentStatus === 'Partially Paid'
+                                                        ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                                                    : 'bg-gray-100 text-gray-800 border-gray-300'
+                                                }`}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <option value="Unpaid">Unpaid</option>
+                                                <option value="Partially Paid">Partially Paid</option>
+                                                <option value="Paid">Paid</option>
+                                            </select>
+                                            
+                                            {/* Delete Button */}
+                                            <Trash2 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleDeleteClick(normFuneralObject._id, normFuneralObject.deceasedName || 'Unknown');
+                                                }} 
+                                                size={20} 
+                                                color="#ff5c5cff" 
+                                                className="cursor-pointer hover:opacity-70"
+                                            />
+                                        </div>
                                     </td>
                                 </tr>
                             );

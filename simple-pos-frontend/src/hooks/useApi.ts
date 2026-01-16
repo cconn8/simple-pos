@@ -6,6 +6,7 @@ import { useFuneralsContext } from '@/contexts/FuneralsContext';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useApi = <T>() => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
   const { token } = useAuth();
   const [state, setState] = useState<LoadingState & { data: T | null }> ({
     isLoading: false,
@@ -38,7 +39,7 @@ export const useApi = <T>() => {
 
       const data = await response.json();
       setState({ isLoading: false, error: null, data });
-      console.log('api data is : ', data);
+      // API call successful
       return data;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'An error occurred';
@@ -57,7 +58,7 @@ export const useInvoices = () => {
   const [error, setError] = useState<string | null>(null);
 
   const generateInvoice = useCallback(async (funeralId: string, data?: any): Promise<any> => {
-    console.log('generating invoice for funeral:', funeralId);
+    // Generate invoice for funeral
     setIsLoading(true);
     setError(null);
     
@@ -77,7 +78,7 @@ export const useInvoices = () => {
       }
       
       const result = await response.json();
-      console.log('Invoice generated successfully:', result);
+      // Invoice generated successfully
       return result;
       
     } catch (err) {
@@ -98,16 +99,15 @@ export const useInvoices = () => {
 };
 
 export const useFunerals = () => {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL!;
-  const { token } = useAuth();
-  
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const { token } = useAuth()
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {search, funerals, setFunerals, refreshTrigger} = useFuneralsContext();
 
   // Fetch funerals from API
   const fetchFunerals = useCallback(async () => {
-    console.log('fetching funerals..');
+    // Fetch funerals from API
     setIsLoading(true);
     setError(null);
 
@@ -118,7 +118,7 @@ export const useFunerals = () => {
         }
       });
       if (!response.ok) { throw new Error(`HTTP ${response.status}`)};
-      const data: FuneralData[] = await response.json();
+      const data: any[] = await response.json(); // Allow mixed legacy and V2 formats
       setFunerals(data || []); // ensure always an array
 
     } catch (err) {
@@ -132,7 +132,7 @@ export const useFunerals = () => {
   }, [API_URL, setFunerals, token]);
 
   const createFuneral = useCallback( async(submissionData : FuneralFormData) => {
-    console.log('creating funeral..');
+    // Create new funeral
     setIsLoading(true);
     setError(null);
 
@@ -147,7 +147,7 @@ export const useFunerals = () => {
       });
       if(!response.ok) {throw new Error(`HTTP error! status : ${response.status}`)}
       const newFuneral : FuneralData = await response.json();
-      console.log('funeral created successfully : ', newFuneral);
+      // Funeral created successfully
       await fetchFunerals();
       return newFuneral;
 
@@ -161,7 +161,7 @@ export const useFunerals = () => {
   }, [API_URL, fetchFunerals, token]);
 
   const updateFuneral = useCallback(async (id: string, submissionData: FuneralFormData) => {
-    console.log('updating funeral with id:', id);
+    // Update funeral
     setIsLoading(true);
     setError(null);
 
@@ -176,7 +176,7 @@ export const useFunerals = () => {
       });
       if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
       const updatedFuneral: FuneralData = await response.json();
-      console.log('funeral updated successfully:', updatedFuneral);
+      // Funeral updated successfully
       await fetchFunerals();
       return updatedFuneral;
 
@@ -191,7 +191,7 @@ export const useFunerals = () => {
 
   // Delete a funeral by ID and refresh the list
   const deleteFuneral = useCallback( async (id: string) => {
-      console.log('deleting funeral with id : ', id);
+      // Delete funeral
       setIsLoading(true);
       setError(null);
       try {
@@ -225,13 +225,22 @@ export const useFunerals = () => {
 
     const normalizedSearch = search.toLowerCase();
 
-    return funerals.filter((funeral) =>
-      [
-        funeral.formData?.deceasedName,
-        funeral.formData?.clientName,
-        funeral.formData?.notes,
-      ].some((field) => field?.toLowerCase().includes(normalizedSearch))
-    );
+    return funerals.filter((funeral) => {
+      // Handle both legacy (formData) and V2 (funeralData) formats
+      const fields = funeral.formData 
+        ? [
+            funeral.formData?.deceasedName,
+            funeral.formData?.clientName, 
+            funeral.formData?.notes,
+          ]
+        : [
+            funeral.funeralData?.deceasedName,
+            funeral.funeralData?.client?.name,
+            funeral.funeralData?.notes,
+          ];
+      
+      return fields.some((field) => field?.toLowerCase().includes(normalizedSearch));
+    });
   }, [funerals, search]);
 
   return {
@@ -251,7 +260,7 @@ export const useInventory = () => {
   const { token } = useAuth();
   const { data : inventory, isLoading, error, apiCall } = useApi<any[]>();
 
-  console.log('UseInventory hook called..')
+  // Initialize inventory hook
 
   const fetchInventory = useCallback(async () => {
     return await apiCall(`${API_URL}/inventory`);
@@ -271,7 +280,7 @@ export const useInventory = () => {
   }, [apiCall, API_URL]);
 
   const updateInventoryItem = useCallback(async(id: string, itemData: any) => {
-    console.log('useApi is sending update inventory request to server...');
+    // Send update request to server
     try {
       const response = await fetch(`${API_URL}/inventory/${id}`, {
         method: 'PATCH',
@@ -282,7 +291,7 @@ export const useInventory = () => {
         body: JSON.stringify(itemData)
       });
       if(!response.ok) throw new Error('Error updating inventory item')
-      console.log('inventory update successful');
+      // Inventory update successful
     } catch (err) {
         console.error("Error updating inventory item:", err);
         throw err;

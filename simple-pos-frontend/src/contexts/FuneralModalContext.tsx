@@ -46,42 +46,42 @@ export function FuneralModalProvider({children} : {children : React.ReactNode}) 
 
     // Define all the functions that components can call
   const openCreateFuneral = () => {
-    console.log('Opening create funeral modal');
+    // Open create funeral modal
     setIsCreateFuneralOpen(true);
   };
   
   const closeCreateFuneral = () => {
-    console.log('Closing create funeral modal');
+    // Close create funeral modal
     setIsCreateFuneralOpen(false);
   };
   
   const openUpdateFuneral = (funeralData: FuneralData) => {
-    console.log('Opening update funeral modal for:', funeralData._id);
+    // Open update funeral modal
     setCurrentFuneral(funeralData);
     setCurrentFuneralId(funeralData._id);
     setIsUpdateFuneralOpen(true);
   };
   
   const closeUpdateFuneral = () => {
-    console.log('Closing update funeral modal');
+    // Close update funeral modal
     setIsUpdateFuneralOpen(false);
     setCurrentFuneral(null);
   };
   
   const openEditInvoice = (funeralId: string, deceasedName: string) => {
-    console.log('Opening edit invoice modal for:', funeralId);
+    // Open edit invoice modal
     setCurrentFuneralId(funeralId);
     setCurrentDeceasedName(deceasedName);
     setIsEditInvoiceOpen(true);
   };
   
   const closeEditInvoice = () => {
-    console.log('Closing edit invoice modal');
+    // Close edit invoice modal
     setIsEditInvoiceOpen(false);
   };
   
   const openDelete = (funeralId: string, deceasedName: string, invoiceUrl = '') => {
-    console.log('Opening delete modal for:', funeralId);
+    // Open delete modal
     setCurrentFuneralId(funeralId);
     setCurrentDeceasedName(deceasedName);
     setCurrentInvoiceUrl(invoiceUrl);
@@ -89,7 +89,7 @@ export function FuneralModalProvider({children} : {children : React.ReactNode}) 
   };
   
   const closeDelete = () => {
-    console.log('Closing delete modal');
+    // Close delete modal
     setIsDeleteOpen(false);
   };
 

@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     // Don't redirect if we're already on the login page
     if (!isLoading && !isAuthenticated && pathname !== '/login') {
-      console.log('Redirecting to login - not authenticated');
+      // Redirect to login - not authenticated
       router.replace('/login');
     }
   }, [isAuthenticated, isLoading, router, pathname]);

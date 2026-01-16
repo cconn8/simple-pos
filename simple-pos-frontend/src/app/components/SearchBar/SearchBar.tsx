@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useFunerals } from '@/hooks/useApi';
 import { Search } from "@deemlol/next-icons";
 import { usePathname, useSearchParams, useRouter} from 'next/navigation';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';

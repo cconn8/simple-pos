@@ -43,29 +43,16 @@ export function EditFuneralItemModal() {
   };
 
   const handleSave = async() => {
-    console.log('handleSave called');
-    console.log('keepChanges:', keepChanges);
-    console.log('editingItem:', editingItem);
+    console.log('💾 Saving funeral item changes');
     try{
       if(keepChanges && editingItem) {
-        console.log('Keep changes selected - updating on the backend')
-        console.log('About to call updateInventoryItem with:', {
-          id: editingItem._id,
-          data: {
-            name: formData.name,
-            description: formData.description,
-            price: Number(formData.price),
-          }
-        });
-      console.log('Keep changes selected - updating on the backend')
+        console.log('🔄 Updating inventory item in backend');
       await updateInventoryItem(editingItem._id, {
         name: formData.name,
         description: formData.description,
         price: Number(formData.price),
       });
-      console.log('updateInventoryItem completed');
-      } else {
-        console.log('Skipping backend update - keepChanges:', keepChanges, 'editingItem:', !!editingItem);
+        console.log('✅ Inventory item updated successfully');
       }
 
       updateFuneralItem(editingItem._id, {
