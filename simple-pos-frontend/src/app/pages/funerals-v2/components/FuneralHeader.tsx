@@ -11,6 +11,17 @@ export default function FuneralHeader() {
 
     useEffect(() => {
         checkXeroStatus();
+        
+        // Check for OAuth success in URL and re-check status
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('xero_auth') === 'success') {
+            console.log('🎉 Xero OAuth success detected - rechecking status');
+            setTimeout(() => {
+                checkXeroStatus();
+                // Clean up URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }, 1000);
+        }
     }, []);
 
     const checkXeroStatus = async () => {
@@ -39,7 +50,18 @@ export default function FuneralHeader() {
 
     const connectToXero = () => {
         console.log('🚀 Opening Xero connection window...');
-        window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/xero/connect`, '_blank');
+        const xeroWindow = window.open(`${process.env.NEXT_PUBLIC_API_URL}/auth/xero/connect`, '_blank');
+        
+        // Check for window close to re-check status
+        const checkClosed = setInterval(() => {
+            if (xeroWindow?.closed) {
+                console.log('🔄 Xero auth window closed - rechecking status');
+                clearInterval(checkClosed);
+                setTimeout(() => {
+                    checkXeroStatus();
+                }, 2000);
+            }
+        }, 1000);
     };
 
     return(
@@ -54,7 +76,18 @@ export default function FuneralHeader() {
                     </button>
                 )}
                 {xeroConnected && (
-                    <span className="p-2 text-green-700 font-medium">✓ Xero Connected</span>
+                    <button 
+                        onClick={() => checkXeroStatus()}
+                        className="p-2 text-green-700 font-medium hover:bg-green-50 rounded">
+                        ✓ Xero Connected
+                    </button>
+                )}
+                {process.env.NODE_ENV === 'development' && (
+                    <button 
+                        onClick={() => checkXeroStatus()}
+                        className="p-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">
+                        🔄 Check Status
+                    </button>
                 )}
                 <button 
                     onClick={() => {
