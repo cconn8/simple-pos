@@ -18,8 +18,16 @@ export class FuneralsService {
   ) {}
 
   async create(data: CreateFuneralDto): Promise<Funeral> {
-    const funeral = await this.funeralModel.create({ formData: data });
-    console.log('Saved funeral : ', funeral);
+    // Simple detection: if data has 'funeralData' property, it's V2 format
+    const funeralRecord = (data as any).funeralData 
+      ? { 
+          funeralData: (data as any).funeralData,
+          ...(data as any).paymentStatus && { paymentStatus: (data as any).paymentStatus }  // Only add if present
+        } // V2 format
+      : { formData: data }; // Legacy format
+    
+    const funeral = await this.funeralModel.create(funeralRecord);
+    // Funeral saved successfully
     return funeral;
   }
 
@@ -35,11 +43,14 @@ export class FuneralsService {
       );
     }
 
-    return funerals;
+    // Convert Mongoose documents to plain objects for proper serialization
+    const plainFunerals = funerals.map(funeral => funeral.toObject());
+    
+    return plainFunerals;
   }
 
   async findOneById(id: string) {
-    console.log('funerals service findOneById called');
+    // Find funeral by ID
     const funeral = await this.funeralModel.findById(id).exec();
     if (!funeral)
       throw new NotFoundException(`Funeral with id ${id} not found`);
@@ -50,16 +61,37 @@ export class FuneralsService {
     id: string,
     updateFuneralDto: UpdateFuneralDto,
   ): Promise<any> {
-    console.log('funerals service updateFuneralById called');
-    // console.log('Data received is ', updateFuneralDto);
+    // Update funeral by ID
+
+    // Handle different update types
+    let updateData;
+    
+    if ((updateFuneralDto as any).funeralData) {
+      // V2 format data update
+      updateData = { 
+        $set: { 
+          funeralData: (updateFuneralDto as any).funeralData,
+          ...((updateFuneralDto as any).paymentStatus && { paymentStatus: (updateFuneralDto as any).paymentStatus })
+        },
+        $unset: { formData: 1 } // Remove legacy formData when saving V2 format
+      };
+    } else if ((updateFuneralDto as any).paymentStatus) {
+      // Simple payment status update
+      updateData = { 
+        $set: { paymentStatus: (updateFuneralDto as any).paymentStatus }
+      };
+    } else {
+      // Legacy format update
+      updateData = { $set: { formData: updateFuneralDto } };
+    }
 
     const updatedDoc = this.funeralModel.findByIdAndUpdate(
       id,
-      { $set: { formData: updateFuneralDto } },
+      updateData,
       { new: true },
     );
 
-    console.log('Document updated in MongoDB!');
+    // Funeral updated successfully
     return updatedDoc;
   }
 

@@ -8,6 +8,7 @@ import puppeteer from 'puppeteer';
 import * as fs from 'fs';
 import Handlebars from 'handlebars';
 import { GoogleAuthService } from 'src/google/google-auth.service';
+import { transformLegacyToV2 } from 'utils/funeralTransformation';
 
 @Injectable()
 export class InvoiceService {
@@ -32,18 +33,28 @@ export class InvoiceService {
     console.log('invoice service here - generating invoice');
     const funeralDoc = await this.funeralsService.findOneById(funeralId);
     const funeralObj = funeralDoc.toObject(); //funerals are nested in formData in mongodb. Convert toObject as mongoDB returns a document type (different to object)
-    const funeral = funeralObj.formData;
-    const normalizedDataForInvoice = { ...funeral, ...data }; //appends any new data from data to a flat object
+    
+    // NEED TO TRANSFORM EVERYTHING INTO V2 FORMAT AND HANDLE EVERYTHING FROM THERE.
+    let legacyRecord=false, normalizedDataForInvoice;
+    if(funeralObj.formData) {
+      legacyRecord=true;
+      normalizedDataForInvoice = transformLegacyToV2(funeralObj)
+    } else {
+      normalizedDataForInvoice = funeralObj
+    }
 
-    const { deceasedName } = normalizedDataForInvoice;
-
-    // funeral['additionalInvoiceData'] = data; //append the edited invoice data from the client modal to the funeral object
+    const {deceasedName} = normalizedDataForInvoice.funeralData.deceasedName;
 
     const pdf = await this.generatePDF(normalizedDataForInvoice); //generate pdf
     const url = await this.uploadToGCS(pdf, deceasedName); //upload to google cloud platform
 
+
+    //UPDATE THE DATABASE WITH THE NEW INVOICE URL (LEGACY FORMAT BUT STILL REQUIRED)
+    //First Check what the existing database structure is to keep consistent
+    let dbQuery = legacyRecord ? 'formData.invoice' : 'funeralData.invoice.pdfUrl'
+    console.log('Checking if legacy db structure - chosen DB string is : ', dbQuery)
     await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, {
-      $set: { 'formData.invoice': url },
+      $set: { [dbQuery]: url },  //note, you need bracket notation around the variable [] for mongoDB to recognise it
     }); //update the funeral record with the url of the invoice
 
     return { invoiceUrl: url };
@@ -53,33 +64,30 @@ export class InvoiceService {
     console.log('generating PDF...');
     console.log('data is : ', data);
 
-    let serviceCharge = data.selectedItems.find(
+    let serviceCharge = data.funeralData.selectedItems.find(
       (item) =>
         item.type?.toLowerCase().includes('service fee') &&
         item.name.toLowerCase().includes('service'),
-    );
+    )
 
     if (!serviceCharge) {
-      console.warn('Service Charge item not found in selected items.');
+      console.warn('No designated Service Charge item found in selected items.');
       serviceCharge = 0;
     }
-    console.log('service fee selected is - : ', serviceCharge);
 
-    const services = data.selectedItems.filter(
+    const services = data.funeralData.selectedItems.filter(
       (item) => item.category == 'service' && item._id != serviceCharge._id,
     );
-    const products = data.selectedItems.filter(
+    const products = data.funeralData.selectedItems.filter(
       (item) => item.category == 'product',
     );
-    const disbursements = data.selectedItems.filter(
+    const disbursements = data.funeralData.selectedItems.filter(
       (item) => item.category == 'disbursement',
     );
 
     let productsAndServicesTotal = 0;
     let disbursementsTotal = 0;
 
-    console.log('service charge is :', serviceCharge.price);
-    console.log('Type of service charge is : ', typeof serviceCharge.price);
 
     const formatItem = (item: Record<string, any>) => {
       const itemTotal = item.price * item.qty;
@@ -92,40 +100,41 @@ export class InvoiceService {
       item['itemTotal'] = itemTotal;
     };
 
-    products.forEach((product) => {
+    products ? products.forEach((product) => {
       formatItem(product);
       productsAndServicesTotal += Number(product.itemTotal || 0);
-    });
-    services.forEach((service) => {
+    }) : console.log('No products to add');
+    
+    services ? services.forEach((service) => {
       formatItem(service);
       productsAndServicesTotal += Number(service.itemTotal || 0);
-    });
-    disbursements.forEach((disbursement) => {
+    }) : console.log('No services to add');
+    
+    disbursements ? disbursements.forEach((disbursement) => {
       formatItem(disbursement);
       disbursementsTotal += Number(disbursement.itemTotal || 0);
-    });
+    }) : console.log('No disbursements to add');
 
-    console.log('test products after formatting : ', products);
 
-    productsAndServicesTotal += serviceCharge.price;
+    productsAndServicesTotal += serviceCharge.price || serviceCharge;
     const subtotal = productsAndServicesTotal + disbursementsTotal;
 
     console.log('Products and services total = ', productsAndServicesTotal);
     console.log('Subtotal = ', subtotal);
 
     // const {fromDate, toDate , invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree } = data.additionalInvoiceData;
-    const formattedFromDate = new Date(data.fromDate).toDateString();
-    const formattedToDate = new Date(data.toDate).toDateString();
+    const formattedFromDate = new Date(data.funeralData.fromDate).toDateString();
+    const formattedToDate = new Date(data.funeralData.toDate).toDateString();
     console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
 
-    const splitAddressLines = (data.billingAddress ?? '')
-      .split(',')
-      .map((line) => line.trim());
-    // console.log('Split address lines is : ',splitAddressLines);
-    const splitServiceChargeDescription = serviceCharge.description
-      .split(/[\n]+/)
-      .map((line) => line.trim());
-    // console.log('Service Description Split is : ', splitServiceChargeDescription);
+    const billingAddress = data.funeralData.billing.billingAddress;
+
+    const splitAddressLines = billingAddress?.includes(',')
+      ? billingAddress.split(',').map(line => line.trim())
+      : [];
+    
+    const splitServiceChargeDescription = serviceCharge.description?.split(/[\n]+/)
+      .map(line => line.trim()) ?? [];
 
     const templateData = {
       data,
@@ -140,7 +149,6 @@ export class InvoiceService {
       formattedToDate,
       splitAddressLines,
       splitServiceChargeDescription,
-      // formattedFromDate, formattedToDate, invoiceNumber, misterMisses, clientName, addressLineOne, addressLineTwo, addressLineThree
     };
 
     const templatePath = path.join(

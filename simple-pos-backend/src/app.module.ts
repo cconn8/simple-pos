@@ -10,6 +10,7 @@ import { InventoryModule } from './inventory/inventory.module';
 import { GoogleAuthService } from './google/google-auth.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { XeroModule } from './xero/xero.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from './users/users.module';
     InventoryModule,
     AuthModule,
     UsersModule,
+    XeroModule,
   ],
 
   controllers: [AppController],

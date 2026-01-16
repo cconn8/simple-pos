@@ -50,4 +50,4 @@ COPY --from=builder /app/templates ./templates
 
 EXPOSE 8080
 
-CMD ["node", "dist/main"]
+CMD ["node", "dist/src/main"]

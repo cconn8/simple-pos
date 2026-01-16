@@ -28,14 +28,11 @@ export default function FuneralHeader() {
         console.log('🔍 Checking Xero connection status...');
         try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                console.log('❌ No auth token found');
-                return;
-            }
+            console.log(`🔑 Auth token: ${token ? 'Found' : 'Not found (but proceeding anyway)'}`);
 
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/xero/status`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    ...(token && { 'Authorization': `Bearer ${token}` }),
                 },
             });
             const result = await response.json();
