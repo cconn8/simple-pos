@@ -13,6 +13,7 @@ import { useFuneralsContext } from '@/contexts/FuneralsContext';
 import { useFunerals } from '@/hooks/useApi';
 import { useFuneralsV2 } from '@/hooks/useFuneralsV2';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 
 
@@ -33,6 +34,7 @@ export default function FuneralsPage() {
         
         const { deleteFuneral } = useFunerals();
         const { fetchFunerals } = useFuneralsV2();
+        const { authenticatedFetch } = useAuthContext();
 
         const handleDeleteConfirm = async () => {
             if (deleteTarget) {
@@ -55,20 +57,9 @@ export default function FuneralsPage() {
             try {
                 console.log('💼 Starting Xero posting for funeral:', postingData.funeralId);
                 
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    console.error('❌ No auth token found');
-                    alert('❌ Authentication required. Please log in again.');
-                    return;
-                }
-                
-                // Call the backend XERO API
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${postingData.funeralId}/xero/post`, {
+                // Use the new authenticated fetch method
+                const response = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${postingData.funeralId}/xero/post`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
                     body: JSON.stringify(postingData),
                 });
 
@@ -92,12 +83,8 @@ export default function FuneralsPage() {
                     if (userChoice) {
                         // User chose to mark as posted to existing invoice
                         try {
-                            const markPostedResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${postingData.funeralId}/xero/mark-posted`, {
+                            const markPostedResponse = await authenticatedFetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${postingData.funeralId}/xero/mark-posted`, {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': `Bearer ${token}`,
-                                },
                                 body: JSON.stringify(postingData),
                             });
 

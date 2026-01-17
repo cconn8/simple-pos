@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [isSignupMode, setIsSignupMode] = useState(false);
   
-  const { login, signup } = useAuth();
+  const { login } = useAuthContext();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,22 +21,63 @@ export default function LoginPage() {
     setIsLoading(true);
     setError('');
 
-    let result;
-    if (isSignupMode) {
-      if (!name.trim()) {
-        setError('Name is required for signup');
-        setIsLoading(false);
-        return;
+    try {
+      if (isSignupMode) {
+        if (!name.trim()) {
+          setError('Name is required for signup');
+          setIsLoading(false);
+          return;
+        }
+        // Handle signup (you may need to implement this API call)
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        
+        const result = await response.json();
+        if (response.ok && result.token) {
+          login(result.token, result.user);
+          router.push('/');
+        } else {
+          setError(result.message || 'Signup failed');
+        }
+      } else {
+        // Handle login
+        console.log('🔍 Attempting login to:', `${process.env.NEXT_PUBLIC_API_URL}/auth/login`);
+        console.log('🔍 Login payload:', { email, password: '***' });
+        
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        console.log('🔍 Login response status:', response.status);
+        console.log('🔍 Login response headers:', Object.fromEntries(response.headers.entries()));
+        
+        const result = await response.json();
+        console.log('🔍 Login response data:', result);
+        
+        if (response.ok && result.token) {
+          console.log('✅ Login successful, storing token...');
+          console.log('🔍 Token preview:', result.token.substring(0, 20) + '...');
+          
+          login(result.token, { email }); // Pass user info
+          
+          // Verify token was stored
+          const storedToken = localStorage.getItem('token');
+          console.log('🔍 Token stored successfully:', !!storedToken);
+          console.log('🔍 Stored token preview:', storedToken?.substring(0, 20) + '...');
+          
+          router.push('/');
+        } else {
+          console.error('❌ Login failed:', result);
+          setError(result.message || 'Login failed');
+        }
       }
-      result = await signup(name, email, password);
-    } else {
-      result = await login(email, password);
-    }
-    
-    if (result.success) {
-      router.push('/'); // Redirect to main app
-    } else {
-      setError(result.error || `${isSignupMode ? 'Signup' : 'Login'} failed`);
+    } catch (error) {
+      setError('Network error. Please try again.');
     }
     
     setIsLoading(false);

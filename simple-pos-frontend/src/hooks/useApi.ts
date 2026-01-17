@@ -3,11 +3,11 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { FuneralData, FuneralFormData, LoadingState } from '../types';
 import { useFuneralsContext } from '@/contexts/FuneralsContext';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export const useApi = <T>() => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { token } = useAuth();
+  const { getValidToken } = useAuthContext();
   const [state, setState] = useState<LoadingState & { data: T | null }> ({
     isLoading: false,
     error: null,
@@ -18,19 +18,24 @@ export const useApi = <T>() => {
     setState(prev => ({ ...prev, isLoading: true, error: null }));
     
     try {
+      const token = getValidToken();
+      if (!token) {
+        // Token invalid or expired - user will be automatically logged out
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch(url, {
         headers: {
           'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
+          'Authorization': `Bearer ${token}`,
           ...options?.headers,
         },
         ...options,
       });
 
       if (response.status === 401) {
-        // Token expired or invalid - redirect to login
-        window.location.href = '/login';
-        return null;
+        // Token expired or invalid - the auth system will handle logout
+        throw new Error('Authentication failed');
       }
 
       if (!response.ok) {
@@ -46,14 +51,14 @@ export const useApi = <T>() => {
       setState(prev => ({ ...prev, isLoading: false, error: errorMessage }));
       return null;
     }
-  }, [token]);
+  }, [getValidToken]);
 
   return { ...state, apiCall };
 };
 
 export const useInvoices = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { token } = useAuth();
+  const { getValidToken } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -257,7 +262,7 @@ export const useFunerals = () => {
 
 export const useInventory = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { token } = useAuth();
+  const { getValidToken } = useAuthContext();
   const { data : inventory, isLoading, error, apiCall } = useApi<any[]>();
 
   // Initialize inventory hook
