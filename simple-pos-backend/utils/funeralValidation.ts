@@ -54,6 +54,7 @@ export function validateFuneralData(data: any): data is FuneralDataV2 {
 export function createDefaultFuneralData(): FuneralDataV2 {
   return {
     deceasedName: '',
+    funeralType: 'Funeral',
     dateOfDeath: '',
     lastAddress: '',
     client: {

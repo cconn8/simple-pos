@@ -35,6 +35,25 @@ let InvoiceController = class InvoiceController {
             throw new common_2.InternalServerErrorException('Failed to generate invoice.');
         }
     }
+    async deleteInvoice(body) {
+        console.log('Received delete invoice request:', body);
+        try {
+            const { funeralId, invoiceUrl } = body;
+            await this.invoiceService.deleteFileGCS(invoiceUrl);
+            console.log('Invoice file deleted from storage');
+            await this.invoiceService.clearInvoiceFromDatabase(funeralId);
+            console.log('Invoice URL cleared from database');
+            return {
+                success: true,
+                message: 'Invoice deleted successfully'
+            };
+        }
+        catch (error) {
+            console.error('Error deleting invoice:', error.message);
+            console.error(error.stack);
+            throw new common_2.InternalServerErrorException('Failed to delete invoice.');
+        }
+    }
 };
 exports.InvoiceController = InvoiceController;
 __decorate([
@@ -45,6 +64,13 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], InvoiceController.prototype, "generateInvoice", null);
+__decorate([
+    (0, common_1.Delete)('delete'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], InvoiceController.prototype, "deleteInvoice", null);
 exports.InvoiceController = InvoiceController = __decorate([
     (0, common_1.UseGuards)(auth_guard_1.AuthGuard),
     (0, common_1.Controller)('invoice'),

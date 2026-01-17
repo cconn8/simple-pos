@@ -37,6 +37,7 @@ function transformLegacyToV2(legacyRecord) {
     };
     const funeralData = {
         deceasedName: (0, funeralValidation_1.safeString)(formData.deceasedName),
+        funeralType: (0, funeralValidation_1.safeString)(formData.funeralType) || 'Funeral',
         dateOfDeath: (0, funeralValidation_1.safeString)(formData.dateOfDeath),
         lastAddress: (0, funeralValidation_1.safeString)(formData.lastAddress),
         client,

@@ -28,3 +28,7 @@ yarn.lock
 
 # exclude secrets
 /Users/colmconneely/Documents/Projects/simplePOS/secrets
+
+# Development token storage
+simple-pos-backend/xero-tokens.json
+xero-tokens.json

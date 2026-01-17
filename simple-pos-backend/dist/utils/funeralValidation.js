@@ -32,6 +32,7 @@ function validateFuneralData(data) {
 function createDefaultFuneralData() {
     return {
         deceasedName: '',
+        funeralType: 'Funeral',
         dateOfDeath: '',
         lastAddress: '',
         client: {

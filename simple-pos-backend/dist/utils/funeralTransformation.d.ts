@@ -11,6 +11,7 @@ export interface FuneralItem {
 }
 export interface FuneralDataV2 {
     deceasedName: string;
+    funeralType: string;
     dateOfDeath: string;
     lastAddress?: string;
     client: ClientDetails;

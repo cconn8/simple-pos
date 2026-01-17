@@ -20,6 +20,7 @@ export interface FuneralItem {
 export interface FuneralDataV2 {
   // Core deceased information
   deceasedName: string;           // Required: every funeral needs this
+  funeralType: string;            // Required: type of funeral (Funeral, Coroner, Sale, etc.) - defaults to "Funeral"
   dateOfDeath: string;            // Required: every funeral needs this
   lastAddress?: string;           // Optional: might not always have this
   
@@ -147,6 +148,7 @@ export function transformLegacyToV2(legacyRecord: any): FuneralRecordV2 {
   // Build the new structured data
   const funeralData: FuneralDataV2 = {
     deceasedName: safeString(formData.deceasedName),
+    funeralType: safeString(formData.funeralType) || 'Funeral', // Default to 'Funeral' for legacy records
     dateOfDeath: safeString(formData.dateOfDeath),
     lastAddress: safeString(formData.lastAddress),
     client,

@@ -332,6 +332,11 @@ let XeroService = XeroService_1 = class XeroService {
         }
     }
     async isAuthenticated() {
+        this.logger.log(`🔍 Checking authentication - tokenSet exists: ${this.tokenSet !== null}`);
+        if (this.tokenSet === null) {
+            await this.loadTokens();
+            this.logger.log(`🔄 After loading - tokenSet exists: ${this.tokenSet !== null}`);
+        }
         return this.tokenSet !== null && await this.initializeConnection();
     }
 };

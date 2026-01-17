@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Delete, UseGuards } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { InternalServerErrorException } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
@@ -21,6 +21,32 @@ export class InvoiceController {
       console.error('Error generating invoice:', error.message);
       console.error(error.stack);
       throw new InternalServerErrorException('Failed to generate invoice.');
+    }
+  }
+
+  @Delete('delete')
+  async deleteInvoice(@Body() body: { funeralId: string; invoiceUrl: string }) {
+    console.log('Received delete invoice request:', body);
+
+    try {
+      const { funeralId, invoiceUrl } = body;
+      
+      // Delete the file from storage
+      await this.invoiceService.deleteFileGCS(invoiceUrl);
+      console.log('Invoice file deleted from storage');
+
+      // Clear the invoice URL from the database
+      await this.invoiceService.clearInvoiceFromDatabase(funeralId);
+      console.log('Invoice URL cleared from database');
+
+      return { 
+        success: true, 
+        message: 'Invoice deleted successfully' 
+      };
+    } catch (error) {
+      console.error('Error deleting invoice:', error.message);
+      console.error(error.stack);
+      throw new InternalServerErrorException('Failed to delete invoice.');
     }
   }
 }

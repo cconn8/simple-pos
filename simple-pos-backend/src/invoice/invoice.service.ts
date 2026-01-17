@@ -43,6 +43,22 @@ export class InvoiceService {
       normalizedDataForInvoice = funeralObj
     }
 
+    // Clean up old invoice file if one exists
+    const existingInvoiceUrl = legacyRecord 
+      ? funeralObj.formData?.invoice 
+      : funeralObj.funeralData?.invoice?.pdfUrl;
+      
+    if (existingInvoiceUrl) {
+      try {
+        console.log('Cleaning up old invoice:', existingInvoiceUrl);
+        await this.deleteFileGCS(existingInvoiceUrl);
+        console.log('Old invoice cleaned up successfully');
+      } catch (error) {
+        console.warn('Failed to clean up old invoice (file may not exist):', error.message);
+        // Don't fail the whole operation if cleanup fails
+      }
+    }
+
     const {deceasedName} = normalizedDataForInvoice.funeralData.deceasedName;
 
     const pdf = await this.generatePDF(normalizedDataForInvoice); //generate pdf
@@ -127,7 +143,7 @@ export class InvoiceService {
     const formattedToDate = new Date(data.funeralData.toDate).toDateString();
     console.log(`new dates are ${formattedFromDate} - ${formattedToDate}`);
 
-    const billingAddress = data.funeralData.billing.billingAddress;
+    const billingAddress = data.funeralData.billing.address;
 
     const splitAddressLines = billingAddress?.includes(',')
       ? billingAddress.split(',').map(line => line.trim())
@@ -220,5 +236,24 @@ export class InvoiceService {
       console.log('no file exists in GCP :', error);
       return;
     }
+  }
+
+  async clearInvoiceFromDatabase(funeralId: string): Promise<any> {
+    console.log('Clearing invoice URL from database for funeral:', funeralId);
+    
+    // First, check the funeral structure to determine the correct path
+    const funeralDoc = await this.funeralsService.findOneById(funeralId);
+    const funeralObj = funeralDoc.toObject();
+    
+    let updateCommand;
+    if (funeralObj.formData) {
+      // Legacy format - clear formData.invoice
+      updateCommand = { $unset: { 'formData.invoice': 1 } };
+    } else {
+      // V2 format - clear funeralData.invoice.pdfUrl
+      updateCommand = { $unset: { 'funeralData.invoice.pdfUrl': 1 } };
+    }
+    
+    return await this.funeralsService.findByIdAndUpdateUsingMongoCommand(funeralId, updateCommand);
   }
 }

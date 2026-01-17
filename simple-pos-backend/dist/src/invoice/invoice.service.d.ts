@@ -14,4 +14,5 @@ export declare class InvoiceService {
     generatePDF(data: any): Promise<Buffer>;
     uploadToGCS(buffer: Buffer, deceasedName: string): Promise<string>;
     deleteFileGCS(invoiceUrl: string): Promise<DeleteFileResponse>;
+    clearInvoiceFromDatabase(funeralId: string): Promise<any>;
 }

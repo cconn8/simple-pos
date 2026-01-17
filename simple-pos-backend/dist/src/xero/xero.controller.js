@@ -41,16 +41,16 @@ let XeroController = XeroController_1 = class XeroController {
             const success = await this.xeroService.handleOAuthCallback(fullUrl);
             if (success) {
                 this.logger.log('✅ Xero OAuth authentication successful - redirecting to frontend');
-                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/pages/funerals-v2?xero_auth=success`);
+                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}?xero_auth=success`);
             }
             else {
                 this.logger.error('❌ Xero OAuth authentication failed - redirecting to frontend');
-                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/pages/funerals-v2?xero_auth=error`);
+                return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}?xero_auth=error`);
             }
         }
         catch (error) {
             this.logger.error('XERO OAuth callback error', error);
-            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/pages/funerals-v2?xero_auth=error`);
+            return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}?xero_auth=error`);
         }
     }
     async status() {

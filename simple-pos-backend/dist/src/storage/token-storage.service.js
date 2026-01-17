@@ -23,11 +23,19 @@ let TokenStorageService = TokenStorageService_1 = class TokenStorageService {
         this.fileName = 'xero-tokens.json';
         this.localTokenPath = path.join(process.cwd(), 'xero-tokens.json');
         const isDevelopment = this.configService.get('NODE_ENV') === 'development';
+        this.logger.log(`🔧 Initializing TokenStorage - Environment: ${this.configService.get('NODE_ENV')}, isDevelopment: ${isDevelopment}`);
         if (!isDevelopment) {
-            this.storage = new storage_1.Storage();
-            this.bucketName = this.configService.get('GCP_STORAGE_BUCKET');
-            if (!this.bucketName) {
-                throw new Error('GCP_STORAGE_BUCKET environment variable is required for production');
+            try {
+                this.storage = new storage_1.Storage();
+                this.bucketName = this.configService.get('GCP_STORAGE_BUCKET');
+                this.logger.log(`📦 GCS bucket configured: ${this.bucketName}`);
+                if (!this.bucketName) {
+                    throw new Error('GCP_STORAGE_BUCKET environment variable is required for production');
+                }
+            }
+            catch (error) {
+                this.logger.error('Failed to initialize GCS Storage:', error);
+                throw error;
             }
         }
     }
@@ -55,29 +63,33 @@ let TokenStorageService = TokenStorageService_1 = class TokenStorageService {
     }
     async loadTokens() {
         try {
-            if (this.configService.get('NODE_ENV') === 'development') {
+            const isDevelopment = this.configService.get('NODE_ENV') === 'development';
+            this.logger.log(`🔍 Loading tokens - Environment: ${this.configService.get('NODE_ENV')}`);
+            if (isDevelopment) {
                 if (fs.existsSync(this.localTokenPath)) {
                     const tokenData = fs.readFileSync(this.localTokenPath, 'utf8');
-                    this.logger.log('Tokens loaded from local file');
+                    this.logger.log('✅ Tokens loaded from local file');
                     return JSON.parse(tokenData);
                 }
+                this.logger.log('❌ No local token file found');
                 return null;
             }
             else {
+                this.logger.log(`🔄 Checking GCS bucket: ${this.bucketName}/${this.fileName}`);
                 const file = this.storage.bucket(this.bucketName).file(this.fileName);
                 const [exists] = await file.exists();
                 if (!exists) {
-                    this.logger.log('No tokens found in Cloud Storage');
+                    this.logger.log('❌ No tokens found in Cloud Storage');
                     return null;
                 }
                 const [contents] = await file.download();
                 const tokenData = contents.toString();
-                this.logger.log('Tokens loaded from Cloud Storage');
+                this.logger.log('✅ Tokens loaded from Cloud Storage');
                 return JSON.parse(tokenData);
             }
         }
         catch (error) {
-            this.logger.error('Failed to load tokens', error);
+            this.logger.error('❌ Failed to load tokens:', error);
             return null;
         }
     }
