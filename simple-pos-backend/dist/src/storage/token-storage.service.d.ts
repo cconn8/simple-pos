@@ -9,4 +9,5 @@ export declare class TokenStorageService {
     constructor(configService: ConfigService);
     saveTokens(tokenSet: any): Promise<void>;
     loadTokens(): Promise<any | null>;
+    deleteTokens(): Promise<void>;
 }

@@ -72,6 +72,23 @@ let XeroController = XeroController_1 = class XeroController {
             };
         }
     }
+    async disconnect() {
+        try {
+            await this.xeroService.clearTokens();
+            this.logger.log('🧹 XERO tokens cleared successfully');
+            return {
+                success: true,
+                message: 'XERO tokens cleared. Re-authentication required.'
+            };
+        }
+        catch (error) {
+            this.logger.error('Failed to clear XERO tokens', error);
+            return {
+                success: false,
+                error: 'Failed to clear XERO tokens'
+            };
+        }
+    }
 };
 exports.XeroController = XeroController;
 __decorate([
@@ -95,6 +112,12 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], XeroController.prototype, "status", null);
+__decorate([
+    (0, common_1.Get)('disconnect'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], XeroController.prototype, "disconnect", null);
 exports.XeroController = XeroController = XeroController_1 = __decorate([
     (0, common_1.Controller)('auth/xero'),
     __metadata("design:paramtypes", [xero_service_1.XeroService])

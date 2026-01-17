@@ -57,44 +57,53 @@ let XeroService = XeroService_1 = class XeroService {
     }
     async initializeConnection() {
         try {
+            await this.loadTokens();
             if (!this.tokenSet) {
-                await this.loadTokens();
-            }
-            if (!this.tokenSet) {
-                this.logger.warn('No XERO token available. OAuth authentication required.');
+                this.logger.warn('❌ No XERO token available. OAuth authentication required.');
                 return false;
             }
+            this.logger.log('🔧 Setting up XERO client with loaded tokens...');
             await this.xeroClient.setTokenSet(this.tokenSet);
             try {
+                this.logger.log('🧪 Testing token validity with tenant update...');
                 const tenants = await this.xeroClient.updateTenants();
                 if (tenants && tenants.length > 0) {
-                    this.logger.log('XERO connection established successfully');
+                    this.logger.log(`✅ XERO connection established successfully with ${tenants.length} tenant(s)`);
                     return true;
                 }
+                this.logger.warn('⚠️ No tenants found - token might be invalid');
             }
             catch (tokenError) {
-                this.logger.warn('XERO token might be expired, attempting refresh...');
+                this.logger.warn('🔄 XERO token might be expired, attempting refresh...', tokenError.message);
                 if (this.tokenSet.refresh_token) {
                     try {
+                        this.logger.log('🔄 Refreshing XERO access token...');
                         const newTokenSet = await this.xeroClient.refreshToken();
                         this.tokenSet = newTokenSet;
+                        this.logger.log('💾 Saving refreshed tokens to storage...');
                         await this.saveTokens();
+                        this.logger.log('🧪 Testing refreshed token...');
                         const tenants = await this.xeroClient.updateTenants();
                         if (tenants && tenants.length > 0) {
-                            this.logger.log('XERO connection refreshed successfully');
+                            this.logger.log(`✅ XERO connection refreshed successfully with ${tenants.length} tenant(s)`);
                             return true;
                         }
                     }
                     catch (refreshError) {
-                        this.logger.error('Failed to refresh XERO token', refreshError);
+                        this.logger.error('❌ Failed to refresh XERO token:', refreshError);
+                        this.tokenSet = null;
                         return false;
                     }
+                }
+                else {
+                    this.logger.error('❌ No refresh token available - re-authentication required');
+                    return false;
                 }
             }
             return false;
         }
         catch (error) {
-            this.logger.error('Failed to initialize XERO connection', error);
+            this.logger.error('❌ Failed to initialize XERO connection:', error);
             return false;
         }
     }
@@ -332,12 +341,69 @@ let XeroService = XeroService_1 = class XeroService {
         }
     }
     async isAuthenticated() {
-        this.logger.log(`🔍 Checking authentication - tokenSet exists: ${this.tokenSet !== null}`);
-        if (this.tokenSet === null) {
+        try {
+            this.logger.log(`🔍 Checking authentication - tokenSet exists: ${this.tokenSet !== null}`);
             await this.loadTokens();
             this.logger.log(`🔄 After loading - tokenSet exists: ${this.tokenSet !== null}`);
+            if (!this.tokenSet) {
+                this.logger.log('❌ No tokens found');
+                return false;
+            }
+            const connectionValid = await this.testConnection();
+            this.logger.log(`🧪 Connection test result: ${connectionValid}`);
+            return connectionValid;
         }
-        return this.tokenSet !== null && await this.initializeConnection();
+        catch (error) {
+            this.logger.error('🚨 Authentication check failed:', error);
+            return false;
+        }
+    }
+    async testConnection() {
+        try {
+            if (!this.tokenSet)
+                return false;
+            await this.xeroClient.setTokenSet(this.tokenSet);
+            const tenants = await this.xeroClient.updateTenants();
+            if (tenants && tenants.length > 0) {
+                this.logger.log('✅ XERO connection test successful');
+                return true;
+            }
+            this.logger.warn('⚠️ XERO connection test failed - no tenants found');
+            return false;
+        }
+        catch (error) {
+            this.logger.warn('⚠️ XERO connection test failed, attempting token refresh...', error.message);
+            if (this.tokenSet && this.tokenSet.refresh_token) {
+                try {
+                    this.logger.log('🔄 Attempting to refresh expired tokens...');
+                    const newTokenSet = await this.xeroClient.refreshToken();
+                    this.tokenSet = newTokenSet;
+                    await this.saveTokens();
+                    const tenants = await this.xeroClient.updateTenants();
+                    if (tenants && tenants.length > 0) {
+                        this.logger.log('✅ XERO connection restored after token refresh');
+                        return true;
+                    }
+                }
+                catch (refreshError) {
+                    this.logger.error('❌ Token refresh failed:', refreshError);
+                }
+            }
+            this.logger.error('❌ XERO connection test ultimately failed');
+            return false;
+        }
+    }
+    async clearTokens() {
+        try {
+            this.logger.log('🧹 Clearing XERO tokens...');
+            this.tokenSet = null;
+            await this.tokenStorage.deleteTokens();
+            this.logger.log('✅ XERO tokens cleared successfully');
+        }
+        catch (error) {
+            this.logger.error('❌ Failed to clear XERO tokens:', error);
+            throw error;
+        }
     }
 };
 exports.XeroService = XeroService;

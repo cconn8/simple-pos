@@ -75,4 +75,26 @@ export class XeroController {
       };
     }
   }
+
+  /**
+   * Clear XERO tokens for debugging
+   * DELETE /auth/xero/disconnect
+   */
+  @Get('disconnect')
+  async disconnect() {
+    try {
+      await this.xeroService.clearTokens();
+      this.logger.log('🧹 XERO tokens cleared successfully');
+      return {
+        success: true,
+        message: 'XERO tokens cleared. Re-authentication required.'
+      };
+    } catch (error) {
+      this.logger.error('Failed to clear XERO tokens', error);
+      return {
+        success: false,
+        error: 'Failed to clear XERO tokens'
+      };
+    }
+  }
 }

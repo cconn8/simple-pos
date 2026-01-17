@@ -41,23 +41,35 @@ let TokenStorageService = TokenStorageService_1 = class TokenStorageService {
     }
     async saveTokens(tokenSet) {
         try {
+            this.logger.log('💾 Saving tokens...');
+            this.logger.log(`🔍 Token details being saved: access_token exists: ${!!tokenSet.access_token}, refresh_token exists: ${!!tokenSet.refresh_token}`);
             const tokenData = JSON.stringify(tokenSet, null, 2);
             if (this.configService.get('NODE_ENV') === 'development') {
                 fs.writeFileSync(this.localTokenPath, tokenData);
-                this.logger.log('Tokens saved to local file');
+                this.logger.log('✅ Tokens saved to local file');
             }
             else {
+                if (!this.storage || !this.bucketName) {
+                    throw new Error('GCS Storage or bucket not properly configured');
+                }
                 const file = this.storage.bucket(this.bucketName).file(this.fileName);
                 await file.save(tokenData, {
                     metadata: {
                         contentType: 'application/json',
                     },
                 });
-                this.logger.log('Tokens saved to Cloud Storage');
+                this.logger.log('✅ Tokens saved to Cloud Storage');
+                const [exists] = await file.exists();
+                if (exists) {
+                    this.logger.log('✅ Token save verified - file exists in GCS');
+                }
+                else {
+                    this.logger.warn('⚠️ Token save verification failed - file not found in GCS');
+                }
             }
         }
         catch (error) {
-            this.logger.error('Failed to save tokens', error);
+            this.logger.error('❌ Failed to save tokens:', error);
             throw error;
         }
     }
@@ -68,14 +80,20 @@ let TokenStorageService = TokenStorageService_1 = class TokenStorageService {
             if (isDevelopment) {
                 if (fs.existsSync(this.localTokenPath)) {
                     const tokenData = fs.readFileSync(this.localTokenPath, 'utf8');
+                    const parsedTokens = JSON.parse(tokenData);
                     this.logger.log('✅ Tokens loaded from local file');
-                    return JSON.parse(tokenData);
+                    this.logger.log(`🔍 Token details: access_token exists: ${!!parsedTokens.access_token}, refresh_token exists: ${!!parsedTokens.refresh_token}`);
+                    return parsedTokens;
                 }
                 this.logger.log('❌ No local token file found');
                 return null;
             }
             else {
                 this.logger.log(`🔄 Checking GCS bucket: ${this.bucketName}/${this.fileName}`);
+                if (!this.storage || !this.bucketName) {
+                    this.logger.error('❌ GCS Storage or bucket not properly configured');
+                    return null;
+                }
                 const file = this.storage.bucket(this.bucketName).file(this.fileName);
                 const [exists] = await file.exists();
                 if (!exists) {
@@ -84,13 +102,56 @@ let TokenStorageService = TokenStorageService_1 = class TokenStorageService {
                 }
                 const [contents] = await file.download();
                 const tokenData = contents.toString();
+                const parsedTokens = JSON.parse(tokenData);
                 this.logger.log('✅ Tokens loaded from Cloud Storage');
-                return JSON.parse(tokenData);
+                this.logger.log(`🔍 Token details: access_token exists: ${!!parsedTokens.access_token}, refresh_token exists: ${!!parsedTokens.refresh_token}`);
+                if (parsedTokens.expires_at) {
+                    const expiryDate = new Date(parsedTokens.expires_at * 1000);
+                    const now = new Date();
+                    const isExpired = now > expiryDate;
+                    this.logger.log(`🕐 Token expiry: ${expiryDate.toISOString()}, Expired: ${isExpired}`);
+                }
+                return parsedTokens;
             }
         }
         catch (error) {
             this.logger.error('❌ Failed to load tokens:', error);
+            if (error instanceof SyntaxError) {
+                this.logger.error('❌ Token file appears to be corrupted (invalid JSON)');
+            }
             return null;
+        }
+    }
+    async deleteTokens() {
+        try {
+            this.logger.log('🧹 Deleting stored tokens...');
+            if (this.configService.get('NODE_ENV') === 'development') {
+                if (fs.existsSync(this.localTokenPath)) {
+                    fs.unlinkSync(this.localTokenPath);
+                    this.logger.log('✅ Local token file deleted');
+                }
+                else {
+                    this.logger.log('ℹ️ No local token file to delete');
+                }
+            }
+            else {
+                if (!this.storage || !this.bucketName) {
+                    throw new Error('GCS Storage or bucket not properly configured');
+                }
+                const file = this.storage.bucket(this.bucketName).file(this.fileName);
+                const [exists] = await file.exists();
+                if (exists) {
+                    await file.delete();
+                    this.logger.log('✅ Token file deleted from Cloud Storage');
+                }
+                else {
+                    this.logger.log('ℹ️ No token file found in Cloud Storage to delete');
+                }
+            }
+        }
+        catch (error) {
+            this.logger.error('❌ Failed to delete tokens:', error);
+            throw error;
         }
     }
 };

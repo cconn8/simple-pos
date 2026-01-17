@@ -96,4 +96,6 @@ export declare class XeroService {
     generateUniqueInvoiceNumber(originalNumber: string): string;
     markAsPosted(contactData: XeroContact, invoiceNumber: string): Promise<XeroPostingResult>;
     isAuthenticated(): Promise<boolean>;
+    private testConnection;
+    clearTokens(): Promise<void>;
 }

@@ -17,4 +17,13 @@ export declare class XeroController {
         error: string;
         message?: undefined;
     }>;
+    disconnect(): Promise<{
+        success: boolean;
+        message: string;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: string;
+        message?: undefined;
+    }>;
 }
