@@ -73,11 +73,18 @@ export default function FuneralHeader() {
                     </button>
                 )}
                 {xeroConnected && (
-                    <button 
-                        onClick={() => checkXeroStatus()}
-                        className="p-2 text-green-700 font-medium hover:bg-green-50 rounded">
-                        ✓ Xero Connected
-                    </button>
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={() => checkXeroStatus()}
+                            className="p-2 text-green-700 font-medium hover:bg-green-50 rounded">
+                            ✓ Xero Connected
+                        </button>
+                        <button 
+                            onClick={connectToXero}
+                            className="px-2 py-1 text-xs text-orange-600 border border-orange-300 rounded hover:bg-orange-50">
+                            Force Reconnect
+                        </button>
+                    </div>
                 )}
                 {process.env.NODE_ENV === 'development' && (
                     <button 
