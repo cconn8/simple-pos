@@ -22,6 +22,7 @@ export const FUNERAL_TEMPLATE_A = {
       label : 'Funeral Details',
       fields : [
           {_id : uuidv4(), name : 'deceasedName', label : 'Name of Deceased', type : 'text', placeholder : 'Name of Deceased'},
+          {_id : uuidv4(), name : 'funeralType', label : 'Type', type : 'dropdown', options : ['Funeral', 'Coroner', 'Pre-Arrangement', 'Sale', 'Quotation'], placeholder : 'Select funeral type'},
           {_id : uuidv4(), name : 'dateOfDeath',  label : 'Date of Death', type : 'date', placeholder : 'Date of Death'},
           {_id : uuidv4(), name : 'lastAddress', label : 'Last Address', type : 'text', placeholder : 'Last Address'},
           {_id : uuidv4(), name : 'funeralNotes', label : 'Funeral Notes', type : 'textarea', placeholder : 'Funeral notes'}
@@ -68,6 +69,7 @@ export const FUNERAL_TEMPLATE_A = {
 //Map the funeral object keys, to display text for the table headings
 export const tableDisplayMappings = [
     {'key' : 'deceasedName', 'displayText': 'Deceased Name'},
+    {'key' : 'funeralType', 'displayText': 'Type'},
     {'key' : 'dateOfDeath', 'displayText': 'Date of Death'},
     {'key' : 'fromDate', 'displayText': 'Commenced Work'},
     {'key' : 'lastAddress', 'displayText': 'Last Address'},

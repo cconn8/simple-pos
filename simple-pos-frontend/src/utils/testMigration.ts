@@ -74,6 +74,7 @@ export function testV2ToLegacyTransform(): boolean {
     _id: 'test-456',
     funeralData: {
       deceasedName: 'Mary Smith',
+      funeralType: 'Funeral',
       dateOfDeath: '2025-01-15',
       lastAddress: '456 Oak Ave',
       client: {

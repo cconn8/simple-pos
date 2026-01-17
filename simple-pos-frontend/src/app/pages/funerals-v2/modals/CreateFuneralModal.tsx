@@ -21,7 +21,7 @@ import {
   FuneralSummaryProps,
   // PaymentStatus removed for redesign
 } from "@/types";
-import { FuneralDataV2 } from "@/types/funeralV2";
+import { FuneralDataV2, FUNERAL_TYPES } from "@/types/funeralV2";
 import { useFuneralsV2 } from "@/hooks/useFuneralsV2";
 import { Edit3, Trash2 } from "@deemlol/next-icons";
 import dateFormat from 'dateformat';
@@ -50,7 +50,7 @@ function FieldElement(props: FieldElementProps & { value?: string; onChange?: (e
                     value={props.value || ""}
                     onChange={props.onChange}
                 >
-                    <option value="">Select...</option>
+                    <option value="">{props.placeholder || "Select..."}</option>
                     {props.options?.map((opt) => (
                         <option key={opt} value={opt}>
                             {opt}
@@ -302,7 +302,20 @@ function ProductTile(props: ProductTileProps) {
 
 
 // Funeral Summary Component
-function FuneralSummary({ formData, onClearAll, onSave, isEditMode }: Omit<FuneralSummaryProps, 'selectedItems' | 'onRemoveItem'> & { isEditMode: boolean }) {
+function FuneralSummary({ 
+    formData, 
+    onClearAll, 
+    onSave, 
+    isEditMode, 
+    keepExistingInvoice, 
+    onKeepExistingInvoiceChange,
+    hasExistingInvoice 
+}: Omit<FuneralSummaryProps, 'selectedItems' | 'onRemoveItem'> & { 
+    isEditMode: boolean;
+    keepExistingInvoice?: boolean;
+    onKeepExistingInvoiceChange?: (value: boolean) => void;
+    hasExistingInvoice?: boolean;
+}) {
     const { selectedFuneralItems, startEditingItem, removeFuneralItem } = useFuneralsContext();
     const total = selectedFuneralItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
@@ -393,6 +406,24 @@ function FuneralSummary({ formData, onClearAll, onSave, isEditMode }: Omit<Funer
                     <span>Total:</span>
                     <span>€{total.toFixed(2)}</span>
                 </div>
+                
+                {/* Keep Existing Invoice Checkbox - only show when editing and invoice exists */}
+                {isEditMode && hasExistingInvoice && (
+                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                        <label className="flex items-center gap-2 text-sm">
+                            <input
+                                type="checkbox"
+                                checked={keepExistingInvoice}
+                                onChange={(e) => onKeepExistingInvoiceChange?.(e.target.checked)}
+                                className="rounded"
+                            />
+                            <span className="text-gray-700">
+                                Keep existing invoice (uncheck to generate new invoice after saving)
+                            </span>
+                        </label>
+                    </div>
+                )}
+                
                 <div className="flex gap-2">
                     <button 
                         onClick={onClearAll}
@@ -430,6 +461,7 @@ export default function CreateFuneralModal() {
     const { createFuneral, updateFuneral } = useFuneralsV2();
     const [formData, setFormData] = useState<FuneralFormData>({
         deceasedName: "",
+        funeralType: "Funeral", // Default value
         dateOfDeath: "",
         lastAddress: "",
         clientName: "",
@@ -440,12 +472,16 @@ export default function CreateFuneralModal() {
         // paymentStatus removed for redesign
     });
 
+    // State for keeping existing invoice when editing
+    const [keepExistingInvoice, setKeepExistingInvoice] = useState(true);
+
     // Populate form data when in edit mode
     useEffect(() => {
         if (isEditMode && editingFuneralData && showFuneralModal) {
             // Extract data from V2 funeralData structure
             setFormData({
                 deceasedName: editingFuneralData.deceasedName || "",
+                funeralType: editingFuneralData.funeralType || "Funeral",
                 dateOfDeath: editingFuneralData.dateOfDeath || "",
                 lastAddress: editingFuneralData.lastAddress || "",
                 clientName: editingFuneralData.client?.name || "",
@@ -530,6 +566,7 @@ export default function CreateFuneralModal() {
             // Prepare data for V2 API submission
             const submissionDataV2: FuneralDataV2 = {
                 deceasedName: formData.deceasedName || '',
+                funeralType: formData.funeralType || 'Funeral',
                 dateOfDeath: formData.dateOfDeath || '',
                 lastAddress: formData.lastAddress || '',
                 client: {
@@ -555,7 +592,11 @@ export default function CreateFuneralModal() {
                     generatedDate: new Date().toISOString(),
                     status: 'Draft',
                     totalAmount: funeralItems.reduce((sum, item) => sum + (item.qty * item.price), 0),
-                    lineItems: funeralItems
+                    lineItems: funeralItems,
+                    // Preserve existing invoice URL if checkbox is checked and we're in edit mode
+                    ...(isEditMode && keepExistingInvoice && editingFuneralData?.invoice?.pdfUrl && {
+                        pdfUrl: editingFuneralData.invoice.pdfUrl
+                    })
                 },
                 fromDate: formData.fromDate || '',
                 toDate: formData.toDate || '',
@@ -590,7 +631,7 @@ export default function CreateFuneralModal() {
         } catch (error) {
             console.error(isEditMode ? 'Error updating funeral:' : 'Error creating funeral:', error);
         }
-    }, [formData, selectedFuneralItems, createFuneral, updateFuneral, isEditMode, viewingFuneral, handleClearAll, setShowFuneralModal]);
+    }, [formData, selectedFuneralItems, createFuneral, updateFuneral, isEditMode, viewingFuneral, handleClearAll, setShowFuneralModal, keepExistingInvoice, editingFuneralData?.invoice?.pdfUrl]);
 
 
 
@@ -665,6 +706,9 @@ export default function CreateFuneralModal() {
                         onClearAll={handleClearAll}
                         onSave={handleSave}
                         isEditMode={isEditMode}
+                        keepExistingInvoice={keepExistingInvoice}
+                        onKeepExistingInvoiceChange={setKeepExistingInvoice}
+                        hasExistingInvoice={isEditMode && !!editingFuneralData?.invoice?.pdfUrl}
                     />
                 </div>
             </div>

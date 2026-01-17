@@ -37,6 +37,7 @@ export interface EditInvoiceData {
 
 export interface FuneralFormData {
   deceasedName?: string;
+  funeralType?: string;
   dateOfDeath?: string;
   lastAddress?: string;
   clientName?: string;

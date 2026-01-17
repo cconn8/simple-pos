@@ -77,6 +77,7 @@ export function transformLegacyToV2(legacyRecord: LegacyFuneralRecord): FuneralR
   // Build the new structured data
   const funeralData: FuneralDataV2 = {
     deceasedName: safeString(formData.deceasedName),
+    funeralType: safeString(formData.funeralType) || 'Funeral',
     dateOfDeath: safeString(formData.dateOfDeath),
     lastAddress: safeString(formData.lastAddress),
     client,

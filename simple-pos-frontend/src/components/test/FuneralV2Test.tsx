@@ -20,6 +20,7 @@ export function FuneralV2Test() {
     _id: 'test-123',
     funeralData: {
       deceasedName: 'John Doe',           // ✅ Required field
+      funeralType: 'Funeral',             // ✅ Required field
       dateOfDeath: '2025-01-10',          // ✅ Required field
       lastAddress: '123 Main St',
       client: {                           // ✅ Organized in logical groups

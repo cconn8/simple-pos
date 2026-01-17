@@ -13,6 +13,17 @@
 
 import { FuneralItem, PaymentStatus } from './index';
 
+// Predefined funeral types
+export const FUNERAL_TYPES = [
+  'Funeral',
+  'Coroner', 
+  'Pre-Arrangement',
+  'Sale',
+  'Quotation'
+] as const;
+
+export type FuneralType = typeof FUNERAL_TYPES[number];
+
 
 // Supporting types for better organization
 export interface ClientDetails {
@@ -58,6 +69,7 @@ export interface InvoiceDetails {
 export interface FuneralDataV2 {
   // Core deceased information
   deceasedName: string;           // Required: every funeral needs this
+  funeralType: string;            // Required: type of funeral (Funeral, Coroner, Sale, etc.) - defaults to "Funeral"
   dateOfDeath: string;            // Required: every funeral needs this
   lastAddress?: string;           // Optional: might not always have this
   

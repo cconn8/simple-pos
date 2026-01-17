@@ -1,11 +1,51 @@
 "use client";
 
-import React, {useContext, createContext, useState} from "react";
+import React, {useContext, createContext, useState, useEffect} from "react";
 import { SelectedFuneralItem } from "../types";
+
+// Filter state structure for clean multi-field filtering
+interface FilterState {
+    type: string;                    // "Funeral", "Coroner", etc. Empty string = "All Types"
+    dateOfDeathYear: string;         // "2024", "2025", etc. Empty string = "All Years"
+    dateOfDeathMonth: string;        // "January", "February", etc. Empty string = "All Months"
+    commencedWorkYear: string;       // "2024", "2025", etc. Empty string = "All Years"  
+    commencedWorkMonth: string;      // "January", "February", etc. Empty string = "All Months"
+}
+
+const defaultFilters: FilterState = {
+    type: "",
+    dateOfDeathYear: "",
+    dateOfDeathMonth: "",
+    commencedWorkYear: "",
+    commencedWorkMonth: ""
+};
+
+// localStorage helpers for filter persistence
+const FILTER_STORAGE_KEY = 'funeral-filters';
+
+const saveFiltersToStorage = (filters: FilterState) => {
+    if (typeof window !== 'undefined') {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+    }
+};
+
+const loadFiltersFromStorage = (): FilterState => {
+    if (typeof window !== 'undefined') {
+        try {
+            const stored = localStorage.getItem(FILTER_STORAGE_KEY);
+            return stored ? JSON.parse(stored) : defaultFilters;
+        } catch (error) {
+            console.warn('Failed to load filters from storage:', error);
+            return defaultFilters;
+        }
+    }
+    return defaultFilters;
+};
 
 interface FuneralsContextType {
     //states
     search: string;
+    filters: FilterState; // Comprehensive filter state
     showFuneralModal : boolean;
     funerals: any[]; // Mix of FuneralData (legacy) and V2 records
     refreshTrigger: number;
@@ -28,6 +68,9 @@ interface FuneralsContextType {
 
     //state setters
     setSearch : (arg: string) => void;
+    setFilters : (arg: FilterState) => void;
+    updateFilter : (key: keyof FilterState, value: string) => void;
+    clearAllFilters : () => void;
     setShowFuneralModal : (arg: boolean) => void;
     setFunerals: (funerals: any[]) => void;
     triggerRefresh: () => void;
@@ -59,6 +102,7 @@ const FuneralsContext = createContext<FuneralsContextType | null>(null)
 
 export function FuneralsProvider({children} : {children: React.ReactNode}) {
     const [search, setSearch]                       = useState("");
+    const [filters, setFilters]                     = useState<FilterState>(defaultFilters);
     const [showFuneralModal, setShowFuneralModal]   = useState(false);
     const [funerals, setFunerals]                   = useState<any[]>([]);
     const [refreshTrigger, setRefreshTrigger]       = useState(0);
@@ -82,6 +126,26 @@ export function FuneralsProvider({children} : {children: React.ReactNode}) {
     const triggerRefresh = () => {
         setRefreshTrigger(prev => prev + 1);
     };
+
+    // Filter management functions
+    const updateFilter = (key: keyof FilterState, value: string) => {
+        setFilters(prev => {
+            const newFilters = { ...prev, [key]: value };
+            saveFiltersToStorage(newFilters);
+            return newFilters;
+        });
+    };
+
+    const clearAllFilters = () => {
+        setFilters(defaultFilters);
+        saveFiltersToStorage(defaultFilters);
+    };
+
+    // Load filters from localStorage on mount
+    useEffect(() => {
+        const savedFilters = loadFiltersFromStorage();
+        setFilters(savedFilters);
+    }, []);
 
     // Funeral item management functions
     const addFuneralItem = (item: SelectedFuneralItem) => {
@@ -149,6 +213,10 @@ export function FuneralsProvider({children} : {children: React.ReactNode}) {
         <FuneralsContext.Provider value={{
             search,
             setSearch,
+            filters,
+            setFilters,
+            updateFilter,
+            clearAllFilters,
             showFuneralModal,
             setShowFuneralModal,
             funerals,

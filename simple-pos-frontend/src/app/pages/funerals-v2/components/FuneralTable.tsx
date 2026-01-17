@@ -10,9 +10,28 @@ import { ChevronDown, ChevronRight, ChevronUp } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
 import { Trash2 } from "@deemlol/next-icons";
+import FilterBar from './FilterBar';
 import { formatDateDisplay } from "@/utils/dateUtils";
 import { FuneralDataV2 } from "@/types/funeralV2";
 import Link from "next/link";
+
+// Color mapping for funeral types (same pattern as Delete/Reset buttons)
+const getFuneralTypeStyles = (type: string): string => {
+    switch (type) {
+        case 'Funeral':
+            return 'px-2 py-1 text-xs bg-purple-100 text-purple-600 rounded';
+        case 'Coroner':
+            return 'px-2 py-1 text-xs bg-yellow-100 text-yellow-600 rounded';
+        case 'Pre-Arrangement':
+            return 'px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded';
+        case 'Sale':
+            return 'px-2 py-1 text-xs bg-green-100 text-green-600 rounded';
+        case 'Quotation':
+            return 'px-2 py-1 text-xs bg-orange-100 text-orange-600 rounded';
+        default:
+            return 'px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded'; // Fallback for legacy types
+    }
+};
 
 interface CustomDataTableProps {
   funerals: any[];
@@ -30,7 +49,10 @@ export default function FuneralTable(props : FuneralTableProps) {
     const { funerals, filteredFunerals, isLoading, error, fetchFunerals } = useFuneralsV2();
     console.log('📋 Loaded funerals count:', funerals?.length || 0);
     // const { funerals, filteredFunerals, isLoading, error, fetchFunerals, updateFuneral } = useFunerals();
-    const { generateInvoice, isLoading: isGeneratingInvoice, error: invoiceError } = useInvoices();
+    const { generateInvoice, error: invoiceError } = useInvoices();
+    
+    // Track loading state per funeral ID
+    const [generatingInvoiceIds, setGeneratingInvoiceIds] = useState<Set<string>>(new Set());
     const {  
         showFuneralModal,  
         setShowFuneralModal, 
@@ -42,21 +64,66 @@ export default function FuneralTable(props : FuneralTableProps) {
         sortDirection,
         handleSort,
         setShowXeroPostingModal,
-        setXeroPostingFuneral
+        setXeroPostingFuneral,
+        filters
     } = useFuneralsContext();
 
     // Process filtered funerals
     //selected cells to show in the funerals table
-    const selectedCells = ['deceasedName', 'dateOfDeath', 'fromDate', 'invoice', 'xeroStatus'] //fromDate is referenced as Commenced Work
+    const selectedCells = ['deceasedName', 'funeralType', 'dateOfDeath', 'fromDate', 'invoice', 'xeroStatus'] //fromDate is referenced as Commenced Work
 
     //organise data for table
     const normalizedFuneralData = useMemo(() => {
         let processedData = filteredFunerals
             .filter(funeral => funeral.funeralData) // Remove funerals without funeralData
+            .filter(funeral => {
+                // Apply comprehensive filters
+                const funeralData = funeral.funeralData;
+                
+                // Type filter
+                if (filters.type && funeralData.funeralType !== filters.type) {
+                    return false;
+                }
+                
+                // Date of Death filters
+                if (filters.dateOfDeathYear || filters.dateOfDeathMonth) {
+                    if (!funeralData.dateOfDeath) return false; // No date = no match
+                    const deathDate = new Date(funeralData.dateOfDeath);
+                    
+                    if (filters.dateOfDeathYear) {
+                        const deathYear = deathDate.getFullYear().toString();
+                        if (deathYear !== filters.dateOfDeathYear) return false;
+                    }
+                    
+                    if (filters.dateOfDeathMonth) {
+                        const deathMonth = deathDate.toLocaleString('default', { month: 'long' });
+                        if (deathMonth !== filters.dateOfDeathMonth) return false;
+                    }
+                }
+                
+                // Commenced Work filters
+                if (filters.commencedWorkYear || filters.commencedWorkMonth) {
+                    if (!funeralData.fromDate) return false; // No date = no match
+                    const workDate = new Date(funeralData.fromDate);
+                    
+                    if (filters.commencedWorkYear) {
+                        const workYear = workDate.getFullYear().toString();
+                        if (workYear !== filters.commencedWorkYear) return false;
+                    }
+                    
+                    if (filters.commencedWorkMonth) {
+                        const workMonth = workDate.toLocaleString('default', { month: 'long' });
+                        if (workMonth !== filters.commencedWorkMonth) return false;
+                    }
+                }
+                
+                return true;
+            })
             .map((funeral) => ({
                 ...funeral,
                 // Flatten V2 data structure for table display so the keys are nested for easy search
                 deceasedName: funeral.funeralData.deceasedName,
+                funeralType: funeral.funeralData.funeralType || 'Funeral', // Default for legacy records
                 dateOfDeath: funeral.funeralData.dateOfDeath,
                 fromDate: funeral.funeralData.fromDate,
                 clientName: funeral.funeralData.client.name,
@@ -101,7 +168,7 @@ export default function FuneralTable(props : FuneralTableProps) {
         }
         // Funerals processed for display
         return processedData;
-    }, [filteredFunerals, sortField, sortDirection]);
+    }, [filteredFunerals, sortField, sortDirection, filters]);
 
     // const funeralFormData = filteredFunerals.map((funeral) => funeral.formData ?? null).filter((fd): fd is FuneralFormData => fd !== null);
     const headingsToShow = tableDisplayMappings.filter((mapping) => selectedCells.includes(mapping.key));
@@ -247,6 +314,9 @@ export default function FuneralTable(props : FuneralTableProps) {
     }
 
     const handleGenerateInvoice = async (funeralId: string) => {
+        // Set this funeral as loading
+        setGeneratingInvoiceIds(prev => new Set(prev).add(funeralId));
+        
         try {
             await generateInvoice(funeralId);
             // Optionally refresh funerals to get updated invoice URL
@@ -254,21 +324,57 @@ export default function FuneralTable(props : FuneralTableProps) {
         } catch (error) {
             console.error('Failed to generate invoice:', error);
             // You could show a toast notification here
+        } finally {
+            // Remove this funeral from loading state
+            setGeneratingInvoiceIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(funeralId);
+                return newSet;
+            });
         }
     };
 
-    // Payment status functionality removed for redesign
+    // Delete invoice handler
+    const handleDeleteInvoice = async (funeralId: string, invoiceUrl: string) => {
+        if (!confirm('Delete this invoice? This action cannot be undone.')) {
+            return;
+        }
 
-    // Payment status color function removed for redesign
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(localStorage.getItem('auth_token') && { 
+                        Authorization: `Bearer ${localStorage.getItem('auth_token')}` 
+                    })
+                },
+                body: JSON.stringify({ funeralId, invoiceUrl })
+            });
+
+            if (!response.ok) throw new Error('Failed to delete invoice');
+            
+            alert('✅ Invoice deleted successfully!');
+            // Refresh funeral data to see changes
+            await fetchFunerals();
+        } catch (error) {
+            console.error('Error deleting invoice:', error);
+            alert('❌ Failed to delete invoice. Please try again.');
+        }
+    };
 
     // Render the actual table
     //funerals is an array of funeralObjects
     return (
         <div className="bg-white m-1 rounded-sm p-4 w-full">
             <div className="flex gap-x-3 mb-2">
-                <h2 className="text-xl font-bold align-middle">Funerals ({filteredFunerals.length})</h2>  
+                <h2 className="text-xl font-bold align-middle">Funerals ({normalizedFuneralData.length})</h2>  
                 <SearchBar placeholder="Search funerals" />
-            </div>    
+            </div>
+            
+            {/* Comprehensive Filter Bar */}
+            <FilterBar />
+                
 
             <div className="overflow-x-auto">
                 <table className="table-auto w-full border border-gray-200 text-left">
@@ -311,8 +417,13 @@ export default function FuneralTable(props : FuneralTableProps) {
                                 >
                                     {cellsToShow.map(([key, val], i) => (
                                         <td key={i} className="px-4 py-2 border-b border-gray-100 whitespace-nowrap">
-                                            {key === "invoice" && typeof val === "string" ? (
+                                            {key === "funeralType" ? (
+                                                <span className={getFuneralTypeStyles(val || 'Funeral')}>
+                                                    {val || 'Funeral'}
+                                                </span>
+                                            ) : key === "invoice" && typeof val === "string" ? (
                                                 val.length > 1 ? (
+                                                    <div className="flex items-center gap-2">
                                                         <a href={val} 
                                                             target="_blank" 
                                                             rel="noopener noreferrer" 
@@ -320,16 +431,27 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                             onClick={(e) => e.stopPropagation()}
                                                         >
                                                             View Invoice
-                                                        </a> 
+                                                        </a>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleDeleteInvoice(normFuneralObject._id, val);
+                                                            }}
+                                                            className="px-2 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200"
+                                                            title="Delete invoice"
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </div>
                                                 ) : <button 
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleGenerateInvoice(normFuneralObject._id);
                                                     }} 
-                                                    disabled={isGeneratingInvoice} 
-                                                    className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${isGeneratingInvoice ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                    disabled={generatingInvoiceIds.has(normFuneralObject._id)} 
+                                                    className={`bg-blue-500 text-xsmall p-1 rounded border text-white hover:bg-blue-700 ${generatingInvoiceIds.has(normFuneralObject._id) ? "opacity-50 cursor-not-allowed" : ""}`}
                                                 >
-                                                    {isGeneratingInvoice ? "Generating..." : "Generate Invoice"}
+                                                    {generatingInvoiceIds.has(normFuneralObject._id) ? "Generating..." : "Generate Invoice"}
                                                 </button>
                                             ) : key === "xeroStatus" ? (
                                                 // Render XERO status with appropriate styling
@@ -351,7 +473,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                                 e.stopPropagation();
                                                                 if (confirm('Reset XERO data? This will allow you to post to XERO again.')) {
                                                                     try {
-                                                                        const response = await fetch(`${process.env.API_URL}/funerals/${normFuneralObject._id}/xero/reset`, {
+                                                                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${normFuneralObject._id}/xero/reset`, {
                                                                             method: 'DELETE'
                                                                         });
                                                                         const result = await response.json();
