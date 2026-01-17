@@ -29,4 +29,7 @@ export const useAuthContext = () => {
   return context;
 };
 
+// Temporary backward compatibility - will be removed later
+export const useAuth = useAuthContext;
+
 export default AuthContext;

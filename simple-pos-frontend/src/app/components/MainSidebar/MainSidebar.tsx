@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 import Image from "next/image";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 interface NavigationItem {
   label: string;
@@ -19,7 +19,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
 
 export default function MainSidebar() {
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout } = useAuthContext();
 
   const handleNavigation = useCallback((path: string) => {
     router.push(path);

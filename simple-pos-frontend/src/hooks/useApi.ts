@@ -68,12 +68,17 @@ export const useInvoices = () => {
     setError(null);
     
     try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       // Assuming the correct endpoint for invoice generation
       const response = await fetch(`${API_URL}/invoice/${funeralId}`, {
         method: 'POST',
         headers: { 
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(data || {})
       });
@@ -94,7 +99,7 @@ export const useInvoices = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [API_URL, token]);
+  }, [API_URL, getValidToken]);
 
   return {
     generateInvoice,
@@ -301,7 +306,7 @@ export const useInventory = () => {
         console.error("Error updating inventory item:", err);
         throw err;
     }
-  }, [API_URL, token])
+  }, [API_URL, getValidToken])
 
   return {
     inventory: inventory || [],
