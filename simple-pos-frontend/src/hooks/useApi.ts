@@ -110,7 +110,7 @@ export const useInvoices = () => {
 
 export const useFunerals = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { token } = useAuth()
+  const { token } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {search, funerals, setFunerals, refreshTrigger} = useFuneralsContext();
@@ -292,11 +292,16 @@ export const useInventory = () => {
   const updateInventoryItem = useCallback(async(id: string, itemData: any) => {
     // Send update request to server
     try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+      
       const response = await fetch(`${API_URL}/inventory/${id}`, {
         method: 'PATCH',
         headers: {
           "Content-Type" : "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(itemData)
       });

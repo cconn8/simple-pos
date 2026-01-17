@@ -234,6 +234,7 @@ export const useAuth = () => {
 
   return {
     ...authState,
+    token: authState.token, // For backward compatibility
     login,
     logout,
     getValidToken,
