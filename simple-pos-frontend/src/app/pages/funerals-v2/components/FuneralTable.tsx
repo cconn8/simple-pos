@@ -9,6 +9,7 @@ import { KeyDisplay } from "../../../../types";
 import { ChevronDown, ChevronRight, ChevronUp } from "@deemlol/next-icons";
 import SearchBar from "@/app/components/SearchBar/SearchBar";
 import { useFuneralsContext } from "@/contexts/FuneralsContext";
+import { useAuthContext } from "@/contexts/AuthContext";
 import { Trash2 } from "@deemlol/next-icons";
 import FilterBar from './FilterBar';
 import { formatDateDisplay } from "@/utils/dateUtils";
@@ -50,6 +51,7 @@ export default function FuneralTable(props : FuneralTableProps) {
     console.log('📋 Loaded funerals count:', funerals?.length || 0);
     // const { funerals, filteredFunerals, isLoading, error, fetchFunerals, updateFuneral } = useFunerals();
     const { generateInvoice, error: invoiceError } = useInvoices();
+    const { getValidToken, logout } = useAuthContext();
     
     // Track loading state per funeral ID
     const [generatingInvoiceIds, setGeneratingInvoiceIds] = useState<Set<string>>(new Set());
@@ -195,18 +197,26 @@ export default function FuneralTable(props : FuneralTableProps) {
     // Payment status update handler
     const handlePaymentStatusChange = async (funeralId: string, newStatus: string) => {
         try {
+            const token = getValidToken();
+            
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+
             // Use the existing API to update payment status
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${funeralId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add auth token if available
-                    ...(localStorage.getItem('auth_token') && { 
-                        Authorization: `Bearer ${localStorage.getItem('auth_token')}` 
-                    })
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ paymentStatus: newStatus })
             });
+
+            if (response.status === 401) {
+                logout('Your session has expired. Please log in again.');
+                throw new Error('Authentication failed');
+            }
 
             if (!response.ok) throw new Error('Failed to update payment status');
             
@@ -341,16 +351,25 @@ export default function FuneralTable(props : FuneralTableProps) {
         }
 
         try {
+            const token = getValidToken();
+            
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/invoice/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(localStorage.getItem('auth_token') && { 
-                        Authorization: `Bearer ${localStorage.getItem('auth_token')}` 
-                    })
+                    Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({ funeralId, invoiceUrl })
             });
+
+            if (response.status === 401) {
+                logout('Your session has expired. Please log in again.');
+                throw new Error('Authentication failed');
+            }
 
             if (!response.ok) throw new Error('Failed to delete invoice');
             
@@ -473,9 +492,23 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                                 e.stopPropagation();
                                                                 if (confirm('Reset XERO data? This will allow you to post to XERO again.')) {
                                                                     try {
+                                                                        const token = getValidToken();
+                                                                        
+                                                                        if (!token) {
+                                                                            throw new Error('Authentication required');
+                                                                        }
+
                                                                         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${normFuneralObject._id}/xero/reset`, {
-                                                                            method: 'DELETE'
+                                                                            method: 'DELETE',
+                                                                            headers: {
+                                                                                Authorization: `Bearer ${token}`
+                                                                            }
                                                                         });
+
+                                                                        if (response.status === 401) {
+                                                                            logout('Your session has expired. Please log in again.');
+                                                                            throw new Error('Authentication failed');
+                                                                        }
                                                                         const result = await response.json();
                                                                         if (result.success) {
                                                                             alert('✅ XERO data reset successfully!');

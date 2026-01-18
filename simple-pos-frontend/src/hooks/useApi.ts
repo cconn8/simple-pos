@@ -110,7 +110,7 @@ export const useInvoices = () => {
 
 export const useFunerals = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const { token } = useAuthContext();
+  const { getValidToken, logout } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const {search, funerals, setFunerals, refreshTrigger} = useFuneralsContext();
@@ -122,11 +122,22 @@ export const useFunerals = () => {
     setError(null);
 
     try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch(`${API_URL}/funerals`, {
         headers: {
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`
         }
       });
+      
+      if (response.status === 401) {
+        logout('Your session has expired. Please log in again.');
+        throw new Error('Authentication failed');
+      }
+      
       if (!response.ok) { throw new Error(`HTTP ${response.status}`)};
       const data: any[] = await response.json(); // Allow mixed legacy and V2 formats
       setFunerals(data || []); // ensure always an array
@@ -139,7 +150,7 @@ export const useFunerals = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [API_URL, setFunerals, token]);
+  }, [API_URL, setFunerals, getValidToken, logout]);
 
   const createFuneral = useCallback( async(submissionData : FuneralFormData) => {
     // Create new funeral
@@ -147,14 +158,25 @@ export const useFunerals = () => {
     setError(null);
 
     try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch(`${API_URL}/funerals`, {
         method: "POST",
         headers: {
           "content-type" : "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(submissionData),
       });
+      
+      if (response.status === 401) {
+        logout('Your session has expired. Please log in again.');
+        throw new Error('Authentication failed');
+      }
+      
       if(!response.ok) {throw new Error(`HTTP error! status : ${response.status}`)}
       const newFuneral : FuneralData = await response.json();
       // Funeral created successfully
@@ -168,7 +190,7 @@ export const useFunerals = () => {
         setIsLoading(false);
       }
 
-  }, [API_URL, fetchFunerals, token]);
+  }, [API_URL, fetchFunerals, getValidToken, logout]);
 
   const updateFuneral = useCallback(async (id: string, submissionData: FuneralFormData) => {
     // Update funeral
@@ -176,14 +198,25 @@ export const useFunerals = () => {
     setError(null);
 
     try {
+      const token = getValidToken();
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
       const response = await fetch(`${API_URL}/funerals/${id}`, {
         method: "PATCH",
         headers: {
           "content-type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` })
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(submissionData),
       });
+      
+      if (response.status === 401) {
+        logout('Your session has expired. Please log in again.');
+        throw new Error('Authentication failed');
+      }
+      
       if (!response.ok) { throw new Error(`HTTP error! status: ${response.status}`) }
       const updatedFuneral: FuneralData = await response.json();
       // Funeral updated successfully
@@ -197,7 +230,7 @@ export const useFunerals = () => {
       setIsLoading(false);
     }
 
-  }, [API_URL, fetchFunerals, token]);
+  }, [API_URL, fetchFunerals, getValidToken, logout]);
 
   // Delete a funeral by ID and refresh the list
   const deleteFuneral = useCallback( async (id: string) => {
@@ -205,12 +238,23 @@ export const useFunerals = () => {
       setIsLoading(true);
       setError(null);
       try {
+        const token = getValidToken();
+        if (!token) {
+          throw new Error('Authentication required');
+        }
+
         const response = await fetch(`${API_URL}/funerals/${id}`, { 
           method: "DELETE",
           headers: {
-            ...(token && { Authorization: `Bearer ${token}` })
+            Authorization: `Bearer ${token}`
           }
         });
+        
+        if (response.status === 401) {
+          logout('Your session has expired. Please log in again.');
+          throw new Error('Authentication failed');
+        }
+        
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         // After successful delete, refetch updated list
         await fetchFunerals();
@@ -221,7 +265,7 @@ export const useFunerals = () => {
         setIsLoading(false);
       }
     },
-    [API_URL, fetchFunerals, token]
+    [API_URL, fetchFunerals, getValidToken, logout]
   );
 
   // Fetch funerals on mount and when refresh is triggered

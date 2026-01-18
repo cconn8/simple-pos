@@ -1,21 +1,36 @@
 
+"use client";
+
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export default function DeleteModal({isDeleteModalVisible, setIsDeleteModalVisible, currentFuneralId, setCurrentFuneralId, currentDeceasedName, setCurrentDeceasedName, currentInvoiceUrl, setCurrentInvoiceUrl, fetchData, resetState}) {
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
+    const { getValidToken, logout } = useAuthContext();
 
     const handleDeleteFuneral = async(funeralId, invoiceUrl) => {
         console.log('Deleting funeral with id : ', funeralId);
         console.log('invoice url : ', invoiceUrl)
         try {
+            const token = getValidToken();
+            if (!token) {
+                throw new Error('Authentication required');
+            }
+
             const response = await fetch(`${API_URL}/funerals/${funeralId}`, {
                 method: "DELETE",
                 headers: {
                     'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({'invoiceUrl': invoiceUrl}),
                 
             });
+
+            if (response.status === 401) {
+                logout('Your session has expired. Please log in again.');
+                throw new Error('Authentication failed');
+            }
 
             if (!response.ok) { throw new Error('Failed to DELETE funeral')};
             
