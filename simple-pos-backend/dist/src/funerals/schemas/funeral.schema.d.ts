@@ -65,6 +65,12 @@ export declare class Funeral extends Document {
         status?: 'posting' | 'posted' | 'failed';
         errorMessage?: string;
     };
+    paymentHistory?: {
+        timestamp: Date;
+        status: PaymentStatus;
+        comment?: string;
+        changedBy?: string;
+    }[];
 }
 export declare const FuneralSchema: import("mongoose").Schema<Funeral, import("mongoose").Model<Funeral, any, any, any, Document<unknown, any, Funeral, any> & Funeral & Required<{
     _id: unknown;

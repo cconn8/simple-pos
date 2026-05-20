@@ -81,6 +81,15 @@ export class Funeral extends Document {
     status?: 'posting' | 'posted' | 'failed';  // Current XERO status
     errorMessage?: string;   // If posting failed, what went wrong
   };
+
+  // Payment History - NEW FEATURE for tracking payment comments
+  @Prop({ type: [Object], default: [], required: false })
+  paymentHistory?: {
+    timestamp: Date;         // When the payment status was changed
+    status: PaymentStatus;   // What status it was changed to
+    comment?: string;        // Optional comment from the user
+    changedBy?: string;      // Optional: who made the change (for future use)
+  }[];
 }
 
 export const FuneralSchema = SchemaFactory.createForClass(Funeral);

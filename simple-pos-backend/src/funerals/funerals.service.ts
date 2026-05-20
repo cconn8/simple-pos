@@ -76,10 +76,21 @@ export class FuneralsService {
         $unset: { formData: 1 } // Remove legacy formData when saving V2 format
       };
     } else if ((updateFuneralDto as any).paymentStatus) {
-      // Simple payment status update
-      updateData = { 
-        $set: { paymentStatus: (updateFuneralDto as any).paymentStatus }
-      };
+      // Payment status update - check if payment history should be added
+      const paymentHistoryUpdate = (updateFuneralDto as any).$push?.paymentHistory;
+      
+      if (paymentHistoryUpdate) {
+        // Payment status update WITH payment history entry
+        updateData = { 
+          $set: { paymentStatus: (updateFuneralDto as any).paymentStatus },
+          $push: { paymentHistory: paymentHistoryUpdate }
+        };
+      } else {
+        // Simple payment status update without history
+        updateData = { 
+          $set: { paymentStatus: (updateFuneralDto as any).paymentStatus }
+        };
+      }
     } else {
       // Legacy format update
       updateData = { $set: { formData: updateFuneralDto } };

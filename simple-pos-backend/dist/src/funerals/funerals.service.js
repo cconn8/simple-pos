@@ -60,9 +60,18 @@ let FuneralsService = class FuneralsService {
             };
         }
         else if (updateFuneralDto.paymentStatus) {
-            updateData = {
-                $set: { paymentStatus: updateFuneralDto.paymentStatus }
-            };
+            const paymentHistoryUpdate = updateFuneralDto.$push?.paymentHistory;
+            if (paymentHistoryUpdate) {
+                updateData = {
+                    $set: { paymentStatus: updateFuneralDto.paymentStatus },
+                    $push: { paymentHistory: paymentHistoryUpdate }
+                };
+            }
+            else {
+                updateData = {
+                    $set: { paymentStatus: updateFuneralDto.paymentStatus }
+                };
+            }
         }
         else {
             updateData = { $set: { formData: updateFuneralDto } };

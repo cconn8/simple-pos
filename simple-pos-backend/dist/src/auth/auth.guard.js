@@ -21,19 +21,25 @@ let AuthGuard = class AuthGuard {
     async canActivate(context) {
         const skipAuth = this.reflector.get('skipAuth', context.getHandler());
         if (skipAuth) {
+            console.log('Skip auth: True : ', skipAuth);
             return true;
         }
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
+        console.log('Extracting auth token from header ...\n Token : ', token);
         if (!token) {
             throw new common_1.UnauthorizedException();
         }
+        console.log('Verifying auth token..');
         try {
             const payload = await this.jwtService.verifyAsync(token);
+            console.log('Verified : ', payload);
             request['user'] = payload;
         }
-        catch {
-            throw new common_1.UnauthorizedException();
+        catch (error) {
+            console.error('JWT Verification failed:', error.message);
+            console.error('Token that failed:', token);
+            throw new common_1.UnauthorizedException(`JWT verification failed: ${error.message}`);
         }
         return true;
     }

@@ -41,6 +41,10 @@ __decorate([
     (0, mongoose_1.Prop)({ type: Object, required: false }),
     __metadata("design:type", Object)
 ], Funeral.prototype, "xeroData", void 0);
+__decorate([
+    (0, mongoose_1.Prop)({ type: [Object], default: [], required: false }),
+    __metadata("design:type", Array)
+], Funeral.prototype, "paymentHistory", void 0);
 exports.Funeral = Funeral = __decorate([
     (0, mongoose_1.Schema)({ timestamps: true })
 ], Funeral);
