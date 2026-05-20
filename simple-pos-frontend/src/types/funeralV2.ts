@@ -94,6 +94,14 @@ export interface FuneralDataV2 {
   funeralNotes?: string;
 }
 
+// Payment History - NEW FEATURE for tracking payment comments
+export interface PaymentHistoryEntry {
+  timestamp: string;       // ISO date string when payment status was changed
+  status: PaymentStatus;   // What status it was changed to
+  comment?: string;        // Optional comment from the user
+  changedBy?: string;      // Optional: who made the change (for future use)
+}
+
 // XERO Integration Data
 export interface XeroData {
   contactId?: string;      // XERO contact ID after creation
@@ -113,6 +121,7 @@ export interface FuneralRecordV2 {
   funeralData: FuneralDataV2;     // Our new structured data
   paymentStatus: PaymentStatus;   // Existing payment status enum
   xeroData?: XeroData;            // XERO integration data
+  paymentHistory?: PaymentHistoryEntry[];  // NEW: Payment history with comments
   // invoice?: string;               // Invoice URL
   createdAt?: string;
   updatedAt?: string;

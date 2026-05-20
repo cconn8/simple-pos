@@ -222,6 +222,44 @@ export function FuneralDetailDrawer() {
               </div>
             </div>
           )}
+
+          {/* Payment History Section - NEW FEATURE */}
+          {viewingFuneralV2.paymentHistory && viewingFuneralV2.paymentHistory.length > 0 && (
+            <div className="border-t border-gray-200 pt-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-3">Payment History</h3>
+              <div className="space-y-3">
+                {viewingFuneralV2.paymentHistory
+                  .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) // Newest first
+                  .map((entry, index) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`px-2 py-1 text-xs rounded font-medium ${
+                              entry.status === 'Paid' 
+                                ? 'bg-green-100 text-green-800'
+                                : entry.status === 'Partially Paid'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}>
+                              {entry.status}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              {dateFormat(new Date(entry.timestamp), 'dd/mm/yyyy HH:MM')}
+                            </span>
+                          </div>
+                          {entry.comment && (
+                            <p className="text-sm text-gray-700 bg-white p-2 rounded border">
+                              &ldquo;{entry.comment}&rdquo;
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

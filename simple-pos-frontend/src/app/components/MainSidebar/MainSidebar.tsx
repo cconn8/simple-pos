@@ -15,6 +15,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { label: 'Funerals', path: './funerals' },
   { label: 'Inventory', path: './inventory' },
   { label: 'Invoices', disabled: true },
+  { label: 'Create User', path: './pages/create-user' },
 ];
 
 export default function MainSidebar() {

@@ -14,7 +14,9 @@ import { Trash2 } from "@deemlol/next-icons";
 import FilterBar from './FilterBar';
 import { formatDateDisplay } from "@/utils/dateUtils";
 import { FuneralDataV2 } from "@/types/funeralV2";
+import { PaymentStatus } from "@/types";
 import Link from "next/link";
+import PaymentCommentModal from "../modals/PaymentCommentModal";
 
 // Color mapping for funeral types (same pattern as Delete/Reset buttons)
 const getFuneralTypeStyles = (type: string): string => {
@@ -55,6 +57,15 @@ export default function FuneralTable(props : FuneralTableProps) {
     
     // Track loading state per funeral ID
     const [generatingInvoiceIds, setGeneratingInvoiceIds] = useState<Set<string>>(new Set());
+    
+    // Payment comment modal state
+    const [showPaymentCommentModal, setShowPaymentCommentModal] = useState(false);
+    const [paymentModalData, setPaymentModalData] = useState<{
+        funeralId: string;
+        deceasedName: string;
+        currentStatus: PaymentStatus;
+        newStatus: PaymentStatus;
+    } | null>(null);
     const {  
         showFuneralModal,  
         setShowFuneralModal, 
@@ -194,8 +205,29 @@ export default function FuneralTable(props : FuneralTableProps) {
         setShowFuneralDetail(true);
     };
 
-    // Payment status update handler
-    const handlePaymentStatusChange = async (funeralId: string, newStatus: string) => {
+    // Payment status change handler - opens modal for Paid/Partially Paid
+    const handlePaymentStatusChange = (funeral: any, newStatus: string) => {
+        // Cast to PaymentStatus type
+        const newPaymentStatus = newStatus as PaymentStatus;
+        const currentPaymentStatus = funeral.paymentStatus as PaymentStatus;
+        
+        // If changing to Paid or Partially Paid, show comment modal
+        if (newPaymentStatus === 'Paid' || newPaymentStatus === 'Partially Paid') {
+            setPaymentModalData({
+                funeralId: funeral._id,
+                deceasedName: funeral.deceasedName || 'Unknown',
+                currentStatus: currentPaymentStatus,
+                newStatus: newPaymentStatus
+            });
+            setShowPaymentCommentModal(true);
+        } else {
+            // For Unpaid, update directly without comment
+            updatePaymentStatusWithComment(funeral._id, newPaymentStatus, '');
+        }
+    };
+
+    // Actual API call to update payment status with comment
+    const updatePaymentStatusWithComment = async (funeralId: string, newStatus: PaymentStatus, comment: string) => {
         try {
             const token = getValidToken();
             
@@ -203,14 +235,24 @@ export default function FuneralTable(props : FuneralTableProps) {
                 throw new Error('Authentication required');
             }
 
-            // Use the existing API to update payment status
+            // Create payment history entry
+            const paymentHistoryEntry = {
+                timestamp: new Date().toISOString(),
+                status: newStatus,
+                comment: comment || undefined, // Only include comment if provided
+            };
+
+            // Send both payment status and payment history
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/funerals/${funeralId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
                 },
-                body: JSON.stringify({ paymentStatus: newStatus })
+                body: JSON.stringify({ 
+                    paymentStatus: newStatus,
+                    $push: { paymentHistory: paymentHistoryEntry } // Add to payment history array
+                })
             });
 
             if (response.status === 401) {
@@ -225,7 +267,25 @@ export default function FuneralTable(props : FuneralTableProps) {
         } catch (error) {
             console.error('Error updating payment status:', error);
             alert('Failed to update payment status. Please try again.');
+            throw error; // Re-throw to handle in modal
         }
+    };
+
+    // Handle payment comment modal confirmation
+    const handlePaymentCommentConfirm = async (comment: string) => {
+        if (paymentModalData) {
+            await updatePaymentStatusWithComment(
+                paymentModalData.funeralId, 
+                paymentModalData.newStatus, 
+                comment
+            );
+        }
+    };
+
+    // Handle payment comment modal close
+    const handlePaymentCommentClose = () => {
+        setShowPaymentCommentModal(false);
+        setPaymentModalData(null);
     };
 
     // XERO posting handler
@@ -566,7 +626,7 @@ export default function FuneralTable(props : FuneralTableProps) {
                                                 value={normFuneralObject.paymentStatus}
                                                 onChange={(e) => {
                                                     e.stopPropagation();
-                                                    handlePaymentStatusChange(normFuneralObject._id, e.target.value);
+                                                    handlePaymentStatusChange(normFuneralObject, e.target.value);
                                                 }}
                                                 className={`text-xs px-2 py-1 rounded border ${
                                                     normFuneralObject.paymentStatus === 'Paid' 
@@ -600,6 +660,18 @@ export default function FuneralTable(props : FuneralTableProps) {
                     </tbody>
                 </table>
             </div>
+
+            {/* Payment Comment Modal */}
+            {paymentModalData && (
+                <PaymentCommentModal
+                    isOpen={showPaymentCommentModal}
+                    onClose={handlePaymentCommentClose}
+                    onConfirm={handlePaymentCommentConfirm}
+                    deceasedName={paymentModalData.deceasedName}
+                    newPaymentStatus={paymentModalData.newStatus}
+                    currentPaymentStatus={paymentModalData.currentStatus}
+                />
+            )}
         </div>
         
     )

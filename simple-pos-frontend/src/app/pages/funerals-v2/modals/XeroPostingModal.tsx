@@ -114,13 +114,13 @@ export default function XeroPostingModal({ isOpen, onClose, funeral, onConfirmPo
         // XERO Invoice fields
         invoiceType: 'ACCREC',
         invoiceNumber: funeral.funeralData.invoice.invoiceNumber || funeral.funeralData.billing.invoiceNumber || `INV-${funeral._id.slice(-6)}`,
-        reference: funeral.funeralData.deceasedName, // Default to deceased name
+        reference: 'Late ' + funeral.funeralData.deceasedName, // Default to deceased name
         invoiceDate: new Date().toISOString().split('T')[0],
         dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 14 days from today
         invoiceStatus: 'AUTHORISED', // Default to approved/awaiting payment
         
         // XERO Line Item fields
-        lineItemDescription: `Funeral services provided for the late ${funeral.funeralData.deceasedName}`,
+        lineItemDescription: `Late ${funeral.funeralData.deceasedName}`,
         lineItemQuantity: 1,
         lineItemUnitAmount: totalAmount,
         lineItemAccountCode: '200', // Default sales account

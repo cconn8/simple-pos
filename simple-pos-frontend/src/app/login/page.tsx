@@ -8,10 +8,8 @@ import Image from 'next/image';
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isSignupMode, setIsSignupMode] = useState(false);
   
   const { login } = useAuthContext();
   const router = useRouter();
@@ -22,73 +20,43 @@ export default function LoginPage() {
     setError('');
 
     try {
-      if (isSignupMode) {
-        if (!name.trim()) {
-          setError('Name is required for signup');
-          setIsLoading(false);
-          return;
-        }
-        // Handle signup (you may need to implement this API call)
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password })
-        });
+      // Handle login only - signup functionality removed for security
+      console.log('🔍 Attempting login to:', `${process.env.NEXT_PUBLIC_API_URL}/auth/login`);
+      console.log('🔍 Login payload:', { email, password: '***' });
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      
+      console.log('🔍 Login response status:', response.status);
+      console.log('🔍 Login response headers:', Object.fromEntries(response.headers.entries()));
+      
+      const result = await response.json();
+      console.log('🔍 Login response data:', result);
+      
+      if (response.ok && result.token) {
+        console.log('✅ Login successful, storing token...');
+        console.log('🔍 Token preview:', result.token.substring(0, 20) + '...');
         
-        const result = await response.json();
-        if (response.ok && result.token) {
-          login(result.token, result.user);
-          router.push('/');
-        } else {
-          setError(result.message || 'Signup failed');
-        }
+        login(result.token, { email }); // Pass user info
+        
+        // Verify token was stored
+        const storedToken = localStorage.getItem('token');
+        console.log('🔍 Token stored successfully:', !!storedToken);
+        console.log('🔍 Stored token preview:', storedToken?.substring(0, 20) + '...');
+        
+        router.push('/');
       } else {
-        // Handle login
-        console.log('🔍 Attempting login to:', `${process.env.NEXT_PUBLIC_API_URL}/auth/login`);
-        console.log('🔍 Login payload:', { email, password: '***' });
-        
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        
-        console.log('🔍 Login response status:', response.status);
-        console.log('🔍 Login response headers:', Object.fromEntries(response.headers.entries()));
-        
-        const result = await response.json();
-        console.log('🔍 Login response data:', result);
-        
-        if (response.ok && result.token) {
-          console.log('✅ Login successful, storing token...');
-          console.log('🔍 Token preview:', result.token.substring(0, 20) + '...');
-          
-          login(result.token, { email }); // Pass user info
-          
-          // Verify token was stored
-          const storedToken = localStorage.getItem('token');
-          console.log('🔍 Token stored successfully:', !!storedToken);
-          console.log('🔍 Stored token preview:', storedToken?.substring(0, 20) + '...');
-          
-          router.push('/');
-        } else {
-          console.error('❌ Login failed:', result);
-          setError(result.message || 'Login failed');
-        }
+        console.error('❌ Login failed:', result);
+        setError(result.message || 'Login failed');
       }
     } catch (error) {
       setError('Network error. Please try again.');
     }
     
     setIsLoading(false);
-  };
-
-  const toggleMode = () => {
-    setIsSignupMode(!isSignupMode);
-    setError('');
-    setEmail('');
-    setPassword('');
-    setName('');
   };
 
   return (
@@ -108,13 +76,10 @@ export default function LoginPage() {
           </div>
           
           <h2 className="text-3xl font-extrabold text-gray-900">
-            {isSignupMode ? 'Create your SimplePOS account' : 'Sign in to SimplePOS'}
+            Sign in to SimplePOS
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            {isSignupMode 
-              ? 'Enter your details to create a new account' 
-              : 'Enter your email and password to access the system'
-            }
+            Enter your email and password to access the system
           </p>
         </div>
 
@@ -135,23 +100,6 @@ export default function LoginPage() {
           )}
 
           <div className="space-y-4">
-            {isSignupMode && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                  Full Name
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required={isSignupMode}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your full name"
-                />
-              </div>
-            )}
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -182,13 +130,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your password"
-                minLength={6}
               />
-              {isSignupMode && (
-                <p className="mt-1 text-xs text-gray-500">
-                  Minimum 6 characters required
-                </p>
-              )}
             </div>
           </div>
 
@@ -208,31 +150,17 @@ export default function LoginPage() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               )}
-              {isLoading 
-                ? (isSignupMode ? 'Creating account...' : 'Signing in...') 
-                : (isSignupMode ? 'Create account' : 'Sign in')
-              }
+              {isLoading ? 'Signing in...' : 'Sign in'}
             </button>
           </div>
         </form>
 
         <div className="text-center space-y-4">
           <div className="border-t border-gray-200 pt-4">
-            <p className="text-sm text-gray-600">
-              {isSignupMode ? 'Already have an account?' : "Don't have an account?"}
+            <p className="text-xs text-gray-500">
+              Secure access to your funeral management system
             </p>
-            <button
-              type="button"
-              onClick={toggleMode}
-              className="mt-1 font-medium text-blue-600 hover:text-blue-500 transition-colors"
-            >
-              {isSignupMode ? 'Sign in here' : 'Create an account'}
-            </button>
           </div>
-          
-          <p className="text-xs text-gray-500">
-            Secure access to your funeral management system
-          </p>
         </div>
       </div>
     </div>
