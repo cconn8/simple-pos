@@ -12,7 +12,7 @@ steps:
       - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:$COMMIT_SHA'
       - '-t'
       - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:latest'
-      - '.'
+      - 'simple-pos-backend'   #point to the simple-pos-backend subdirectory in the github repo (exclude simple-pos-frontend)
 
   # 2️⃣ Push both tags to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
