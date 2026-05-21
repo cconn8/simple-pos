@@ -47,7 +47,9 @@ export const FUNERAL_TEMPLATE_A = {
             {_id : uuidv4(), name : 'clientName', label : 'Client Name', type : 'text', placeholder : 'Client Name'},
             {_id : uuidv4(), name : 'clientAddress',  label : 'Client Address', type : 'text', placeholder : 'Client Address'},
             {_id : uuidv4(), name : 'clientPhone', label : 'Client Phone', type : 'text', placeholder : 'Phone'},
-      ]
+            {_id : uuidv4(), name : 'clientEmail', label : 'Client Email', type : 'text', placeholder : 'email'},
+
+          ]
     },
     { _id : uuidv4(),  
       name : 'billingDetails',
