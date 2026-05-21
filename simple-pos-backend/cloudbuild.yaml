@@ -1,0 +1,45 @@
+# Cloud Build pipeline: build image → push to Artifact Registry → deploy to Cloud Run
+# Place this file at: simple-pos-backend/cloudbuild.yaml
+# In the trigger config, set "Cloud Build configuration file" and point it at this path.
+
+steps:
+  # 1️⃣ Build the Docker image, tagged with both the commit SHA and :latest
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    args:
+      - 'build'
+      - '-t'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:$COMMIT_SHA'
+      - '-t'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:latest'
+      - '.'
+
+  # 2️⃣ Push both tags to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    args:
+      - 'push'
+      - '--all-tags'
+      - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend'
+
+  # 3️⃣ Deploy the freshly built image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-cloud-run'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'simple-pos-nest-backend'
+      - '--image=europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=europe-west2'
+      - '--allow-unauthenticated'
+      - '--project=$PROJECT_ID'
+
+# Record the image(s) built so they appear in the Cloud Build UI's "Build Artifacts" tab
+images:
+  - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:$COMMIT_SHA'
+  - 'europe-west2-docker.pkg.dev/$PROJECT_ID/simple-pos/simple-pos-nest-backend:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
